@@ -1,0 +1,4 @@
+<<a "foobar"
+bazquux
+a
+

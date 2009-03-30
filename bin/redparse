@@ -1,0 +1,260 @@
+#!/usr/bin/env ruby
+=begin           
+    redparse - a ruby parser written in ruby
+    Copyright (C) 2008  Caleb Clausen
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=end
+$VERBOSE=1 #turn on -w
+require "redparse.rb"
+require 'redparse/problemfiles'
+
+class NeverExecThis<RuntimeError; end
+
+def arraydiff(a,b)
+    a==b and return [a,false]
+    (Array===a or a=[a])
+    result= a.dup
+    diff=false
+    size= a.size >= b.size ? a.size : b.size
+    size.times{|i|
+      ai=a[i]
+      bi=b[i]
+      if Array===ai and Array===bi
+        result_i,diff_i= arraydiff(ai,bi)
+        diff||=diff_i
+        result[i]=result_i
+      elsif ai!=bi
+        next if Regexp===ai and ai.to_s==bi.to_s and 
+          ai.options==bi.options 
+        diff=true
+        result[i]={ai=>bi}
+      elsif ai.nil? 
+        result[i]={'size mismatch'=>"#{a.size} for #{b.size}"} if a.size!=b.size
+        diff=true
+      end
+      if i.nonzero? and Hash===result[i] and Hash===result[i-1]
+        old=result[i-1]
+        oldkeys=old.keys
+        oldvals=old.values
+        if Reg::Subseq===oldkeys.first
+          oldkeys=oldkeys.children
+          oldval=oldvals.children
+        end
+        result[i-1..i]=[ {-[*oldkeys+result[i].keys]=>-[*oldvals+result[i].values]} ]
+      end
+    }
+    return result,diff
+end
+
+class RawParseTree; end
+class ParseTree<RawParseTree
+  #this way is bad enough, there's a fd leak
+  def parse_tree_and_warnings_leaks_stderr(str,name)
+    oldSTDERR=STDERR.dup
+    warnstash=Tempfile.new "warnstash"
+    warnings=[]
+
+    STDERR.reopen warnstash
+      tree=parse_tree_for_string(str,name)
+
+    return tree,warnings
+  ensure
+    STDERR.reopen oldSTDERR
+
+    warnstash.rewind
+    warnings.replace warnstash.read.split
+    warnstash.close
+  end
+end
+
+
+
+output=:pp
+quiet=true
+ruby187=false
+while /^-/===ARGV.first
+    case opt=ARGV.shift
+      when "--"; break
+      when "--pp"; output=:pp
+      when "--lisp"; output=:lisp
+      when "--parsetree"; output=:parsetree
+      when "--vsparsetree"; output=:vsparsetree
+      when "--vsparsetree2"; output=:vsparsetree2
+      when "--update-problemfiles"; problemfiles=ProblemFiles.new
+      when "--unparse"; output=:unparse
+      when "--compile", "-c"; compile=true
+      when "--macros", "--macro", "-m": 
+        require 'rubygems'
+        require 'macro'
+        parserclass=Macro::RedParseWithMacros
+      when "-q"; quiet=true
+      when "-v"; quiet=false
+      when "-e"; inputs=[ARGV.join(" ")]; names=["-e"]; break
+      when "-7"; ruby187=true
+      else fail "unknown option: #{opt}"
+    end
+end
+  
+unless inputs
+    if ARGV.empty?
+      inputs=[STDIN.read]
+      names=["-"]
+    elsif ARGV.size==1 and (Dir.entries(ARGV.first) rescue false)
+      names=Dir[ARGV.first+"/**/*.rb"]
+    else
+      names=ARGV.dup
+    end
+    inputs||=names.map{|name| File.open(name).read rescue nil}
+end
+
+result=0
+ 
+safety="BEGIN{raise NeverExecThis};BEGIN{throw :never_exec_this,1};"
+nullsafety=";"
+#safe_inputs=inputs.map{|input| safety+input}
+
+inputs.each_index{|i| 
+  begin
+
+    input=inputs[i] or next
+    name=names[i]
+
+    if /\A=begin\s/===input
+      #combine 1st 2 lines of input
+      if /\A(=begin(.*)\n=end\s(.*))\n/===input
+        input[0,$1.size]="##$2 #$3"
+      else
+        /\A((.*)\n(.*))\n/===input
+        input[0,$1.size]=$2+" "+$3 
+      end
+      input=safety+"\n"+input
+    else
+      input=safety+input
+    end
+    #print name+"... "; STDOUT.flush
+
+    begin
+      tree=nil
+      if catch(:never_exec_this){
+        tree=if compile
+          huh (parserclass||RedParse).new(input,name).compile
+          huh parse
+        else
+          (parserclass||RedParse).new(input,name).parse
+        end
+        nil
+      } #raise NeverExecThis
+#    rescue RedParse::ParseError=>e
+#      require 'pp'
+#      pp e.stack[-[15,e.stack.size].min..-1]
+#      raise
+#    rescue NeverExecThis:
+        puts "RedParse attempted to execute parse data in #{name}"
+        next
+      end
+    rescue Interrupt: exit 2
+    rescue Exception=>e
+      puts "during parse of #{name}:"
+      problemfiles.push name if problemfiles
+      raise e
+    end
+    tree or fail "parsetree was nil for #{name}"
+
+    fail unless RedParse::SequenceNode===tree
+    fail unless RedParse::KWCallNode===tree[0] and "BEGIN"==tree[0].name     
+    fail unless RedParse::KWCallNode===tree[1] and "BEGIN"==tree[1].name     
+    tree[0..1]=[]
+
+    case output
+    when :pp
+      require 'pp'
+      pp tree
+    when :lisp
+      puts tree.to_lisp
+    when :unparse
+      puts tree.unparse({})
+    when :parsetree
+      tree=tree.to_parsetree
+      hack=tree.dup
+      p hack
+      hack.first[1..2]=[]  #get rid of BEGIN blocks inserted into beginning of input
+      hack=if hack.first.size<=2; hack.first[1] else hack end
+      pp(hack||[])
+    when :vsparsetree,:vsparsetree2
+      begin
+      require 'rubygems'
+      rescue Exception
+      end
+      require 'parse_tree'
+      #require 'algorithm/diff'
+      begin
+        pt_args=[:quirks]
+        pt_args<<:ruby187 if ruby187 or ::VERSION["1.8.7"]
+        mine=tree.to_parsetree(*pt_args)
+        if IO===input 
+          input.rewind
+          input=input.read
+        end
+        ryans=nil
+        catch(:never_exec_this){
+          ryans,warns=ParseTree.new.parse_tree_and_warnings_leaks_stderr(input,name); nil
+        } and raise NeverExecThis
+        delta,is_diff=arraydiff(mine,ryans)
+      rescue NeverExecThis:
+        puts "ParseTree attempted to execute parse data in #{name}"
+        next
+      rescue Interrupt: exit 2
+      rescue Exception=>e
+        #raise( RuntimeError.new( "#{e} during to_parsetree of #{name}" ) )
+        puts "error during to_parsetree of #{name}"
+        problemfiles.push name if problemfiles
+        raise
+      end
+      if output==:vsparsetree2
+        if !quiet or is_diff
+          puts "mine:"
+          pp mine
+          puts "ryans:" if is_diff
+          pp ryans if is_diff
+        end
+      elsif !quiet or is_diff
+        puts 'differences in '+name if is_diff
+        pp delta
+      end
+      if is_diff
+        result=1
+        problemfiles.push name if problemfiles
+      else
+        puts "no differences in "+name
+        problemfiles.delete name if problemfiles
+      end
+    end
+
+  rescue NeverExecThis:
+    puts "mysterious attempt to execute parse data in #{name}"
+    next
+  rescue Interrupt,SystemExit: exit 2
+  rescue Exception=>e
+    puts "#{e}:#{e.class}"
+    puts e.backtrace.join("\n")
+    #problemfiles.push name if problemfiles
+    #raise
+  ensure
+    STDOUT.flush
+  end
+}
+exit result
+

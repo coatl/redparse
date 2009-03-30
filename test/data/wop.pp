@@ -1,0 +1,38 @@
+RubyParser::Nodes::AssignNode[RubyParser::Nodes::MultiAssign[#<RubyLexer::VarNameToken:0x2b00d174e530
+   @ident="@foo",
+   @lvalue=nil,
+   @offset=1>,
+  RubyParser::Nodes::UnaryStarNode[#<RubyLexer::OperatorToken:0x2b00d105af80
+    @ident="*@",
+    @offset=6,
+    @unary=true>,
+   RubyParser::Nodes::BracketsGetNode[RubyParser::Nodes::CallSiteNode[nil,
+     #<RubyLexer::MethNameToken:0x2b00d10064a8
+      @has_no_block=false,
+      @ident="f",
+      @offset=7>,
+     nil,
+     nil,
+     nil,
+     {:@lvalue=>nil, :@not_real_parens=>true}],
+    [RubyParser::Nodes::CallSiteNode[nil,
+      #<RubyLexer::MethNameToken:0x2b00d1d6ba80
+       @has_no_block=false,
+       @ident="h",
+       @offset=9>,
+      nil,
+      nil,
+      nil,
+      {:@lvalue=>nil, :@not_real_parens=>true}]],
+    {:@lvalue=>true}],
+   {:@lvalue=>true, :@after_comma=>true, :@ident=>"*@"}]],
+ #<RubyLexer::KeywordToken:0x2b00d1d404e8 @ident="=", @offset=12>,
+ [RubyParser::Nodes::CallSiteNode[nil,
+   #<RubyLexer::MethNameToken:0x2b00d1d2c3d0
+    @has_no_block=false,
+    @ident="c",
+    @offset=13>,
+   nil,
+   nil,
+   nil,
+   {:@lvalue=>nil, :@not_real_parens=>true}]]]
