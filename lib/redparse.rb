@@ -2339,8 +2339,8 @@ end
     #semicolon cleanup....
     -[(OPERATORLIKE_LB&dont_postpone_semi).lb,Expr, ';', IGN_SEMI_BEFORE.la] \
                                                      >>delete_monkey(2,"semi_cleanup_before_ISB"),
-    -[Expr, ';', KW('then').la]                     >>delete_monkey(2,"semi_cleanup_before_then"),
-    -[dont_postpone_semi.lb, Expr, ';', RescueNode] >>delete_monkey(3,"semi_cleanup_before_rescue"),   #-10
+    -[Expr, ';', KW('then').la]                      >>delete_monkey(2,"semi_cleanup_before_then"),
+    -[dont_postpone_semi.lb, Expr, ';', RescueNode]  >>delete_monkey(3,"semi_cleanup_before_rescue"),   #-10
     -[IGN_SEMI_AFTER.lb, ';']                        >>delete_monkey(2,"semi_cleanup_after_oplike"),
     -[(StartToken|RescueHeaderNode).lb, ';' ]        >>delete_monkey(2,"semi_cleanup_after_rescue"),
      #this rule is somewhat more forgiving than matz' parser...
