@@ -2173,10 +2173,13 @@ end
         stack[-3].after_comma=true}, 
                #mebbe this should be a lexer hack?
 
-    -[(OPERATORLIKE_LB&~(MethNameToken|FUNCLIKE_KEYWORD)).lb, '(', Expr, ')']>>ParenedNode,
-    -[(OPERATORLIKE_LB&~(MethNameToken|FUNCLIKE_KEYWORD)).lb, '(', ')']>>VarLikeNode, #(), alias for nil
+    -[#(OPERATORLIKE_LB&~(MethNameToken|FUNCLIKE_KEYWORD)).lb, 
+      '(', Expr, KW(')')&~(-{:callsite? =>true}|-{:not_real? =>true})]>>ParenedNode,
+    -[#(OPERATORLIKE_LB&~(MethNameToken|FUNCLIKE_KEYWORD)).lb, 
+      '(', (KW(')')&~(-{:callsite? =>true}|-{:not_real? =>true})).bp]>>VarLikeNode, #(), alias for nil
 
-    -[(OPERATORLIKE_LB&~Op('=',true)).lb, Expr, Op('rescue',true), Expr, lower_op]>>RescueOpNode,
+    -[#(OPERATORLIKE_LB&~Op('=',true)).lb, 
+      Expr, Op('rescue',true), Expr, lower_op]>>RescueOpNode,
 
     #dot and double-colon
     -[DoubleColonOp, VarNode,  lower_op]>>ConstantNode,#unary ::
@@ -2196,7 +2199,8 @@ end
       Expr, ';', Expr, lower_op]>>SequenceNode,
 
 
-    -[(OPERATORLIKE_LB&~KW(')')).lb, '{', (CommaOpNode|ArrowOpNode).-, '}']>>HashLiteralNode, #-40
+    -[#(OPERATORLIKE_LB&~KW(')')).lb, 
+      '{', (CommaOpNode|ArrowOpNode).-, '}']>>HashLiteralNode, #-40
 
     -[KW(')').lb, 'do', BlockFormalsNode.-, Expr.-, 'end']>>BlockNode,
     #this does {} as well... converted to do...end
