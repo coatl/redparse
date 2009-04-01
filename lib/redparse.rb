@@ -1650,6 +1650,20 @@ end
     pp dr_count.reject{|(dr,n)| dr.pos.zero? or dr.pos==1 && dr.rule.lookback?} \
                .sort_by{|(dr,n)| n}[-15..-1].map{|(dr,n)| [dr.name,n] }
 
+    #look for duplicate states
+    actions2state={}
+    dup_states=0
+    states.each{|st| 
+      cache=actions2state[st.actions]
+      if cache
+        st.equivalent_to=cache
+        dup_states+=1
+      else
+        actions2state[st.actions]=st 
+      end
+    }
+    puts "#{dup_states} duplicate states" if dup_states.nonzero?
+
 #    pp states
 #    pp states.size
     
