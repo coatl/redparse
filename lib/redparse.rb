@@ -1630,7 +1630,7 @@ end
     puts "#{nevers} dotted rules were never reached (out of #{drs.size})"
     nevers=0
     acts.each{|act|
-      next unless act_count[act].zero?
+      next unless act_count[act.__id__].zero?
       puts "never reached #{act.name rescue act}" 
       nevers+=1
     }
