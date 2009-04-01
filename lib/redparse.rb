@@ -1116,9 +1116,6 @@ end
     #if any of morerules are actually compatible, add it to current state.
     def perhaps_also_allow(morerules,parser)
       morerules=morerules.dup
-      if dotteds.find{|x| /BeginNode@2/===x.name } 
-        pp dotteds.map{|dr| dr.name}
-      end
       need_sort=false
       scan_rules=@dotteds
       added={}
@@ -1151,10 +1148,6 @@ end
         dotted.evolve input,parser,seenlist,result2
       }
 
-      if dotteds.find{|x| /BeginNode@2/===x.name } and
-         result2.grep(DottedRule).find{|x| /BeginNode@[^0]/===x.name }
-        pp result2.map{|dr| dr.name rescue dr} #dotteds.map{|dr| dr.name}
-      end
       result= 
         #seenlist.values.flatten.compact.uniq.sort_by{|x| x.name}
       result2=result2.uniq.compact.sort_by{|x| x.name}
