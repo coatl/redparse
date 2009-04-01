@@ -214,6 +214,8 @@ class RedParse
       #identity_param :unary, true,false,nil
       
       #identity_param :comma_type, :lhs,:rhs,:param,:call,:array,nil
+      identity_param :callsite?, nil, true, false
+      identity_param :not_real?, nil, true, false
       alias image ident
 
 
