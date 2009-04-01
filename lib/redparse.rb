@@ -118,6 +118,7 @@
 require 'rubygems'
 require 'rubylexer'
 require 'reg'
+require 'ron/graphedge'
 
 require "redparse/node"
 #require "redparse/decisiontree"
@@ -1734,6 +1735,59 @@ end
            }.join("\n")
     end
   end
+
+  class MarshalProxy
+    def initialize(key)
+      @key=key
+    end
+    attr :key
+  end
+
+  def _dump depth
+    fail unless @rules
+    ivs=instance_variables.unshift("@rules").uniq #ensure @rules is first
+    a= ivs+ivs.reverse.map{|var| instance_variable_get var}
+    n=-1
+    seen={}
+    Ron::GraphEdge.graphcopy(a){|cntr,o,i,ty,useit|
+      case o
+      when StackMonkey
+        useit[0]=true
+        seen[o.__id__]||=MarshalProxy.new(o.name)
+      when Reg::Deferred
+        useit[0]=true
+        seen[o.__id__]||=MarshalProxy.new(n+=1)
+      end
+    }
+    Marshal.dump(a,depth)
+  end
+
+  def self._load(str,*more)
+    result=allocate
+    a=Marshal.load(str,*more)
+
+    #build a lookup table for unmarshalables by walking an example new instance
+    n=-1;lookup={}
+    Ron::GraphEdge.graphwalk(result.expanded_RULES){|cntr,o,i,ty|
+      case o
+      when StackMonkey 
+        lookup[o.name]=o
+      when Reg::Deferred
+        lookup[n+=1]=o 
+      end
+    }
+
+    Ron::GraphEdge.graphcopy(a){|cntr,o,i,ty,useit|
+      if MarshalProxy===o
+        useit[0]=true
+        lookup[o.key]
+      end
+    }
+
+    (0...a.size/2).each{|i| result.instance_variable_set a[i],a[-i] }
+    return result
+  end
+
 
   ###### specific to parsing ruby
 
