@@ -1600,10 +1600,20 @@ end
   end
 
   def compile
-    @generating_parse_tables=true
-    @inputs||=enumerate_exemplars
-    states=all_states
-    
+    if File.exist?("cached_parse_tables.drb")
+      dup=Marshal.load(f=open("cached_parse_tables.drb","rb"))
+      instance_variables.each{|var| remove_instance_variable var }
+      dup.instance_variables.each{|var| instance_variable_set var,dup.instance_variable_get(var) }
+    else
+      @generating_parse_tables=true
+      @inputs||=enumerate_exemplars
+ 
+      states=all_states
+ 
+      Marshal.dump(self,f=open("cached_parse_tables.drb","wb"))
+    end
+    f.close
+   
     #look for unused dotted rules and actions 
     #also states with drs past the end
     past_end=0
