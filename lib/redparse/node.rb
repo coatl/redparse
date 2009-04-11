@@ -1715,8 +1715,10 @@ end
           body&&result+= body.unparse(o)
           result+="\n"
           rescues.each{|resc| result+=resc.unparse(o) }
-          result+="\nensure "+ensure_.unparse(o) if ensure_
           result+="\nelse "+else_.unparse(o) if else_
+          result+="\nelse" if @empty_else
+          result+="\nensure "+ensure_.unparse(o) if ensure_
+          result+="\nensure" if @empty_ensure
           result+="\nend"
       end
     end
