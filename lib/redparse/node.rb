@@ -1673,8 +1673,6 @@ end
           end
           if body 
               needbegin=  (BeginNode===body and body.after_equals)
-              huh if needbegin and RescueOpNode===body #need test case for this
-              huh if needbegin and ParenedNode===body #need test case for this
               body=body.parsetree(o) 
               body=[:begin, body] if needbegin and body.first!=:begin and !o[:ruby187]
               (newtarget||target).push body if body
