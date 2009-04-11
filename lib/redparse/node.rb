@@ -3187,7 +3187,7 @@ end
                  vals.push numopts|charset unless numopts|charset==0
                  val=/#{val}/
                  type
-               when '{': 
+               when '{'
                  return @parses_like.parsetree(o)
 =begin
                  vals[0]=vals[0].sub(/\A(\s|\v)+/,'') if /\A(\s|\v)/===vals.first
