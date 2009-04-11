@@ -1559,7 +1559,8 @@ end
       i=0
       inputs.each {|input|
         newstate=state.evolve input,self,seenlist
-        #newstate is ParserState|MultiShift|MultiReduce|StackMonkey|Class|:accept|:error
+        assert ACTION_PATTERN===newstate
+        #newstate is ParserState|MultiShift|MultiReduce|Rule|:accept|:error
         state[input.identity_name]=newstate
         next unless newstate.respond_to? :substates 
         #newstate.substates is just [newstate] for plain ParserStates
