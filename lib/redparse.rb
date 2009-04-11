@@ -1155,7 +1155,7 @@ end
       sort_substates! if need_sort
     end
 
-    #returns ParserState|MultiShift|MultiReduce|Class|StackMonkey|:accept|:error
+    #returns ParserState|MultiShift|MultiReduce|Rule|:accept|:error
     def evolve input,parser,seenlist
       result2=[]
       @dotteds.each{|dotted| 
