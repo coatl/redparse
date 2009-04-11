@@ -1914,7 +1914,7 @@ end
 
         when MultiAssign;
         lhs=left.lvalue_parsetree(o)
-        rhs= right.class==Array ? right : [right]
+        rhs= right.class==Array ? right.dup : [right]
         star=rhs.pop if UnaryStarNode===rhs.last
         rhs=rhs.map{|x| x.rescue_parsetree(o)}
         if rhs.size==0
@@ -3166,7 +3166,7 @@ end
             end
           }
           while vals.size>1 and vals[1].first==:str
-            vals[0]<<vals.delete_at(1).last
+            vals[0]+=vals.delete_at(1).last
           end
           #vals.pop if vals.last==[:str, ""]
 
