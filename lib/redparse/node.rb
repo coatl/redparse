@@ -3910,15 +3910,17 @@ end
       end
 
       def unparse o
-        result="
-         def #{receiver&&receiver.unparse(o)+'.'}#{name}#{
+        result=
+         "def #{receiver&&receiver.unparse(o)+'.'}#{name}#{
            args&&'('+args.map{|arg| arg.unparse o}.join(',')+')'
         }
            #{body&&body.unparse(o)}
         "
         result+=rescues.map{|resc| resc.unparse o}.to_s 
         result+="else #{else_.unparse o}\n"  if else_
+        result+="else\n" if @empty_else
         result+="ensure #{ensure_.unparse o}\n"  if ensure_
+        result+="ensure\n" if @empty_ensure
         result+="end"
       end
 
