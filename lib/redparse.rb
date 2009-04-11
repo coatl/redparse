@@ -1169,7 +1169,7 @@ end
       #pp result2.map{|res| DottedRule===res ? res.name : res }
 #      result==result2 or fail
 
-      return :error if result.empty?
+      return result=:error if result.empty?
 
 
       #ok, who wants to shift and who wants to reduce?
@@ -1179,7 +1179,7 @@ end
       }
 
       #if no reducers at all, just try (multi?)shift
-      return shiftlist2multishift?( shiftlist,parser )if reducelist.empty?
+      return result=shiftlist2multishift?( shiftlist,parser )if reducelist.empty?
 
       #line up reducers by priority
       actions=reducelist \
@@ -1188,10 +1188,13 @@ end
       #actions is +[(Rule|Conditional[Rule]).*]
       action=actions.shift #this first (unless conditional)
       #action is Rule|Conditional[Rule]
+      result=
       case action.action
       when :error; return :error
-      when Class, StackMonkey, :accept
-        action.action
+      when Class, StackMonkey
+        action
+      when :accept
+        :accept
       when :shift #this counts as a reduce at this point, but it writes shift instructions
         shiftlist2multishift? shiftlist,parser
       when Rule #oy, vey, was a Conditional
@@ -1223,6 +1226,8 @@ end
       else fail "#{action} not expected here"
       end
       #stack monkeys/:accept are treated like reduce here
+    ensure
+      assert ACTION_PATTERN===result
     end
 
     def name
