@@ -155,21 +155,8 @@ end
 class RedParseTest<Test::Unit::TestCase
   ERROR_EXAMPLES=[
     "x{\x0afor i in (begin\n[44,55,66,77,88] end) do p i**Math.sqrt(i) end\n}\n",
-    "def wait; begin; ync; mup; end ;end",
-    "def e; begin; y; g else t; m; end ;end",
-    'def i;"..#{@@c = 1}";end',
-    '"#{}"""',
-    %[%W(white\\  \\  \\ \\  \\ space).should == ["white ", " ", "  ", " space"]],
-    "%w[- \\\\ ]",
-    "%w[- \\\\ e]",
-    "begin begin; ync; p1; end;rr end",
-    "begin;mode;rescue;o_chmod rescue nil;end",
-    "%w![ ] { } ( ) | - * . \\\\ ? + ^ $ #!"
   ]
   FAILURE_EXAMPLES=[
-    "module A; b; rescue C=>d; e; else g; ensure f; end",
-    "class<<A; b; rescue C=>d; e; else g; ensure f; end",
-    "class A; b; rescue C=>d; e; else g; ensure f; end",
     'e { |c|; print "%02X" % c }',
     %[p <<-heredoc "x y z" and 5\n       a b c\n     heredoc],
     "File.open() {|f|  ;  }",
@@ -192,6 +179,20 @@ class RedParseTest<Test::Unit::TestCase
   ]
 
   ONELINERS=[
+    "module A; b; rescue C=>d; e; else g; ensure f; end"...'',
+    "class<<A; b; rescue C=>d; e; else g; ensure f; end"...'',
+    "class A; b; rescue C=>d; e; else g; ensure f; end"...'',
+    'def i;"..#{@@c = 1}";end'...'',
+    "def wait; begin; ync; mup; end ;end"...'',
+    "def e; begin; y; g else t; m; end ;end"...'',
+    '"#{}"""'...'',
+    %[%W(white\\  \\  \\ \\  \\ space).should == ["white ", " ", "  ", " space"]]...'',
+    "%w[- \\\\ ]"...'',
+    "%w[- \\\\ e]"...'',
+    "begin begin; ync; p1; end;rr end"...'',
+    "begin;mode;rescue;o_chmod rescue nil;end"...'',
+    "%w![ ] { } ( ) | - * . \\\\ ? + ^ $ #!"...'',
+
     'def foo(a = 1)    end; def foo(a=b=c={})  end; def bar(a=b=c=1,d=2)  end'...'',
     '() until 1'...'',
     '(a) until 1'...'',
