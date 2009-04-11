@@ -1252,6 +1252,34 @@ end
       else fail
       end
     end
+
+    def make_sr_goto_tables
+      name2exemplar={}
+      @inputs.each{|i| name2exemplar[i.name]=i }
+
+      @goto={}; @sr={}
+      goto_counts=Hash.new(0); sr_counts=Hash.new(0)
+      actions.each_pair{|k,v| 
+        if Node===name2exemplar[k]
+          @goto[k]=v
+          goto_counts[v]+=1
+        else
+          assert(Token===name2exemplar[k])
+          @sr[k]=v
+          sr_counts[v]+=1
+        end
+      }
+      dflt=goto_counts.sort_by{|v,c| c}.last[0]
+      @goto.delete_if{|k,v| v==dflt }
+      @goto.default=dflt
+
+      dflt=sr_counts.sort_by{|v,c| c}.last[0]
+      @sr.delete_if{|k,v| v==dflt }
+      @sr.default=dflt
+
+      @actions=nil
+    end
+
   end
 
   class MultiReduce
