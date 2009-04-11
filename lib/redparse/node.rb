@@ -3151,9 +3151,9 @@ end
                 result=elem
               end
               vals.push result
-            when NopNode:
+            when NopNode
               vals.push [:evstr]
-            when Node,VarNameToken:
+            when Node #,VarNameToken
               res=elem.parsetree(o)
               if res.first==:str and @char != '{'
                 vals.push res
