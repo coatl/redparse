@@ -1282,7 +1282,7 @@ end
         op=op()
         op=op.chomp "@"
         result=op
-        result+=" " if /[a-z_]/i===op
+        result+=" " if /[a-z_]/i===op or /^[+-]/===op && LiteralNode===val
         result+=val.unparse(o)
       end
     end
