@@ -1182,9 +1182,13 @@ end
 #    class ArrowOpNode<ValueNode
 #      param_names(:left,:arrow_,:right)
 #    end
-     module ArrowOpNode #not to appear in final tree?
+     module ArrowOpNode
        def initialize(*args) 
          @module=ArrowOpNode
+       end
+
+       def unparse(o)
+         left.unparse(o)+" => "+right.unparse(o)
        end
      end
 
