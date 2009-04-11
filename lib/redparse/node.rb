@@ -4038,6 +4038,7 @@ end
       def str_unparse(str,o)
        case str
        when VarNode; str.ident
+       when "~@"; str
        when String 
          str.to_sym.inspect
          #what if str isn't a valid method or operator name? should be quoted
