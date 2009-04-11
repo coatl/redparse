@@ -3537,7 +3537,7 @@ EOS
     pt_opts<<:ruby187 if ::VERSION["1.8.7"]
     /unparse/===xmpl and warn 'unparse in parser test data!'
     problem_exprs=problem_exprs()
-    warnings=warnings2=nil
+    nodes=warnings=warnings2=nil
 =begin
       xmpl=<<-prefix+xmpl+<<-suffix
         BEGIN{throw :never_exec_parse_data_try1,1}
@@ -3568,15 +3568,19 @@ EOS
         #pp e.backtrace
         #raise "last gasp ParseTree exec catcher failed!"
         tree=e
-        tree2=nodes=nil
+        tree2=nodes=h=nil
         assert_hopefully_raises_Exception(xmpl){
           nodes=RedParse.new(xmpl,"-").parse
+          h=nodes.hash
           tree2,warnings2=nodes.to_parsetree_and_warnings(*pt_opts)
         }
+        assert_equal h,nodes.hash if h
       else
         begin
           nodes=RedParse.new(xmpl,"-").parse
+          h=nodes.hash
           tree2,warnings2=nodes.to_parsetree_and_warnings(*pt_opts)
+          assert_equal h,nodes.hash
           assert_equal tree, tree2
           assert_equal warnings, warnings2 if ENV['WARN_PICKINESS']
           if warnings != warnings2
