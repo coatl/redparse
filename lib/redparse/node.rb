@@ -3098,7 +3098,7 @@ end
       }
       def parsetree(o)
         if size==1
-          val=first
+          val=translate_escapes first
           type=case @char
                when '"',"'"; :str
                when '/'
@@ -3142,7 +3142,8 @@ end
           vals=[]
           each{|elem| 
             case elem
-            when String: 
+            when String
+              elem=translate_escapes elem
               if saw_string
                 result=[:str, elem]
               else
