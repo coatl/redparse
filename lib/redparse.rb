@@ -1521,6 +1521,7 @@ end
     warn "why are non_empty and after_equals params to BeginNode appearently ignored?"
     warn "some token identities overlap themselves?!?"
     warn "some overlaps are duplicated"
+    warn ". and :: overlap => ..... surely that's not right"
     @inputs.map{|input|
       profile=all_patterns.map{|pat| Proc===pat ? pat : !!(pat===input)}
       if seen[profile]
