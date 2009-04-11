@@ -216,6 +216,7 @@ class RedParse
       #identity_param :comma_type, :lhs,:rhs,:param,:call,:array,nil
       identity_param :callsite?, nil, true, false
       identity_param :not_real?, nil, true, false
+      identity_param :infix, nil, true
       alias image ident
 
 
@@ -226,6 +227,10 @@ class RedParse
           comma_type.to_s+","
         else old_as
         end
+      end
+
+      def infix
+        @infix if defined? @infix
       end
     end
 
