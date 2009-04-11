@@ -2897,6 +2897,24 @@ end
         }
       end
 
+      def translate_escapes(str)
+        rl=RubyLexer.new("(string escape translation hack...)",'')
+        result=str.dup
+        seq=result.to_sequence
+        rl.instance_eval{@file=seq}
+        repls=[]
+        i=0
+        #ugly ugly ugly
+        while i<result.size and bs_at=result.index(/\\./m,i)
+          seq.pos=$~.end(0)-1
+          ch=rl.send(@bs_handler,"\\",@open[-1,1],@close)
+          result[bs_at...seq.pos]=ch
+          i=bs_at+ch.size
+        end
+
+        return  result
+      end
+
       def old_cat_initialize(*tokens) #not needed anymore?
         token=tokens.shift
   
