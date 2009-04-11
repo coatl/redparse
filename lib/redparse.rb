@@ -1068,19 +1068,32 @@ end
     def priority; @action.priority end
   end
 
+  class ParserState; end
+  class MultiShift; end
+  class MultiReduce; end
+
+  ACTION_PATTERN=ParserState|Rule|MultiShift|MultiReduce|:accept|:error
   class ParserState #a union of dotted rules
     def initialize(dotteds,index)
       fail if dotteds.empty? #error state
+      fail unless dotteds.grep(nil).empty?
       @dotteds=dotteds
       @index=index
       sort_substates!
-      @actions={} #key is an input, value is ParserState|Class|StackMonkey|:accept|:error
+      @actions={} #key is an input, value is ParserState|Rule|MultiShift|MultiReduce|:accept|:error
     end
    
     attr_reader :actions
 
-    def [](k) @actions[k] end
-    def []=(k,v) @actions[k]=v end
+    def [](k) 
+      result=@actions[k]
+      assert ACTION_PATTERN===result
+      result
+    end
+    def []=(k,v) 
+      assert ACTION_PATTERN===v
+      @actions[k]=v 
+    end
 
     def sort_substates!
       @dotteds=@dotteds.sort_by{|dotted| -dotted.pos}.uniq
