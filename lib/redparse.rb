@@ -302,7 +302,7 @@ end
     Thread.current[:$RedParse_parser]||=self
 
     @rules||=expanded_RULES()
-    @inputs||=enumerate_exemplars
+#    @inputs||=enumerate_exemplars
 
     @stack=[StartToken.new, get_token] 
            #last token on @stack is always implicitly the lookahead
