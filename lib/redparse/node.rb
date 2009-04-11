@@ -3490,6 +3490,7 @@ end
         result+="#{consequent.unparse(o)}\n" if consequent
         result+=elsifs.map{|n| n.unparse(o)}.to_s if elsifs
         result+="else "+else_.unparse(o)+"\n" if else_
+        result+="else \n" if defined? @empty_else
         result+="end"
         return result
       end
