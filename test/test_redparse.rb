@@ -3342,7 +3342,6 @@ EOS
 #    'a=b,c=d',
   ]
   puts "warning: most data fuzzing is disabled for now"
-  puts "warning: unparser tests disabled for now"
 
   RUBYIDENT=/((?:$|@@?)?[a-z_][a-z_0-9]*[?!]?)/i
 
@@ -3606,15 +3605,23 @@ EOS
         
       end #until output.equal? tree 
 
-      return #skip unparse tests for now
+#      puts "warning: unparser tests disabled for now"
+#      return #skip unparse tests for now
 
-      reparsed= RedParse.new(nodes.unparse({}),"-").parse
-      assert_equal nodes.delete_extraneous_ivars!,
-                   reparsed.delete_extraneous_ivars!
+      return unless nodes
+      begin
+        reparsed= RedParse.new(nodes.unparse({}),"-").parse
+        assert_equal nodes.delete_extraneous_ivars!,
+                     reparsed.delete_extraneous_ivars!
+      rescue Exception
+        raise unless Exception===tree
+      end
 
-      tree3=reparsed.to_parsetree(*pt_opts)
-      assert_equal tree, tree3
-
+      unless Exception===tree
+        tree3=reparsed.to_parsetree(*pt_opts)
+        assert_equal tree, tree3
+      else #missing a syntax errr, but that's been noted already
+      end
 
 #  rescue Exception=>e:
 #      raise "error: #{e}:#{e.class} while testing '#{xmpl}'"
