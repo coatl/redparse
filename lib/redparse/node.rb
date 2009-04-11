@@ -2872,13 +2872,22 @@ end
         @modifiers=str.modifiers #if str.modifiers
         super( *with_string_data(str) )
 
+        @open=token.open
+        @close=token.close
+        @bs_handler=str.bs_handler
+
         if /[\[{]/===@char
           @parses_like=split_into_words(str)
         end
 
+        return
+
+#this should have been taken care of by with_string_data        
         first=shift
         delete_if{|x| ''==x }
         unshift(first)
+
+#escape translation now done later on
         map!{|strfrag|
           if String===strfrag
             str.translate_escapes strfrag
@@ -2886,8 +2895,6 @@ end
             strfrag
           end
         }
-        @open=token.open
-        @close=token.close
       end
 
       def old_cat_initialize(*tokens) #not needed anymore?
