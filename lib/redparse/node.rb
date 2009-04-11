@@ -1105,9 +1105,11 @@ end
         items.map!{|expr| expr.rescue_parsetree(o)}.push last.parsetree(o)
 #        items=map{|expr| expr.parsetree(o)}
         items.reject!{|expr| []==expr }
-        if o[:quirks]
-          header=items.first
-          (items[0,1] = *header[1..-1]) if header and header.first==:block
+        if o[:quirks] 
+          unless BeginNode===data[0]
+            header=items.first
+            (items[0,1] = *header[1..-1]) if header and header.first==:block
+          end
         else
           (items.size-1).downto(0){|i|
             header=items[i]
