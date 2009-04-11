@@ -988,13 +988,13 @@ end
 
       def unparse o
         result=l=left.unparse(o)
-        result+=" " if /a-z_/i===op
+        result+=" " if /\A!|a-z_/i===op
         result+=op
         result+=" " if /a-z_/i===op or / \Z/===l
         result+=right.unparse(o)      
       end
 
-      def unparse o; raw_unparse o end
+#      def unparse o; raw_unparse o end
     end
 
     module MatchNode
