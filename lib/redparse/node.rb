@@ -351,7 +351,11 @@ class RedParse
     class StringToken
       attr :char
     end
-  
+
+    class RubyCode
+      attr :linenum
+    end  
+
     class HerePlaceholderToken
       attr_accessor :node
       attr :string
