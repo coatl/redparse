@@ -1787,12 +1787,9 @@ end
       end
 
       def unparse(o)
-          #should unparse back to a rescue op, someday
-          result="begin "
-          result+= body.unparse(o)
-          result+="\n"
-          result+=rescues.first.unparse(o)
-          result+="\nend"
+          result= body.unparse(o)
+          result+=" rescue "
+          result+=rescues.first.action.unparse(o)
       end
     end
 
