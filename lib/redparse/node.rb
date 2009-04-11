@@ -1619,7 +1619,7 @@ end
     class BeginNode<ValueNode
       param_names :body, :rescues, :else!, :ensure!
       def initialize(*args)
-        @empty_ensure=@op_rescue=nil
+        @empty_ensure=@empty_else=@op_rescue=nil
           body,rescues,else_,ensure_=*args[1...-1]
           if else_
             else_=else_.val or @empty_else=true
@@ -2219,10 +2219,10 @@ end
       end
 
       def unparse o
-        unless @had_parens
-          "|"+super+"|" 
-        else
+        if defined? @had_parens
           "|("+super+")|" 
+        else
+          "|"+super+"|" 
         end
       end
 
@@ -3778,7 +3778,7 @@ end
           end
           super(*data)
         end
-        @no_braces=true unless open
+        @no_braces=!open
       end
 
       def image; "({})" end
@@ -3836,7 +3836,7 @@ end
       
       def initialize(defword_,header,maybe_eq_,semi_,
                      body,rescues,else_,ensure_,endword_)
-        @empty_ensure=nil
+        @empty_else=@empty_ensure=nil
 #        if DotCallNode===header
 #          header=header.data[1]
 #        end
