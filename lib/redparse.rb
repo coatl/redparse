@@ -1888,7 +1888,9 @@ end
 #    }
 #    result.map!{|rule| DottedRule.create(rule,0,parser)}
 #
-#    ParserState.new result
+#    result=ParserState.new result
+#    result.name="start_state"
+#    result
 #  end
 
   def new_state(drs,unruly_also=false)
