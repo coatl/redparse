@@ -962,9 +962,9 @@ end
           fail if i>@rule.patterns.size
 
           if !@saw_item_that.empty?
-            @saw_item_that=nil
+            p(:saw_item_that!)
             fail unless @saw_item_that.size==1
-            pair=@saw_item_that.to_a.first.first
+            pair=@saw_item_that.to_a.first
             fail unless p.equal? pair.last
             it=pair.first
             action=
