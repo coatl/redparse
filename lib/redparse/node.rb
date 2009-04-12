@@ -3128,7 +3128,8 @@ end
             double_chunks=x.split(/( #{EVEN_BSS} | (?:[^\\\s\v]|\A|#{EVEN_BSS}\\[\s\v]) )(?:\s|\v)+/xo,-1)
             chunks=[]
             (0..double_chunks.size).step(2){|i| 
-              chunks << strtok.translate_escapes(double_chunks[i,2].to_s)#.gsub(/\\([\s\v\\])/){$1}
+              chunks << #strtok.translate_escapes \
+                double_chunks[i,2].to_s #.gsub(/\\([\s\v\\])/){$1}
             }
 
             chunk1= chunks.shift          
