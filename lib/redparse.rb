@@ -1623,7 +1623,7 @@ end
       end
     end
 
-  attr_reader :inputs
+  attr_accessor :inputs
 
   def all_states
     return @all_states if defined? @all_states
@@ -1648,17 +1648,34 @@ end
   end
 
   def compile
+    oldparser=Thread.current[:$RedParse_parser]
+    Thread.current[:$RedParse_parser]||=self
+
     if File.exist?("cached_parse_tables.drb")
       dup=Marshal.load(f=open("cached_parse_tables.drb","rb"))
       instance_variables.each{|var| remove_instance_variable var }
-      dup.instance_variables.each{|var| instance_variable_set var,dup.instance_variable_get(var) }
+      extend SingleForwardable
+      def_singleton_delegators(dup,public_methods+private_methods+protected_methods)
+
+      self.inputs=enumerate_exemplars
     else
       @generating_parse_tables=true
       @inputs||=enumerate_exemplars
- 
+
       states=all_states
- 
-      Marshal.dump(self,f=open("cached_parse_tables.drb","wb"))
+#      @rules=expanded_RULES 
+      @inputs=nil #Marshal no like it
+
+      begin
+        p :dumping
+        Marshal.dump(self,f=open("cached_parse_tables.drb","wb"))
+        p :dump_done!
+      rescue Exception
+        p :dump_failed
+        File.unlink "cached_parse_tables.drb"
+      ensure
+        @inputs=enumerate_exemplars
+      end
     end
     f.close
    
