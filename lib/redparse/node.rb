@@ -3029,6 +3029,16 @@ end
         return super
       end
 
+      def walk(*args,&callback)
+        return @parses_like.walk(*args,&callback) if defined? @parses_like
+        super
+      end
+
+      def depthwalk(*args,&callback)
+        return @parses_like.depthwalk(*args,&callback) if defined? @parses_like
+        super
+      end
+
       def special_conditions!
         @implicit_match= @char=="/"
       end
