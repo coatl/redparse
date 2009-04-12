@@ -323,6 +323,36 @@ user_error_handler:
 ]
 end
 
+
+  CHARMAPPINGS={
+  ?`=>'bquote',  ?~=>'tilde',  ?!=>'bang',    ?@=>'at',
+  ?#=>'num',     ?$=>'dollar', ?%=>'percent', ?^=>'caret',
+  ?&=>'and',     ?*=>'star',   ?(=>'lparen',  ?)=>'rparen',
+  ?-=>'minus',   ?+=>'plus',   ?==>'equals',
+  ?{=>'lbrace',  ?}=>'rbrace', ?[=>'lbrack',  ?]=>'rbrack',
+  ?|=>'or',      ?\\=>'bslash',?:=>'colon',   ?;=>'semicolon',
+  ?"=>'dquote',  ?'=>'squote', ?,=>'comma',   ?.=>'dot',
+  ?<=>'less',    ?>=>'more',   ??=>'q',       ?/=>'y',
+  ?\s=>'space',
+  ?X=>'x',
+  }
+  STRMAPPINGS={
+    '::'=>"XX",
+    '++'=>"Xeval",
+    '--'=>"Xsingleton",
+    '[]'=>"Xbrackets",
+    '->'=>"Xcalling",
+  }
+  STRMAP_REX=/#{STRMAPPINGS.keys.map{|x| Regexp.quote x}.join "|"}/
+  def self.str2cname str
+    str.gsub(STRMAP_REX){|str| STRMAPPINGS[str] } \
+       .gsub(/[^A-Za-z_0-9]|[X]/){|ch| 
+         "X"+  esc=CHARMAPPINGS[ch[0]] ? esc : ch[0].to_s(16)
+       } 
+  end
+  def str2cname(str) RedParse.str2cname(str) end
+
+
 =begin
 The case arms are the only part of the code that depends on the automaton. Any state that has
 an outgoing transition on yacc�s special error symbol will have a case arm in the second switch
