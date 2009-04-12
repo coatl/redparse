@@ -3089,13 +3089,14 @@ end
         last.downto(1){|frag_i| 
           frag=data[frag_i]
           String===frag or next
-          delete= frag.empty? 
+          next unless frag.empty? 
           next if frag_i==last #and o[:quirks]
           next if data[frag_i-1].line != data[frag_i+1].line #and o[:quirks]
                   #prev and next inclusions on different lines
-          data.slice!(frag_i) if delete
+          data.slice!(frag_i)
         }
 #        data.unshift '' if was_nul_header
+
         return data
       end
 
