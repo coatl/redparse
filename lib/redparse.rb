@@ -1707,7 +1707,7 @@ end
     past_end=0
     drs=all_dotted_rules
     dr_count=Hash.new(0)
-    acts=all_rules.map{|r| r.action }.uniq
+    acts=all_rules#.map{|r| r.action }.uniq
     act_count=Hash.new(0)
     states.each{|state|
       state.dotteds.each{|dr| 
