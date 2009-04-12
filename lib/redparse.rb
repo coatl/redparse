@@ -1817,6 +1817,7 @@ end
     seenlist.default=:dunno_yet
     result=initial_state.evolve StartToken.new, self,seenlist
     result.perhaps_also_allow all_rules,self
+    result.name="start"
     result
     #pp [:initial_seenlist, seenlist]
   #ensure  p :/
