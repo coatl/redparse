@@ -1943,19 +1943,53 @@ end
     }
   end
 
-  class <<self
-    def inspect_constant_names
-      eval constants.map{|k| <<-"END" unless Numeric|Symbol|true|false|nil===const_get(k)
-             class <<#{k}
-               def constant_name; '#{k}' end
-               alias original_inspect inspect
-               alias inspect constant_name
-             end
-           END
-           }.join("\n")
+  module NamedConstant
+    attr_accessor :constant_name
+    def inspect; constant_name end
+  end
+  def self.inspect_constant_names
+    constants.each{|kn| 
+      k=const_get(kn)
+      next if Class|Module|Numeric|Symbol|true|false|nil===k
+      k.extend NamedConstant
+      k.constant_name=kn
+    }
+  end
+
+  def undumpables
+    return @undumpables if @undumpables
+    @rules||=expanded_RULES
+    n=-1
+    @undumpables={}
+    abortable_graphwalk(@rules){|cntr,o,i,ty|
+      !case o
+       when StackMonkey
+         @undumpables[o.name]=o
+       when Reg::Deferred
+         @undumpables[n+=1]=o
+         class<<o
+           attr_accessor :undump_key
+         end
+         o.undump_key=n
+       end
+    }
+  end
+
+  class ::Proc #hack hack hack
+    #only define hacky _dump if one isn't defined already
+    unless instance_methods.include?("_dump") or 
+           instance_methods.include?("marshal_dump") or 
+           (Marshal.dump(proc{}) rescue false)
+      def _dump depth
+        undump_key.to_s
+      end
+      def self._load str
+        Thread.current[:$RedParse_parser].undumpables[str.to_i]
+      end
     end
   end
 
+=begin disabled, uses too much memory!!
   class MarshalProxy
     def initialize(key)
       @key=key
@@ -1963,13 +1997,11 @@ end
     attr :key
   end
 
-  def _dump depth
-    fail unless @rules
-    ivs=instance_variables.unshift("@rules").uniq #ensure @rules is first
-    a= ivs+ivs.reverse.map{|var| instance_variable_get var}
+  #convert unmarshalables, such as stackmonkeys into proxies
+  def proxify
     n=-1
     seen={}
-    Ron::GraphEdge.graphcopy(a){|cntr,o,i,ty,useit|
+    mkproxy=proc{|cntr,o,i,ty,useit|
       case o
       when StackMonkey
         useit[0]=true
@@ -1979,16 +2011,27 @@ end
         seen[o.__id__]||=MarshalProxy.new(n+=1)
       end
     }
-    Marshal.dump(a,depth)
+    Ron::GraphWalk.graphmodify!(@rules,&mkproxy)
+    Ron::GraphWalk.graphmodify!(self,&mkproxy)
+
   end
 
-  def self._load(str,*more)
-    result=allocate
-    a=Marshal.load(str,*more)
+  def _dump depth
+    fail unless @rules
+    proxify
+    ivs=instance_variables
+    a=ivs+ivs.reverse.map{|var| instance_variable_get var }
+    result=Marshal.dump(a,depth)
+    unproxify
+    return result
+  end
 
-    #build a lookup table for unmarshalables by walking an example new instance
+  #convert marshal proxies back to the real thing
+  def unproxify
+    #build a lookup table for unmarshalables by walking @rules
+    @rules||=expanded_RULES
     n=-1;lookup={}
-    Ron::GraphEdge.graphwalk(result.expanded_RULES){|cntr,o,i,ty|
+    Ron::GraphWalk.graphwalk(@rules){|cntr,o,i,ty|
       case o
       when StackMonkey 
         lookup[o.name]=o
@@ -1997,17 +2040,24 @@ end
       end
     }
 
-    Ron::GraphEdge.graphcopy(a){|cntr,o,i,ty,useit|
+    Ron::GraphWalk.graphmodify!(self){|cntr,o,i,ty,useit|
       if MarshalProxy===o
         useit[0]=true
         lookup[o.key]
       end
     }
+  end
+
+  def self._load(str,*more)
+    result=allocate
+    a=Marshal.load(str,*more)
+
+    result.unproxify
 
     (0...a.size/2).each{|i| result.instance_variable_set a[i],a[-i] }
     return result
   end
-
+=end
 
   ###### specific to parsing ruby
 
