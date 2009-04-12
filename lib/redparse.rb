@@ -152,6 +152,39 @@ class RedParse
       result=@monkey_code[stack]
       return result
     end
+
+    def _dump depth
+      @name
+    end
+
+    def self._load str
+      Thread.current[:$RedParse_parser].undumpables[@name]
+    end
+
+    def action2c
+      #"return the whole thing on first call, just a goto stmt after that"
+      return "    goto #@goto_label;\n" if defined? @goto_label
+
+=begin
+      <<-E
+      #{@goto_label=@name.gsub(/[^a-z0-9_]/,'_')}:
+        monkey=rb_hash_get(undumpables,rb_cstr2str("#@name"));
+        rb_funcall(monkey,rb_intern("[]"),huh_stack);
+
+        /*recover from stackmonkey fiddling*/
+        for(i=0;i<#{-@first_changed_index};++i) {
+          rb_ary_unshift(lexer_moretokens,
+            rb_ary_pop(huh_semantic_stack));
+          rb_ary_pop(huh_syntax_stack);
+        }
+
+        goto #{Node===@and_expect_node ? 
+                 postreduceaction4this_state(@and_expect_node) : 
+                 shiftaction4this_state
+        };
+      E
+=end
+    end
   end
   class DeleteMonkey<StackMonkey
     def initialize(index,name)
