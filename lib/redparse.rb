@@ -1862,7 +1862,8 @@ end
     puts generate_c
     return self
   ensure 
-    remove_instance_variable :@generating_parse_tables
+    remove_instance_variable :@generating_parse_tables rescue nil
+    Thread.current[:$RedParse_parser]=oldparser
   end
 
   def ultimate_goal_nodes
