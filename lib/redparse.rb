@@ -1659,7 +1659,6 @@ end
   end
 
   def enumerate_states
-    pp @inputs.map{|x| x.identity_name}
     inputs=check_for_parsealike_inputs
     inputs.reject!{|x| StartToken===x}
 
