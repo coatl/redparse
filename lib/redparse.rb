@@ -2508,7 +2508,7 @@ end
     -[#(OPERATORLIKE_LB&~(MethNameToken|FUNCLIKE_KEYWORD)).lb, 
       '(', Expr, KW(')')&~(-{:callsite? =>true}|-{:not_real? =>true})]>>ParenedNode,
     -[#(OPERATORLIKE_LB&~(MethNameToken|FUNCLIKE_KEYWORD)).lb, 
-      '(', (KW(')')&~(-{:callsite? =>true}|-{:not_real? =>true})).bp]>>VarLikeNode, #(), alias for nil
+      '(', KW(')')&~(-{:callsite? =>true}|-{:not_real? =>true})]>>VarLikeNode, #(), alias for nil
 
     -[#(OPERATORLIKE_LB&~Op('=',true)).lb, 
       Expr, RESCUE_OP, Expr, lower_op]>>RescueOpNode,
