@@ -1231,7 +1231,30 @@ end
     end
 
     def name
-      @dotteds.map{|dotted| dotted.name}.join(",")
+      @name||@dotteds.map{|dotted| dotted.name}.join(",")
+    end
+    attr_writer :name
+
+    def rename(name2count)
+      return @name if defined? @name
+      name=most_prominent_members.map{|dotted| dotted.name}.join(",")
+      if name2count[name]
+        name2count[name]+=1
+        name+="___"+name2count[name].to_s
+      else
+        name2count[name]=1
+      end
+
+      @name=name
+    end
+    
+    def most_prominent_members
+      result=@dotteds.select{|dr| dr.pos==@dotteds.first.pos }
+      close2end=@dotteds.map{|dr| [dr,dr.rule.patterns.size-dr.pos]}.sort_by{|(o,k)| -k}
+      result+=close2end.select{|(dr,k)| k==close2end.first.last}.map{|(dr,k)| dr}
+      result2=result.reject{|dr| dr.pos==0 or dr.pos==1&&dr.rule.lookback?}
+      result=result2 unless result2.empty?
+      return result
     end
 
     def hash
