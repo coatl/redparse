@@ -17,7 +17,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =end
 
-require 'rubygems'
+begin
+  require 'rubygems'
+rescue LoadError=>e
+  raise unless /rubygems/===e.message
+  #hope we don't need it
+end
 require 'tempfile'
 require 'pp'
 require "rubylexer"
