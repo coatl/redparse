@@ -215,7 +215,7 @@ def reduce(rule,m)
   leader="\nreduce_#{rule.name}:\n/*reduce_#{m}:*/ /*Production #{m}: #{rule.to_s} */\n"
   if StackMonkey===repl
     userhook="
-      huh rb_proc_call(repl_#{rule.name},semantic_stack);
+      huh rb_proc_call(stack_monkey_#{rule.name},semantic_stack);
       huh /*objects removed from semantic stack get pushed back onto lexer input*/
       i -= #{repl.backup_count};
       
