@@ -2277,6 +2277,10 @@ end
 
   RESCUE_BODY=-[Expr.-, RescueNode.*, ElseNode.-, EnsureNode.-,]
 
+  RESCUE_OP=Op('rescue')|(KW('rescue')&-{:infix=>true})
+
+  RESCUE_KW=KW('rescue')&-{:infix=>nil}
+
   inspect_constant_names
 
   def RULES
@@ -2328,7 +2332,7 @@ end
     -[Lvalue&~MULTIASSIGN, Op('=',true), AssignmentRhsNode&-{:is_list=>true}, 
         Op('rescue3',true).la]>>:shift,
     -[Lvalue&~MULTIASSIGN, Op('=',true), AssignmentRhsNode&-{:is_list=>true}, 
-        Op('rescue',true).la] >>
+        RESCUE_OP.la] >>
         stack_monkey("rescue3",1,Op('rescue3',true)){|stack| 
           resc=stack.last.dup
           resc.ident += '3'
@@ -2356,7 +2360,7 @@ end
       '(', (KW(')')&~(-{:callsite? =>true}|-{:not_real? =>true})).bp]>>VarLikeNode, #(), alias for nil
 
     -[#(OPERATORLIKE_LB&~Op('=',true)).lb, 
-      Expr, Op('rescue',true), Expr, lower_op]>>RescueOpNode,
+      Expr, RESCUE_OP, Expr, lower_op]>>RescueOpNode,
 
     #dot and double-colon
     -[DoubleColonOp, VarNode,  lower_op]>>ConstantNode,#unary ::
@@ -2421,14 +2425,14 @@ end
       'end'
     ]>>BeginNode,
 
-    -[Op('=',true), BEGINAFTEREQUALS, Op('rescue',true).la]>>
+    -[Op('=',true), BEGINAFTEREQUALS, RESCUE_OP.la]>>
       stack_monkey("begin after equals",2,BEGINAFTEREQUALS_MARKED){ |stack| stack[-2].after_equals=true }, 
     #this is bs. all for an extra :begin in the parsetree
 
     -[(KW(/^(;|begin)$/)|RescueNode).lb, #ParenedNode|RescueOpNode|BeginNode used to be here too
-      'rescue', KW('=>').-, Expr.-, /^([:;]|then)$/,
+      RESCUE_KW, KW('=>').-, Expr.-, /^([:;]|then)$/,
     ]>>RescueHeaderNode,
-    -[ RescueHeaderNode, Expr.-, KW(';').-, KW(/^(rescue|else|ensure|end)$/).la
+    -[ RescueHeaderNode, Expr.-, KW(';').-, (KW(/^(else|ensure|end)$/)|RESCUE_KW).la
     ]>>RescueNode,
 
     -['ensure', Expr.-, KW('end').la]>>EnsureNode,
