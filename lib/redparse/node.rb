@@ -3060,22 +3060,32 @@ end
 #          sum.size%2==1 and sum.last<<elems.shift
 #          sum+elems
 #        } 
+#        line=@line
         1.step(data.length-1,2){|i|
           tokens=data[i].ident.dup
+          line=data[i].linenum
+
+          #replace trailing } with EoiToken
           (tokens.size-1).downto(0){|j| 
              tok=tokens[j]
              break(tokens[j..-1]=[EoiToken.new('',nil,tokens[j].offset)]) if tok.ident=='}' 
           }
+          #remove leading {
           tokens.each_with_index{|tok,j| break(tokens.delete_at j) if tok.ident=='{' }
-          if tokens.size==1 and VarNameToken===tokens.first||VarNode===tokens.first
-            data[i]=tokens.first
+
+          if tokens.size==1 and VarNameToken===tokens.first
+            data[i]=VarNode.new tokens.first
+            data[i].line=line
           else
+            #parse the token list in the string inclusion
             klass=Thread.current[:$RedParse_parser].class
             data[i]=klass.new(tokens, "(string inclusion)").parse
           end
         } #if data
 #        was_nul_header= (String===data.first and data.first.empty?) #and o[:quirks]
         last=data.size-1
+
+        #remove (most) empty string fragments
         last.downto(1){|frag_i| 
           frag=data[frag_i]
           String===frag or next
