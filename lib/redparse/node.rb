@@ -536,6 +536,48 @@ class RedParse
         }
       end
 
+      def depthwalk(parent=nil,index=nil,subindex=nil,&callback)
+        each_with_index{|datum,i|
+          case datum
+          when Node; datum.walk(self,i,&callback)
+          when Array;
+            datum.each_with_index{|x,j| 
+              Node===x and x.walk(self,i,j,&callback)
+            }
+          end
+        }
+        callback[ parent,index,subindex,self ]
+      end
+
+      def add_parent_links!
+        walk{|parent,i,subi,o|
+          o.parent=parent if Node===o
+        }
+      end
+
+      attr_accessor :parent
+
+      def xform_tree!(xformer)
+        session={}
+        depthwalk{|parent,i,subi,o|
+          xformer.xform!(o,session) if o
+        }
+        depthwalk{|parent,i,subi,o|
+          if session.has_key? o.__id__
+            new= session[o.__id__]
+            if Reg::Formula===new
+              new=new.formula_value(session,o)
+            end
+            subi ? parent[i][subi]=new : parent[i]=new
+          end
+        }
+        if session.has_key? self.__id__
+          return session[self.__id__]
+        else
+          return self
+        end
+      end
+
       def linerange
         min=9999999999999999999999999999999999999999999999999999
         max=0
