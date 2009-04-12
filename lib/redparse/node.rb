@@ -27,6 +27,7 @@ require 'tempfile'
 require 'pp'
 require "rubylexer"
 require "reg"
+require "regxform"
 
 
 
@@ -3005,25 +3006,26 @@ end
 
       def unparse_interior o,open=@open,close=@close
         escapable=escapable(open,close)
-        map{|substr|
+        result=map{|substr|
           if String===substr
-            substr.gsub!( /\\+/ )do
-              result=$&*2 
-              result.chomp! '\\' if $&.size&1==1
-              result
-            end
-            substr.gsub! escapable do '\\'+$& end
+#            substr.gsub!( /\\+/ )do
+#              result=$&*2 
+#              result.chomp! '\\' if $&.size&1==1
+#              result
+#            end
+#            substr.gsub! escapable do '\\'+$& end
             substr
           else
             ['#{',substr.unparse(o),'}']
           end
         }
+        result
       end
 
       def image; '(#@char)' end
 
       def delete_extraneous_ivars!
-        @parses_like.delete_extraneous_ivars! if @parses_like
+        @parses_like.delete_extraneous_ivars! if defined? @parses_like
         return super
       end
 
