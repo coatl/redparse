@@ -739,7 +739,7 @@ end
   def all_dotted_rules
     all_rules.map{|rule| 
       (0...rule.patterns.size).map{|i| 
-        DottedRule.create(rule,i) 
+        DottedRule.create(rule,i,self) 
       }
     }.flatten
   end
@@ -853,14 +853,35 @@ end
   end 
 
   class DottedRule
-    def initialize(rule,pos)
+    def initialize(rule,pos,parser)
       @rule,@pos=rule,pos
       fail unless (0...rule.patterns.size)===@pos
+#      @also_allow= compute_also_allow(parser) if parser unless defined? $OLD_PAA
+    end
+    def compute_also_allow(parser,provisional=[false])
+        parser.all_initial_dotted_rules.map{|dr|
+          next if dr==self
+          fake_rule=dr.rule.final_promised_rule
+          final_more_dr=DottedRule.create(fake_rule,0,nil)
+          also=dr.also_allow
+          unless also
+            provisional[0]||=0
+            provisional[0]+=1
+            also=[]
+          end
+          also+[dr] if optionally_combine final_more_dr,parser
+        }.flatten.compact.uniq
     end
     attr_reader :rule,:pos
+    attr_accessor :also_allow
 
-    def self.create(rule,pos)
-      rule.drs[pos]||=DottedRule.new(rule,pos)      
+    def self.create(rule,pos,parser)
+      result=rule.drs[pos] and return result
+      result=rule.drs[pos]=DottedRule.new(rule,pos,parser)
+unless defined? $OLD_PAA
+      result.also_allow=result.compute_also_allow(parser) if parser
+end
+      return result
     end
 
     def hash; (@rule.priority<<3)^@pos end
@@ -923,7 +944,7 @@ end
             if i==@rule.patterns.size
               @rule
             else
-              DottedRule.create(@rule,i)
+              DottedRule.create(@rule,i,parser)
             end
             break Conditional.new(it,action)
           end
@@ -932,7 +953,7 @@ end
           if i == @rule.patterns.size
             break @rule
           else
-            break result<<DottedRule.create(@rule,i)
+            break result<<DottedRule.create(@rule,i,parser)
           end
         elsif !@rule.optional?(i) 
           break result.empty? ? nil : result
@@ -971,7 +992,7 @@ end
       rrules=parser.all_rules.select{|rule| 
                !rule.unruly? and !nodes_here.grep(rule.action).empty?
              }.map{|rule|
-               DottedRule.create(rule,0) 
+               DottedRule.create(rule,0,parser) 
              }
 
       #if any generating rules match a node in the leftmost pattern,
@@ -1035,8 +1056,9 @@ end
             elsif myposes[myi]>=rule.patterns.size
               return result=false             #fail if stronger rule at an end
             else
-              mynew=DottedRule.create(rule,myposes[myi])
-              new=DottedRule.create(other.rule,poses[i])
+              p [:**,rule.name,myposes[myi]]
+              mynew=DottedRule.create(rule,myposes[myi],parser)
+              new=DottedRule.create(other.rule,poses[i],parser)
               return result=mynew.optionally_combine( new,parser )
             end
           end
@@ -1166,9 +1188,14 @@ end
 
     #given a list of rules, see if any of them are compatible with
     #a current substate. (compatibility means the aggregate patterns
-    #can be anded together and still be able to cenceivably match something.)
+    #can be anded together and still be able to conceivably match something.)
     #if any of morerules are actually compatible, add it to current state.
     def perhaps_also_allow(morerules,parser)
+      fail unless morerules==parser.all_rules
+      @dotteds.concat @dotteds.map{|d| d.also_allow }.flatten.compact.uniq
+      sort_substates!
+    end
+    def old_perhaps_also_allow(morerules,parser)
       morerules=morerules.dup
       need_sort=false
       scan_rules=@dotteds
@@ -1178,10 +1205,10 @@ end
         morerules.each{|morerule|
           next if added[morerule]
           fake_rule=morerule.final_promised_rule
-          final_more_dr=DottedRule.create(fake_rule,0)
+          final_more_dr=DottedRule.create(fake_rule,0,parser)
           scan_rules.each{|dotted|
             if dotted.optionally_combine final_more_dr,parser
-              adding<<DottedRule.create(morerule,0)
+              adding<<DottedRule.create(morerule,0,parser)
               added[morerule]=1
               break
             end
@@ -1194,6 +1221,8 @@ end
       end
       sort_substates! if need_sort
     end
+    alias perhaps_also_allow old_perhaps_also_allow if defined? $OLD_PAA
+
 
     #returns ParserState|MultiShift|MultiReduce|Rule|:accept|:error
     def evolve input,parser,seenlist
@@ -1829,7 +1858,7 @@ end
 #      rt=rule.reduces_to and
 #        !goal.select{|node| node>=rt}.empty?
 #    }
-#    result.map!{|rule| DottedRule.create(rule,0)}
+#    result.map!{|rule| DottedRule.create(rule,0,parser)}
 #
 #    ParserState.new result
 #  end
@@ -1845,7 +1874,9 @@ end
 
   def initial_state
     @states={}
-    result=new_state all_rules.map{|r| DottedRule.create(r,0)}
+    all_initial_dotted_rules #is this still needed?
+    result=new_state all_rules.map{|r| DottedRule.create(r,0,self)}
+    result.name="initial"
     #result.perhaps_also_allow all_rules,self #silly here
     result
   end
