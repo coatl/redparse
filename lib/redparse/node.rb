@@ -2995,10 +2995,10 @@ end
 
       def escapable open=@open,close=@close
         unless escapable=ESCAPABLES[open]
-          maybe_crunch='#' if %r{\A["`/\{]\Z} === @char #"
+          maybe_crunch='\\#' if %r{\A["`/\{]\Z} === @char and open[1] != ?q and open != "'" #"
           #crunch (#) might need to be escaped too, depending on what @char is
           escapable=ESCAPABLES[open]=
-            /[#{open[-1,1]+close}#{maybe_crunch}]/
+            /[#{Regexp.quote open[-1,1]+close}#{maybe_crunch}]/
         end
         escapable             
       end
