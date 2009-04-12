@@ -3113,6 +3113,7 @@ end
         huh
       end
 
+      EVEN_BSS=/(?:[^\\]|\G)(?:\\\\)*/
       def split_into_words strtok
         return unless /[{\[]/===@char
         result=ArrayLiteralNode[]
@@ -3120,7 +3121,11 @@ end
         first[/\A(?:\s|\v)+/]='' if /\A(?:\s|\v)/===first
         each{|x|
           if String===x
-            double_chunks=x.split(/((?:(?:[^\\]|\A)(?:\\\\)+)|(?:[^\\\s\v]|\A))(?:\s|\v)+/,-1)
+            x=x[/\A(?:\s|\v)+(.*)\Z/,1] if /\A[\s\v]/===x
+            #split on ws preceded by an even # of backslashes or a non-backslash, non-ws char
+            #this ignores backslashed ws
+            #save the thing that preceded the ws, it goes back on the token preceding split
+            double_chunks=x.split(/( #{EVEN_BSS} | (?:[^\\\s\v]|\A|#{EVEN_BSS}\\[\s\v]) )(?:\s|\v)+/xo,-1)
             chunks=[]
             (0..double_chunks.size).step(2){|i| 
               chunks << strtok.translate_escapes(double_chunks[i,2].to_s)#.gsub(/\\([\s\v\\])/){$1}
