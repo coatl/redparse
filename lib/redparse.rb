@@ -115,7 +115,14 @@
 #MultiShift/MultiReduce are not supported actions in generate.rb
 #:accept/:error are not supported actions in generate.rb
 
-require 'rubygems'
+require 'forwardable'
+
+begin
+  require 'rubygems'
+rescue LoadError=>e
+  #hope we don't need it
+  raise unless /rubygems/===e.message
+end
 require 'rubylexer'
 require 'reg'
 require 'ron/graphedge'
