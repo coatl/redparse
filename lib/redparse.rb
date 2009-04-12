@@ -744,6 +744,33 @@ end
     }.flatten
   end
 
+#$OLD_PAA=1
+
+  def all_initial_dotted_rules
+    return @all_initial_dotted_rules if defined? @all_initial_dotted_rules
+    @all_initial_dotted_rules=result=
+      all_rules.map{|rule| DottedRule.create(rule,0,nil) }
+
+    p :all_init
+
+unless defined? $OLD_PAA
+    scanning=result
+    provisionals=nil
+    while true
+      old_provisionals=provisionals
+      provisionals={}
+      scanning.each{|dr| 
+        dr.also_allow=dr.compute_also_allow(provisional=[false]) #fill out dr.also_allow
+        provisionals[dr]=provisional[0]
+      }
+      scanning=provisionals.map{|dr,val| dr if val }.compact
+    end until provisionals==old_provisionals
+end
+    p :all_init_done
+
+    return result
+  end
+
   class Rule #original user rules, slightly chewed on
     def initialize(rawrule,priority)
       @priority=priority
