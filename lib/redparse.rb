@@ -701,8 +701,8 @@ end
     return @all_rules if defined? @all_rules
 
     @inputs||=enumerate_exemplars
-    @rules=nil  #force it to be recalculated
-    @all_rules = map_with_index(expanded_RULES()){|r,i| Rule.new r,i}
+    @rules=expanded_RULES  #force it to be recalculated
+    @all_rules = map_with_index(@rules){|r,i| Rule.new r,i}
 
     @all_rules.each{|r|
       if StackMonkey===r.action
