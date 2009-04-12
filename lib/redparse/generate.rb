@@ -140,9 +140,9 @@ def action2c(action)
              when nil,:error;  "goto error_handler;"
              when ParserState;  "goto shift_state_#{str2cname action.name};"
              when :accept; "YYACCEPT;"
-             when MultiReduce; huh action.action2c
-             when MultiShift; huh action.action2c
-             when StackMonkey; huh
+             when MultiReduce; action.action2c
+             when MultiShift; action.action2c
+#             when StackMonkey; action.action2c
              else fail "unexpected action type: #{action.class} = #{action}"
              end
 end
