@@ -267,14 +267,14 @@ fail, no default entry is needed. However, making the most common case arm the
 default is a trivial time and space optimization.
 =end
 
-def generate_c
-  init_code+
-  state_utils+
-  map_with_index(all_states){|st,i| state st,i }.to_s+
-  (0...RULES().size).map{|i| reduce i }.to_s+
-  node_types.map{|nt| nonterminal nt }.to_s+
-  #error_handler+  #disabled, i have rules for error recovery
-  "}"
+def generate_c output
+  output<< init_code
+  output<< state_utils
+  (0...RULES().size).each_with_index{|i,m| output<< (reduce i,m) }
+  node_types.each{|nt| output<< (nonterminal nt) }
+  map_with_index(all_states){|st,i| output<< (state st,i) }
+  #output<< error_handler  #disabled, i have rules for error recovery
+  output<< "}"
 end
 
 

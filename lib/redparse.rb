@@ -1859,7 +1859,7 @@ end
 #    pp states
 #    pp states.size
     
-    puts generate_c
+    generate_c $stdout
     return self
   ensure 
     remove_instance_variable :@generating_parse_tables rescue nil
