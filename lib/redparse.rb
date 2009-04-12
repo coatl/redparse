@@ -1752,6 +1752,14 @@ end
     }
     puts "#{dup_states} duplicate states" if dup_states.nonzero?
 
+    name2count={}
+    states.each{|state| state.rename(name2count) }
+
+    #divide each state's actions into sr and goto tables
+    #also scan states for the most common sr and goto actions and make them default
+    states.each{|state| state.make_sr_goto_tables }
+
+
 #    pp states
 #    pp states.size
     
