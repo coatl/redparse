@@ -2434,6 +2434,8 @@ end
 
   inspect_constant_names
 
+  warn "error recovery rules disabledfor now; creates too many states and masks errors"
+
   def RULES
     lower_op=(LOWEST_OP|(~VALUELIKE_LA & lower_op())).la
     def lower_op.inspect; "lower_op" end
@@ -2442,10 +2444,12 @@ end
      -[EoiToken]>>:error,
     ]+
 
+=begin disabled temporarily, to see how many states it saves
     #these must be the lowest possible priority, and hence first in the rules list
     BEGIN2END.map{|_beg,_end| 
       -[KW(_beg), (KW(_beg)|KW(_end)).~.*, KW(_end), KW(/^(do|\{)$/).~.la]>>MisparsedNode
     }+
+=end
 
     [
     -[UNOP, Expr, lower_op]>>UnOpNode,
