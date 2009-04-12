@@ -102,7 +102,7 @@ int yyparse(void){
 
   la_identity = yylex(&la_token); /* Get 1st token.*/
 
-  goto shift_state_#{all_states.first.name};/* Start state.*/
+  goto shift_state_#{str2cname all_states.first.name};/* Start state.*/
 "
 end
 
@@ -136,9 +136,9 @@ end
 
 def action2c(action)
              case action
-             when Rule; "goto reduce_#{action.name};"
+             when Rule; "goto reduce_#{str2cname action.name};"
              when nil,:error;  "goto error_handler;"
-             when ParserState;  "goto shift_state_#{action.name};"
+             when ParserState;  "goto shift_state_#{str2cname action.name};"
              when :accept; "YYACCEPT;"
              when MultiReduce; huh action.action2c
              when MultiShift; huh action.action2c
@@ -173,7 +173,7 @@ state_action_#{name}: /* Error-recovery entry point.*/
 /*state_action_#{n}:*/
   switch (la_identity){
     #{state_n.actions.map do |tok,action|
-        %[  case #{tok.gsub("::","XX")}: #{action2c action}]
+        %[  case #{str2cname(tok)}: #{action2c action}]
       end.join(%[\n])
     }
     default: #{action2c state_n.actions.default}
@@ -217,7 +217,7 @@ def reduce(rule,m)
       huh /*objects removed from semantic stack get pushed back onto lexer input*/
       i -= #{repl.backup_count};
       
-      goto nonterminal_switcher_#{repl.huh}; 
+      goto nonterminal_switcher_#{str2cname repl.huh}; 
       // Compute transition on some old node from the (semantic) stack.
       huh//need a node (or token?) number to goto address mapper (switch stmt) here    
     "
@@ -231,7 +231,7 @@ def reduce(rule,m)
     i -= #{numpatterns}; /* Pop patterns from stack.*/
   
     SEMANTIC_STACK_SET(yyredval); /* Copy ($$) onto semantic stack.*/
-    goto nonterminal_#{repl.name}; /* Compute transition on produced node type.*/
+    goto nonterminal_#{str2cname repl.name}; /* Compute transition on produced node type.*/
   ]
   end
 end
@@ -249,11 +249,11 @@ current state. This simple switch statement is given below.
 
 def nonterminal(j)
 "
-nonterminal_#{j.name}:  /*nonterminal_#{j.small_int}:*/
+nonterminal_#{str2cname j.name}:  /*nonterminal_#{j.small_int}:*/
   switch (OLDSTACK){   // Top of stack.
     #{
       all_states.map_with_index do|state,k|
-        %[  case #{k}: goto state_#{state.goto[j].name};\n]
+        %[  case #{k}: goto state_#{str2cname state.goto[j].name};\n]
       end
     }
   }
@@ -304,7 +304,7 @@ user_error_handler:
     switch (OLDSTACK){
     #{@states.map{|state| 
         i=state.small_int
-        "case #{i}: goto state_action_#{state.name};\n"
+        "case #{i}: goto state_action_#{str2cname state.name};\n"
       }
     }
   }else{
