@@ -179,6 +179,8 @@ state_action_#{name}: /* Error-recovery entry point.*/
     default: #{action2c state_n.actions.default}
   }
 "
+rescue Exception=>e
+  backtrace.unshift("exception in state #{name} #{e.class}:#{e}").join("\n")
 end
 
 =begin
@@ -234,6 +236,9 @@ def reduce(rule,m)
     goto nonterminal_#{str2cname repl.name}; /* Compute transition on produced node type.*/
   ]
   end
+
+rescue Exception=>e
+  backtrace.unshift("exception in reduce of rule #{rule.name} #{e.class}:#{e}").join("\n")
 end
 
 =begin
@@ -258,6 +263,8 @@ nonterminal_#{str2cname j.name}:  /*nonterminal_#{j.small_int}:*/
     }
   }
 "
+rescue Exception=>e
+  backtrace.unshift("exception in node(nonterminal) #{j.name} #{e.class}:#{e}").join("\n")
 end
 
 =begin
