@@ -3117,8 +3117,8 @@ end
       def split_into_words strtok
         return unless /[{\[]/===@char
         result=ArrayLiteralNode[]
-        result << StringNode['',{:@char=>'"'}]
-        first[/\A(?:\s|\v)+/]='' if /\A(?:\s|\v)/===first
+        result << StringNode['',{:@char=>'"',:@open=>@open,:@close=>@close,:@bs_handler=>@bs_handler}]
+#        first[/\A(?:\s|\v)+/]='' if /\A(?:\s|\v)/===first #uh-oh, changes first
         each{|x|
           if String===x
             x=x[/\A(?:\s|\v)+(.*)\Z/,1] if /\A[\s\v]/===x
@@ -3140,7 +3140,9 @@ end
               result.last.push chunk1
             end
 #            result.last.last.empty? and result.last.pop
-            result.concat chunks.map{|chunk| StringNode[chunk,{:@char=>'"'}]}
+            result.concat chunks.map{|chunk| 
+              StringNode[chunk,{:@char=>'"',:@open=>@open,:@close=>@close,:@bs_handler=>@bs_handler}]
+            }
           else
             result.last << x
           end
