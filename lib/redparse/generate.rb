@@ -56,13 +56,13 @@ subsequent automata simulation. It is grammar-independent.
 
 def init_code
 "
-#define YYABORT do { \
-  free(start_stack);return -1; \
+#define YYABORT do { \\
+  free(start_stack);return -1; \\
   } while(0)
-#define YYACCEPT do { \
-  YYSTYPE result=SEMANTIC_STACK; \
-  free(start_stack); \
-  return result; \
+#define YYACCEPT do { \\
+  YYSTYPE result=SEMANTIC_STACK; \\
+  free(start_stack); \\
+  return result; \\
   } while(0)
 /*#define yyclearin_token = yylex(&la_token)*/
 #define yyerrok yyerrorstatus = 3
@@ -110,21 +110,21 @@ end
 def state_utils
 "
 #define MALLOC_ERROR() huh
-#define RESERVE_STACK_SLOT() \
-  if (++i >= stack_size){ \
-    unsigned new_stack_size=stack_size*2; \
-    stack_start=realloc(stack_start,sizeof(StackType)*new_stack_size); \
-    if (stack_start==NULL) MALLOC_ERROR(); \
-    //semantic_stack_start=realloc(semantic_stack_start,sizeof(SemanticStackType)*new_stack_size); \
-    //if (semantic_stack_start==NULL) MALLOC_ERROR(); \
-    stack_size=new_stack_size; \
+#define RESERVE_STACK_SLOT() \\
+  if (++i >= stack_size){ \\
+    unsigned new_stack_size=stack_size*2; \\
+    stack_start=realloc(stack_start,sizeof(StackType)*new_stack_size); \\
+    if (stack_start==NULL) MALLOC_ERROR(); \\
+    //semantic_stack_start=realloc(semantic_stack_start,sizeof(SemanticStackType)*new_stack_size); \\
+    //if (semantic_stack_start==NULL) MALLOC_ERROR(); \\
+    stack_size=new_stack_size; \\
   }
 
-#define GET_TOKEN() \
-  do { \
-    SEMANTIC_STACK_SET(la_token); /*Put lexical semantic entry on stack.*/ \
-    la_identity = yylex(&la_token); /* Advance lexical analysis.*/ \
-    yyerrorstatus++; /* Update error-recovery counter.*/ \
+#define GET_TOKEN() \\
+  do { \\
+    SEMANTIC_STACK_SET(la_token); /*Put lexical semantic entry on stack.*/ \\
+    la_identity = yylex(&la_token); /* Advance lexical analysis.*/ \\
+    yyerrorstatus++; /* Update error-recovery counter.*/ \\
   } while(0)
 
 #define STACK stack_start[i]
