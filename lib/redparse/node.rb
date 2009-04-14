@@ -579,7 +579,11 @@ class RedParse
           end
         }
         if session.has_key? self.__id__
-          return session[self.__id__]
+          new= session[self.__id__]
+          if Reg::Formula===new
+            new=new.formula_value(session,self)
+          end
+          return new
         else
           return self
         end
