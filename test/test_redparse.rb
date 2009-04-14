@@ -3515,8 +3515,8 @@ EOS
         @@missed_syntax_errors=1
         at_exit{warn "missed syntax errors: #@@missed_syntax_errors"}
       end
-      puts "warning: syntax error expected, but none was seen, expression: <<< #{xmpl} >>>" if 
-        POWERS_OF_2[@@missed_syntax_errors]
+      #puts "warning: syntax error expected, but none was seen, expression: <<< #{xmpl} >>>" if 
+      #  POWERS_OF_2[@@missed_syntax_errors]
     end
   end
 
