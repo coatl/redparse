@@ -568,6 +568,7 @@ class RedParse
         depthwalk{|parent,i,subi,o|
           xformer.xform!(o,session) if o
         }
+        session["final"]=true
         depthwalk{|parent,i,subi,o|
           if session.has_key? o.__id__
             new= session[o.__id__]
