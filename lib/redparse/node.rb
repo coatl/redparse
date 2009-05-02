@@ -203,20 +203,15 @@ class RedParse
         @not_real if defined? @not_real
       end
 
-      fail unless "^("==RubyLexer::FUNCLIKE_KEYWORDS.source[0..1]
-      fail unless ")$"==RubyLexer::FUNCLIKE_KEYWORDS.source[-2..-1]
-      fail unless "^("==RubyLexer::VARLIKE_KEYWORDS.source[0..1]
-      fail unless ")$"==RubyLexer::VARLIKE_KEYWORDS.source[-2..-1]
       identity_param :ident, *%w<+@ -@ &@ *@ ! ~ not defined?>+ #should be unary ops
                                %w<end ( ) { } [ ] alias undef in>+
                                %w<? : ; !~ rhs, lhs, call, array, param, rescue3>+ #these should be ops
                                %w{*= **= <<= >>= &&= ||= |= &= ^= /= %= -= += = => ... .. . ::}+ #shouldn't be here, grrr
-                               RubyLexer::FUNCLIKE_KEYWORDS.source[2...-2].tr_s("\\",'').split("|")+
-                               RubyLexer::VARLIKE_KEYWORDS.source[2...-2].tr_s("\\",'').split("|")+
-                               RubyLexer::INNERBOUNDINGWORDS[1...-1].split("|")+
-                               RubyLexer::BINOPWORDS[1...-1].split("|")+
-                               RubyLexer::BEGINWORDLIST<<
-                               warn("missing some more ident identity_params here?")
+                               RubyLexer::FUNCLIKE_KEYWORDLIST+
+                               RubyLexer::VARLIKE_KEYWORDLIST+
+                               RubyLexer::INNERBOUNDINGWORDLIST+
+                               RubyLexer::BINOPWORDLIST+
+                               RubyLexer::BEGINWORDLIST
       #identity_param :unary, true,false,nil
       
       #identity_param :comma_type, :lhs,:rhs,:param,:call,:array,nil
