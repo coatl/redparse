@@ -76,6 +76,16 @@ class Test::Unit::TestCase
   end
 end
 
+require 'test/unit/ui/console/testrunner'
+class Test::Unit::UI::Console::TestRunner
+  alias add_fault__no_immed_output add_fault
+  def add_fault fault
+    @fault_count||=0
+    output("\n%3d) %s" % [@fault_count+=1, fault.long_display])
+    add_fault__no_immed_output fault
+  end
+end
+
 class ParseTree
   def put o
     o=Marshal.dump o
