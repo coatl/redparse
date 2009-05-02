@@ -189,6 +189,18 @@ class RedParseTest<Test::Unit::TestCase
   ]
 
   ONELINERS=[
+    '%W[r\\c     3]'...'',
+
+    "%w[a\\C- b]"...'',
+    "%w[a\\M- b]"...'',
+    "%w[a\\c b]"...'',
+    "%W[a\\c b]"...'',
+    "%w[a\\\\c b]"...'',
+    "%W[a\\\\c b]"...'',
+    "%w[a\\c  b]"...'',
+    "%W[a\\c  b]"...'',
+    "%w[a\\\\c  b]"...'',
+    "%W[a\\\\c  b]"...'',
     "module A; b; rescue C=>d; e; else g; ensure f; end"...'',
     "class<<A; b; rescue C=>d; e; else g; ensure f; end"...'',
     "class A; b; rescue C=>d; e; else g; ensure f; end"...'',
