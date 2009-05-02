@@ -22,8 +22,8 @@ end
      _.author = "Caleb Clausen"
      _.email = "redparse-owner @at@ inforadical .dot. net"
      _.url = ["http://redparse.rubyforge.org/", "http://rubyforge.org/projects/redparse/"]
-     _.extra_deps << ['rubylexer', '>= 0.7.2']
-     _.extra_deps << ['reg']
+     _.extra_deps << ['rubylexer', '>= 0.7.3']
+     _.extra_deps << ['reg', '>= 0.4.7']
 #     _.test_globs=["test/*"]
      _.description=desc
      _.summary=desc[/\A[^.]+\./]
