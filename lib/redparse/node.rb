@@ -4303,7 +4303,16 @@ end
     end
  
     class ModuleNode<NamespaceNode
-      param_names(:moduleword_,:name,:semi_,:body,:rescues,:else!,:ensure!,:endword_)
+      param_names(:name,:body,:rescues,:else!,:ensure!)
+
+      def initialize moduleword,name,semiword,body,rescues,else_,ensure_,endword
+        else_=else_.val if else_
+        ensure_=ensure_.val if ensure_
+        super(name,body,rescues,else_,ensure_)        
+      end
+
+      alias else_ else
+      alias ensure_ ensure
 
       def image; "(module #{name})" end
 
@@ -4344,8 +4353,13 @@ end
           name,op,parent=*name
           op=="<" or fail "invalid superclass expression: #{name}"
         end
+        else_=else_.val if else_
+        ensure_=ensure_.val if ensure_
         super(name,parent,body,rescues,else_,ensure_)
       end
+
+      alias else_ else
+      alias ensure_ ensure
 
       def image; "(class #{name})" end
 
