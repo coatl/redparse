@@ -1759,39 +1759,9 @@ end
       end
  
       def parsetree(o)
-          body=body()
-          target=result=[]   #was: [:begin, ]
-
-          #body,rescues,else_,ensure_=*self
-          target.push target=[:ensure, ] if ensure_ or @empty_ensure
-
-          rescues=rescues().map{|resc| resc.parsetree(o)}
-          if rescues.empty? 
-            else_ and
-              body=SequenceNode.new(body,nil,else_)
-            else_=nil
-          else 
-            target.push newtarget=[:rescue, ]
-            else_=else_()
-          end
-          if body 
-              needbegin=  (BeginNode===body and body.after_equals)
-              body=body.parsetree(o) 
-              body=[:begin, body] if needbegin and body.first!=:begin and !o[:ruby187]
-              (newtarget||target).push body if body
-          end
-          target.push ensure_.parsetree(o) if ensure_
-          target.push [:nil] if @empty_ensure
-          target=newtarget if newtarget
-          
-          unless rescues.empty?
-            target.push linked_list(rescues)
-          end
-          target.push else_.parsetree(o) if  else_ #and !body
-          result.size==0 and result=[[:nil]]
-          result=result.last #if @op_rescue
-          result=[:begin,result] unless o[:ruby187]||result==[:nil]#||result.first==:begin
-          result
+        result=parsetree_and_rescues(o)
+        result=[:begin,result] unless o[:ruby187]||result==[:nil]#||result.first==:begin
+        return result
       end
 
       def rescue_parsetree o
