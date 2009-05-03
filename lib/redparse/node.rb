@@ -2610,11 +2610,15 @@ end
           if first
             arrowrange=first..last
             arrows=param_list[arrowrange]
-            param_list[arrowrange]=[HashLiteralNode.new(nil,arrows,nil)]
+            h=HashLiteralNode.new(nil,arrows,nil)
+            h.endline=arrows.first.endline
+            param_list[arrowrange]=[h]
           end
         
-        when ArrowOpNode:  
-          param_list=[HashLiteralNode.new(nil,param_list,nil)]
+        when ArrowOpNode
+          h=HashLiteralNode.new(nil,param_list,nil)
+          h.endline=param_list.endline
+          param_list=[h]
 #        when KeywordOpNode
 #          fail "didn't expect '#{param_list.inspect}' inside actual parameter list"
         when nil
