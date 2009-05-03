@@ -3211,8 +3211,10 @@ end
         return unless /[{\[]/===@char
         result=ArrayLiteralNode[]
         result << StringNode['',{:@char=>'"',:@open=>@open,:@close=>@close,:@bs_handler=>@bs_handler}]
+        proxy=dup
+        proxy[0]=proxy[0][/\A(?:\s|\v)+(.*)\Z/,1] if /\A(?:\s|\v)/===proxy[0]
 #        first[/\A(?:\s|\v)+/]='' if /\A(?:\s|\v)/===first #uh-oh, changes first
-        each{|x|
+        proxy.each{|x|
           if String===x
             x=x[/\A(?:\s|\v)+(.*)\Z/,1] if /\A[\s\v]/===x
             #split on ws preceded by an even # of backslashes or a non-backslash, non-ws char
