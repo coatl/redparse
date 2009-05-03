@@ -863,6 +863,23 @@ class RedParse
         }
         return output,star,amp
       end
+
+      def unparse_nl(token,o,alt=';',nl="\n")
+
+        #should really only emit newlines 
+        #to bring line count up to startline, not endline.
+        #but that doesn't exist yet
+
+        linenum= Integer===token ? token : token.endline rescue o[:linenum]
+        shy=linenum-o[:linenum]
+        return alt if shy<=0
+        o[:linenum]=linenum
+        return nl*shy
+      end
+
+      def default_unparse_options
+        {:linenum=>1}
+      end
     end
 
     class ValueNode<Node
