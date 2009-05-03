@@ -264,9 +264,9 @@ end
 
     #give lookahead matcher (if any) a chance to fail the match
     case lookahead_processor
-    when ::Reg::LookAhead:
+    when ::Reg::LookAhead
       return false unless lookahead_processor.subregs[0]===@stack.last
-    when Proc:
+    when Proc
       return false unless lookahead_processor[self,@stack.last] 
     end
 
