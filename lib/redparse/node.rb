@@ -2466,7 +2466,7 @@ end
         @reverse=false
         @module=WhileOpNode
         @loop=true
-        @test_first= !( BeginNode===val1||RescueOpNode===val1 )
+        @test_first= !( BeginNode===val1 )
         condition.special_conditions! if condition.respond_to? :special_conditions!
       end
 
@@ -2500,7 +2500,7 @@ end
         self[1]=op
         @reverse=true
         @loop=true
-        @test_first= !( BeginNode===val1||RescueOpNode===val1) 
+        @test_first= !( BeginNode===val1 ) 
         @module=UntilOpNode
         condition.special_conditions! if condition.respond_to? :special_conditions!
       end
