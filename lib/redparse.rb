@@ -280,7 +280,7 @@ end
     case node_type
     when Class
         node=node_type.new(*matching)
-        node.line=@line
+        node.endline=@endline
         @stack[matchrange]=[node]
     when Proc,StackMonkey;   node_type[@stack]
     when :shift; return 0
@@ -306,8 +306,8 @@ if false
         node=stack[i]
         if node.respond_to? :linerange
           node.linerange
-        elsif node.respond_to? :line
-          node.line..node.line
+        elsif node.respond_to? :endline
+          node.endline..node.endline
         end
       }
       types=(1..stack.size-2).map{|i| stack[i].class }
@@ -2715,7 +2715,7 @@ end
       p result if rpt
 
       #set token's line if wanted
-      result.line||=@line if result.respond_to? :line=
+      result.endline||=@endline if result.respond_to? :endline=
 
       if result.respond_to?(:as) and as=result.as
         #result=make_kw(as,result.offset)
@@ -2731,7 +2731,7 @@ end
       case result
       when FileAndLineToken #so __FILE__ and __LINE__ can know what their values are
         @file=result.file
-        @line=result.line
+        @endline=result.line
         redo
       
       when OperatorToken
@@ -2752,7 +2752,7 @@ end
             result.value=@file.dup
           when "__LINE__"; #I wish rubylexer would handle this
             class<<result; attr_accessor :value; end
-            result.value=@line
+            result.value=@endline
           else 
             result=make_kw name,result.offset if defined? SPECIALIZED_KEYWORDS
             #warning, this may discard information stored in instance vars of result

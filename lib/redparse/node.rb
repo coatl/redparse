@@ -322,7 +322,7 @@ class RedParse
         lvar_type==:current ? [ident] : []
       end
 
-      attr_accessor :line,:lvalue
+      attr_accessor :endline,:lvalue
 
       def dup
         result=super
@@ -389,7 +389,7 @@ class RedParse
       end
       alias unwrap data
 
-      attr_accessor :line
+      attr_accessor :endline
       attr_accessor :errors
 
       def self.[](*data)
@@ -574,7 +574,7 @@ class RedParse
         min=9999999999999999999999999999999999999999999999999999
         max=0
         walk{|parent,i,subi,node|
-          if node.respond_to? :line and line=node.line
+          if node.respond_to? :endline and line=node.endline
             min=[min,line].min
             max=[max,line].max
           end
@@ -756,7 +756,7 @@ class RedParse
           when Node
             node.remove_instance_variable :@offset rescue nil
             node.remove_instance_variable :@loopword_offset rescue nil
-            node.remove_instance_variable :@line rescue nil
+            node.remove_instance_variable :@endline rescue nil
             node.remove_instance_variable :@lvalue rescue nil
             if node.respond_to? :lvalue 
               node.lvalue or
@@ -875,9 +875,10 @@ class RedParse
 
     class VarNode<ValueNode
       include FlattenedIvars
-      attr_accessor :line,:lvalue,:ident
+      attr_accessor :endline,:lvalue,:ident
       attr_reader :lvar_type,:in_def,:offset
       alias image ident
+      alias startline endline
 
       alias == flattened_ivars_equal?
 
@@ -885,7 +886,7 @@ class RedParse
         @ident=tok.ident
         @lvar_type=tok.lvar_type
         @offset=tok.offset
-        @line=tok.line
+        @endline=tok.endline
         @in_def=tok.in_def
       end
 
@@ -3091,7 +3092,7 @@ end
 #          sum.size%2==1 and sum.last<<elems.shift
 #          sum+elems
 #        } 
-#        line=@line
+#        endline=@endline
         1.step(data.length-1,2){|i|
           tokens=data[i].ident.dup
           line=data[i].linenum
@@ -3106,7 +3107,7 @@ end
 
           if tokens.size==1 and VarNameToken===tokens.first
             data[i]=VarNode.new tokens.first
-            data[i].line=line
+            data[i].endline=endline
           else
             #parse the token list in the string inclusion
             klass=Thread.current[:$RedParse_parser].class
@@ -3122,7 +3123,7 @@ end
           String===frag or next
           next unless frag.empty? 
           next if frag_i==last #and o[:quirks]
-          next if data[frag_i-1].line != data[frag_i+1].line #and o[:quirks]
+          next if data[frag_i-1].endline != data[frag_i+1].endline #and o[:quirks]
                   #prev and next inclusions on different lines
           data.slice!(frag_i)
         }
@@ -3131,9 +3132,9 @@ end
         return data
       end
 
-      def line= line
+      def endline= endline
         each{|frag| 
-          frag.line||=line if frag.respond_to? :line
+          frag.endline||=endline if frag.respond_to? :endline
         }
 
         super
@@ -4567,7 +4568,7 @@ end
 
       def msg
         inner=middle.grep(MisparsedNode).first and return inner.msg
-        "#@line: misparsed #{what}: #{middle.map{|node| node&&node.image}.join(' ')}" 
+        "#@endline: misparsed #{what}: #{middle.map{|node| node&&node.image}.join(' ')}" 
       end
     end
 
