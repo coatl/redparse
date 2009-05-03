@@ -231,9 +231,7 @@ class RedParse
       identity_param :ident, *%w[+@ -@ &@ *@ ! ~ not defined? * ** + - < << <= <=> > >= >> =~ == ===
                                  % / & | ^ != !~ = => :: ? : , ; . .. ... *= **= <<= >>= &&= ||= && ||
                                  &= |= ^= %= /= -= += and or
-                              ]+RubyLexer::OPORBEGINWORDLIST+
-                               %w<; rhs, lhs, call, array, param, rescue3>+
-                                [warn("missing some more ident identity_params here?")]
+                              ]+RubyLexer::OPORBEGINWORDLIST+%w<; rhs, lhs, call, array, param, rescue3>
       #identity_param :unary, true,false,nil
       #identity_param :comma_type, :lhs,:rhs,:param,:call,:array,nil
       attr_accessor :comma_type 
