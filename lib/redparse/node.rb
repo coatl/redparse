@@ -1682,7 +1682,58 @@ end
       end
     end
 
+    module HasRescue
+      def parsetree_and_rescues(o)
+          body=body()
+          target=result=[]   #was: [:begin, ]
+
+          #body,rescues,else_,ensure_=*self
+          target.push target=[:ensure, ] if ensure_ or @empty_ensure
+
+          rescues=rescues().map{|resc| resc.parsetree(o)}
+          if rescues.empty?
+            else_ and
+              body=SequenceNode.new(body,nil,else_)
+            else_=nil
+          else
+            target.push newtarget=[:rescue, ]
+            else_=else_()
+          end
+          if body
+#              needbegin=  (BeginNode===body and body.after_equals)
+              body=body.parsetree(o)
+#              body=[:begin, body] if needbegin and body.first!=:begin and !o[:ruby187]
+              (newtarget||target).push body if body
+          end
+          target.push ensure_.parsetree(o) if ensure_
+          target.push [:nil] if @empty_ensure
+          target=newtarget if newtarget
+
+          unless rescues.empty?
+            target.push linked_list(rescues)
+          end
+          target.push else_.parsetree(o) if  else_ #and !body
+          result.size==0 and result=[[:nil]]
+          result=result.last #if @op_rescue
+          result
+      end
+
+      def unparse_and_rescues(o)
+          result=" "
+          result+= body.unparse(o) if body
+          result+=unparse_nl(rescues.first,o)
+          rescues.each{|resc| result+=resc.unparse(o) }
+          result+=unparse_nl(else_,o)+"else "+else_.unparse(o) if else_
+          result+=";else" if @empty_else
+          result+=unparse_nl(ensure_,o)+"ensure "+ensure_.unparse(o) if ensure_
+          result+=";ensure" if @empty_ensure 
+          return result
+       end
+
+    end
+
     class BeginNode<ValueNode
+      include HasRescue
       param_names :body, :rescues, :else!, :ensure!
       def initialize(*args)
         @empty_ensure=@empty_else=@op_rescue=nil
@@ -3949,6 +4000,7 @@ end
     end
 
     class MethodNode<ValueNode
+      include HasRescue
       param_names(:defword_,:receiver,:name,:maybe_eq_,:args,:semi_,:body,:rescues,:elses,:ensures,:endword_)
       alias ensure_ ensures
       alias else_ elses
@@ -4076,6 +4128,10 @@ end
           end
         end
         target.push [:nil] if !goodies && !receiver
+
+        #it would be better to use parsetree_and_rescues for the rest of this method,
+        #just to be DRYer
+
         target.push ensuretarget=target=[:ensure, ] if ensures or @empty_ensure
         #simple dup won't work... won't copy extend'd modules
         body=Marshal.load(Marshal.dump(body())) if body()
@@ -4207,6 +4263,11 @@ end
     end
 
     class NamespaceNode<ValueNode
+      include HasRescue
+      def initialize(*args)
+        @empty_ensure=@empty_else=nil
+        super
+      end
     end
  
     class ModuleNode<NamespaceNode
