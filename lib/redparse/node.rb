@@ -221,7 +221,7 @@ class RedParse
       alias image ident
 
 
-      #this should be in rubylexer
+      warn "KeywordToken#as/infix should be in rubylexer"
       alias old_as as
       def as
         if comma_type
