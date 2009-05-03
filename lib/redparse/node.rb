@@ -3240,7 +3240,12 @@ end
               StringNode[chunk,{:@char=>'"',:@open=>@open,:@close=>@close,:@bs_handler=>@bs_handler}]
             }
           else
-            result.last << x
+            #result.last << x
+            unless String===result.last.last
+              result.push StringNode["",{:@char=>'"',:@open=>@open,:@close=>@close,:@bs_handler=>@bs_handler}]
+            end
+            result.last.push x
+#            result.push StringNode["",x,{:@char=>'"',:@open=>@open,:@close=>@close,:@bs_handler=>@bs_handler}]
           end
         } 
         result.shift if StringNode&-{:size=>1, :first=>''}===result.first
