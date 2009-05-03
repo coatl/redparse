@@ -41,14 +41,6 @@ class RedParse
       self::const_set k,t if Module===t and RubyLexer::Token>=t
     }
 
-    module SimpleToLisp
-      def to_lisp; to_s end
-    end
-
-    [SymbolToken, VarNameToken].each{|tokclass|
-      tokclass.send :include, SimpleToLisp
-    }
-
     module FlattenedIvars
       def flattened_ivars
         result=[]
