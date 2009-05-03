@@ -1201,15 +1201,15 @@ end
         end
       end
 
-      def unparse o
-        map{|expr| expr.unparse(o)}.join("\n")      
+      def unparse o=default_unparse_options
+        map{|expr| unparse_nl(expr,o)+expr.unparse(o)}.to_s
       end
     end
 
     class StringCatNode < ValueNode
       def initialize(*strses)
         strs=strses.pop.unshift( *strses )
-        hd=strs.pop if HereDocNode===strs.first
+        hd=strs.shift if HereDocNode===strs.first
         strs.map!{|str| StringNode.new(str)}
         strs.unshift hd if hd
         super( *strs )
