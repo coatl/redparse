@@ -3188,7 +3188,25 @@ end
         huh
       end
 
-      EVEN_BSS=/(?:[^\\]|\G)(?:\\\\)*/
+      EVEN_BSS=/(?:[^\\\s\v]|\G)(?:\\\\)*/
+
+      DQ_ESC=/(?>\\(?>[CM]-|c)?)/
+      DQ_EVEN=%r[
+                  (?:
+                   \A |
+                   [^\\c-] |
+                   (?>\A|[^\\])c |
+                   (?> [^CM] | (?>\A|[^\\])[CM] )-
+                  )              #not esc
+                  #{DQ_ESC}{2}*  #an even number of esc
+             ]omx
+      DQ_ODD=/#{DQ_EVEN}#{DQ_ESC}/omx
+      SQ_ESC=/\\/
+      SQ_EVEN=%r[
+                  (?:  \A | [^\\]  )  #not esc
+                  #{SQ_ESC}{2}*       #an even number of esc
+             ]omx
+      SQ_ODD=/#{SQ_EVEN}#{SQ_ESC}/omx
       def split_into_words strtok
         return unless /[{\[]/===@char
         result=ArrayLiteralNode[]
