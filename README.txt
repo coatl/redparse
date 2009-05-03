@@ -60,12 +60,11 @@ Please see COPYING.LGPL for details.
 
 == Drawbacks:
 
-* Pathetically, rediculously slow (to be addressed soon).
+* Pathetically, rediculously slow (to be addressed soon, really).
 * Error handling is very minimal right now.
 * No warnings at all.
 * Some expressions aren't parsed correctly. see below.
 * Line numbers in ParseTrees not supported yet. 
-* AST tree format is not finalized yet.
 * Unit test takes a fairly long time.
 * Lots of warnings printed during unit test.
 * Debugging parse rules is not straightforward.
@@ -109,9 +108,9 @@ Syntax trees are represented by trees of nested Nodes. All Nodes descend from
 Array, and their subnodes can be addressed by numeric index, just like normal
 Arrays. However, many subnodes want to have names as well, thus most (but not
 all) array slots within the various Node classes have names. The general rule
-is that Node slots may contain a Node, a VarNameToken, a plain Array, a 
-String, or nil. However, many cases are more specific than that. Specific 
-Node classes are documented briefly below in this format:
+is that Node slots may contain a Node, a plain Array, a String, or nil. 
+However, many cases are more specific than that. Specific Node classes are 
+documented briefly below in this format:
 
  NodeName          #comments describing node
                     (slot1: Type, slot2: Type)
@@ -134,40 +133,34 @@ describes the constraints on the Array's contents.
 In the cases where node slots don't have names, there will be no colon-
 terminated slot name(s) on the second line, just an Array[] specification.
 
-And just to make everyone's life a little more complicated, I should add that
-there is still one token type which leaks through into the syntax tree:
-VarNameToken. It's descended from a RubyLexer::Token, not a Node. In the 
-future this will be replaced with an actual Node.
-
-In fact, there are several areas where rough edges in the syntax tree could be
-removed. So don't consider this current depiction to be final. But it should 
-be pretty close.
+This is a final depiction of the syntax tree. There may be additions to the
+existing format in the future, but no incompatibility-creating changes.
 
  Several abbreviations are used:
- Value means ValueNode
- LValue means ConstantNode|VarNameToken|UnaryStarNode|CallNode|
+ Expr means ValueNode
+ LValue means ConstantNode|VarNode|UnaryStarNode|CallNode|
               BracketsGetNode|AssigneeList[LValue*]
  UnAmpNode means UnOpNode with op == "&"
 
- VarNameToken<RubyLexer::Token  #represents variables and constants
-                                 (ident: String)
- Node<Array        #abstract ancestor of all nodes (except VarNameToken)
- +RescueNode       #a rescue clause in a def of begin statement
- |                  (exceptions: Array[Value*], varname: VarNameToken|nil, action: Value)
+ Node<Array        #abstract ancestor of all nodes
+ +RescueNode       #a rescue clause in a def or begin statement
+ |                  (exceptions: Array[Expr*], varname: VarNode|nil, action: Expr)
  +WhenNode         #a when clause in a case statement
- |                  (when: Value|Array[Value+]  then: Value|nil )
+ |                  (when: Expr|Array[Expr+]  then: Expr|nil )
  +ElsifNode        #an elsif clause in an if statement
- |                  (elsif: Value, then: Value|nil) 
+ |                  (elsif: Expr, then: Expr|nil) 
  +ValueNode        #abstract, a node which has a value (an expression)
+ |+VarNode  #represents variables and constants
+ ||                 (ident: String)
  |+ListOpNode      #abstract, ancestor for nodes which are lists of 
  |||               #things separated by some op
  ||+SequenceNode   #a sequence of statements
- |||                 (Array[Value*])
+ |||                 (Array[Expr*])
  ||+ConstantNode   #a constant expression of the form A::B::C or the like
  ||                #first expression can be anything
- ||                 (Array[String|Value|nil,String+])
+ ||                 (Array[String|Expr|nil,String+])
  |+RawOpNode       #ancestor of all operators (but not . :: ; , ?..:)
- |||                (left: Value, op: String, right: Value)
+ |||                (left: Expr, op: String, right: Expr)
  ||+OpNode         #ancestor of some operators
  |||+RangeNode     #a range literal node
  |||+KeywordOpNode #abstract, ancestor of keyword operators
@@ -176,13 +169,15 @@ be pretty close.
  ||||+UntilOpNode  #until as an operator
  ||||+IfOpNode     #if as an operator
  ||||+UnlessOpNode #unless as an operator
+ ||||+RescueOpNode #rescue as an operator
+ ||||               (body: Expr, rescues: Array[RescueNode*])
  |||+NotEqualNode  #!= expressions
  |||+MatchNode     #=~ expressions
  |||+NotMatchNode  #!~ expressions
  |+LiteralNode     #literal symbols, integers
  ||                 (val: Numeric|Symbol|StringNode)
  |+StringNode      #literal strings
- |||                (Array[(String|Value)+])
+ |||                (Array[(String|Expr)+])
  ||+HereDocNode    #here documents
  |+StringCatNode   #adjacent strings are catenated ("foo" "bar" == "foobar")
  ||                 (Array[StringNode+])
@@ -191,59 +186,63 @@ be pretty close.
  |+VarLikeNode     #nil,false,true,__FILE__,__LINE__,self
  ||                 (name: String)
  |+UnOpNode        #unary operators
- ||                 (op: String, val: Value)
+ ||                 (op: String, val: Expr)
  ||+UnaryStarNode  #unary star (splat)
  |||+DanglingStarNode  #unary star with no argument
  |||||                    (no attributes)
  ||||+DanglingCommaNode  #comma with no rhs
  ||                       (no attributes)
- |+ParenedNode     #ugly, parenthesized expressions and begin..end
- ||                 (body: Value)  -OR-      (parentheses)
- ||                 (body: Value|nil, rescues: Array[RescueNode*], 
- ||                  else: Value|nil, ensure: Value|nil)  (begin...end and rescue as operator)
+ |+BeginNode       #begin..end block
+ ||                 (body: Expr|nil, rescues: Array[RescueNode*], 
+ ||                  else: Expr|nil, ensure: Expr|nil) 
+ |+ParenedNode     #parenthesized expressions 
+ ||                 (body: Expr)
  |+AssignNode      #assignment (including eg +=)
- ||                 (left:AssigneeList|LValue, op:String ,right:Array[Value*]|Value)
+ ||                 (left:AssigneeList|LValue, op:String ,right:Array[Expr*]|Expr)
  |+AssigneeList    #abstract, comma-delimited list of assignables
  |||                (Array[LValue*])
  ||+NestedAssign   #nested lhs, in parentheses
  ||+MultiAssign    #regular top-level lhs
  ||+BlockParams    #block formal parameter list
  |+CallSiteNode    #abstract, method calls
- |||                (receiver: Value|nil, name: String, params: nil|Array[Value+,UnaryStarNode?,UnAmpNode?], 
- |||                 block_params: BlockParams, block: Value)
+ |||                (receiver: Expr|nil, name: String, params: nil|Array[Expr+,UnaryStarNode?,UnAmpNode?], 
+ |||                 block_params: BlockParams, block: Expr)
  ||+CallNode       #normal method calls
  ||+KWCallNode     #keywords that look (more or less) like methods (BEGIN END yield return break continue next)
  |+ArrayLiteralNode #[..] 
- ||                 (Array[Value*])
+ ||                 (Array[Expr*])
  |+IfNode          #if..end and unless..end
- ||                 (if: Value, then: Value|nil, elsifs: Array[ElsifNode+]|Nil, else: Value|nil)
+ ||                 (if: Expr, then: Expr|nil, elsifs: Array[ElsifNode+]|Nil, else: Expr|nil)
  |+LoopNode        #while..end and until..end
- ||                 (while: Value, do: Value:nil)
+ ||                 (while: Expr, do: Expr:nil)
  |+CaseNode        #case..end
- ||                 (case: Value|nil, whens: Array[WhenNode*], else: Value|nil)
+ ||                 (case: Expr|nil, whens: Array[WhenNode*], else: Expr|nil)
  |+ForNode         #for..end
- ||                 (for: LValue, in: Value, do: Value|nil)
+ ||                 (for: LValue, in: Expr, do: Expr|nil)
  |+HashLiteralNode #{..}
- ||                 (Array[Value*]) (size must be even)
+ ||                 (Array[Expr*]) (size must be even)
  |+TernaryNode     # ? .. :
- ||                 (if: Value, then: Value, else: Value)
+ ||                 (if: Expr, then: Expr, else: Expr)
  |+MethodNode      #def..end
- ||                 (receiver:Value|nil, name:String, 
- ||                  params:Array[VarNameToken*,AssignNode*,UnaryStarNode?,UnAmpNode?]|nil, 
- ||                  body: Value|nil, rescues: Array[RescueNode+]|nil, else: Value|nil, ensure: Value|nil)
+ ||                 (receiver:Expr|nil, name:String, 
+ ||                  params:Array[VarNode*,AssignNode*,UnaryStarNode?,UnAmpNode?]|nil, 
+ ||                  body: Expr|nil, rescues: Array[RescueNode+]|nil, else: Expr|nil, ensure: Expr|nil)
  |+AliasNode       #alias foo bar
- ||                 (to: String|VarNameToken|StringNode, from: String|VarNameToken|StringNode)
+ ||                 (to: String|VarNode|StringNode, from: String|VarNode|StringNode)
  |+UndefNode       #undef foo
  ||                 (Array[String|StringNode+])
  |+NamespaceNode #abstract
  ||+ModuleNode     #module..end
- |||                (name: VarNameToken|ConstantNode, body: Value|nil)
+ |||                (name: VarNode|ConstantNode, body: Expr|nil
+ |||                 rescues: Array[RescueNode+]|nil, else: Expr|nil, ensure: Expr|nil)
  ||+ClassNode      #class..end
- |||                (name: VarNameToken|ConstantNode, parent: Value|nil, body: Value|nil)
+ |||                (name: VarNode|ConstantNode, parent: Expr|nil, body: Expr|nil,
+ |||                 rescues: Array[RescueNode+]|nil, else: Expr|nil, ensure: Expr|nil)
  ||+MetaClassNode  #class<<x..end
- ||                 (val: Value, body: Value|nil)
+ ||                 (val: Expr, body: Expr|nil,
+ ||                  rescues: Array[RescueNode+]|nil, else: Expr|nil, ensure: Expr|nil)
  |+BracketsGetNode #a[b]
- |                  (receiver: Value, params: Array[Value+,UnaryStarNode?]|nil)
+ |                  (receiver: Expr, params: Array[Expr+,UnaryStarNode?]|nil)
  |
  ErrorNode         #mixed in to nodes with a syntax error
  +MisparsedNode    #mismatched braces or begin..end or the like
