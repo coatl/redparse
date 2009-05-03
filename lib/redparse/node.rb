@@ -1850,6 +1850,9 @@ end
       def else; nil end
       def ensure; nil end
 
+      def left; body end
+      def right; rescues.action end
+
       alias ensure_ ensure
       alias else_ else
       alias empty_ensure ensure
