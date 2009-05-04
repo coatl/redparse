@@ -185,7 +185,7 @@ inputs.each_index{|i|
     when :lisp
       puts tree.to_lisp
     when :unparse
-      puts tree.unparse({})
+      puts tree.unparse
     when :parsetree
       tree=tree.to_parsetree
       hack=tree.dup

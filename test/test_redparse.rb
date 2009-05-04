@@ -3632,7 +3632,8 @@ EOS
 
       return unless nodes
       begin
-        reparsed= RedParse.new(nodes.unparse({}),"-").parse
+        unparsed=nodes.unparse
+        reparsed= RedParse.new(unparsed,"-").parse
         assert_equal nodes.delete_extraneous_ivars!,
                      reparsed.delete_extraneous_ivars!
       rescue Exception
