@@ -4358,7 +4358,7 @@ end
       def unparse o=default_unparse_options
         result="class #{name.unparse o}"
         result+=" < #{parent.unparse o}" if parent
-        result+="\n#{body&&body.unparse(o)}\nend"
+        result+=unparse_nl(body||self,o)+"#{unparse_and_rescues(o)};end"
         return result
       end
 
