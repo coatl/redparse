@@ -332,7 +332,7 @@ class RedParse
 
       public :remove_instance_variable
 
-      def unparse o; ident end
+      def unparse o=default_unparse_options; ident end
       alias lhs_unparse unparse
 
       def delete_extraneous_ivars!
@@ -961,7 +961,7 @@ class RedParse
 
       public :remove_instance_variable
 
-      def unparse o; ident end
+      def unparse o=default_unparse_options; ident end
       alias lhs_unparse unparse
 
 #      def delete_extraneous_ivars!
@@ -1049,7 +1049,7 @@ end
       end
       alias opnode_parsetree parsetree
 
-      def unparse o
+      def unparse o=default_unparse_options
         result=l=left.unparse(o)
         result+=" " if /\A!|a-z_/i===op
         result+=op
@@ -1057,7 +1057,7 @@ end
         result+=right.unparse(o)      
       end
 
-#      def unparse o; raw_unparse o end
+#      def unparse o=default_unparse_options; raw_unparse o end
     end
 
     module MatchNode
@@ -1227,7 +1227,7 @@ end
         ]
       end
 
-      def unparse o
+      def unparse o=default_unparse_options
         map{|ss| ss.unparse(o)}.join ' '      
       end
     end
@@ -1240,7 +1240,7 @@ end
          @module=ArrowOpNode
        end
 
-       def unparse(o)
+       def unparse(o=default_unparse_options)
          left.unparse(o)+" => "+right.unparse(o)
        end
      end
@@ -1277,7 +1277,7 @@ end
         @as_flow_control=true
       end
 
-      def unparse(o)
+      def unparse(o=default_unparse_options)
         result=left.unparse(o)+'..'
         result+='.' if exclude_end?
         result << right.unparse(o)
@@ -1331,7 +1331,7 @@ end
         parsetree(o)
       end
 
-      def unparse o
+      def unparse o=default_unparse_options
         op=op()
         op=op.chomp "@"
         result=op
@@ -1357,7 +1357,7 @@ end
 
       identity_param :lvalue, nil, true
 
-      def unparse o
+      def unparse o=default_unparse_options
         "*"+val.unparse(o)      
       end
     end
@@ -1373,7 +1373,7 @@ end
       def parsetree(o); [:splat] end
       alias lvalue_parsetree parsetree
 
-      def unparse(o); "* "; end
+      def unparse(o=nil); "* "; end
     end
 
     class DanglingCommaNode<DanglingStarNode
@@ -1387,7 +1387,7 @@ end
       end
       alias parsetree lvalue_parsetree
 
-      def unparse o;  "";   end
+      def unparse o=default_unparse_options;  "";   end
     end
 
     class ConstantNode<ListOpNode
@@ -1401,7 +1401,7 @@ end
         }
         super(*args)  
       end
-      def unparse(o)
+      def unparse(o=default_unparse_options)
         if Node===first
           result=dup
           result[0]= first.unparse(o)#.gsub(/\s+\Z/,'')
@@ -1607,7 +1607,7 @@ end
       end
       attr_writer :lvalue
 
-      def unparse(o)
+      def unparse(o=default_unparse_options)
         if size==1
           "("+(body&&body.unparse(o))+")"
         else
@@ -1664,7 +1664,7 @@ end
 
       identity_param :lvalue, nil, true
 
-      def unparse(o)
+      def unparse(o=default_unparse_options)
           "("+(body&&body.unparse(o))+")"
       end
     end
@@ -1784,7 +1784,7 @@ end
       end
 #      attr_accessor :lvalue
 
-      def unparse(o)
+      def unparse(o=default_unparse_options)
           result="begin "
           body&&result+= body.unparse(o)
           result+="\n"
@@ -1862,7 +1862,7 @@ end
         return nil 
       end
 
-      def unparse(o)
+      def unparse(o=default_unparse_options)
           result= body.unparse(o)
           result+=" rescue "
           result+=rescues.first.action.unparse(o)
@@ -2119,7 +2119,7 @@ end
         end
       end
 
-      def unparse(o)
+      def unparse(o=default_unparse_options)
         result=lhs.lhs_unparse(o)
         result="(#{result})" if defined? @lhs_parens
         result+op+
@@ -2186,7 +2186,7 @@ end
         replace data
       end
 
-      def  unparse o
+      def  unparse o=default_unparse_options
         map{|lval| lval.lhs_unparse o}.join(', ')      
       end
 
@@ -2273,7 +2273,7 @@ end
 #      def parsetree(o)
 #        [:masgn, *super]
 #      end
-      def unparse o
+      def unparse o=default_unparse_options
         "("+super+")"
       
       end
@@ -2294,7 +2294,7 @@ end
         super(data)
       end
 
-      def unparse o
+      def unparse o=default_unparse_options
         if defined? @had_parens
           "|("+super+")|" 
         else
@@ -2338,7 +2338,7 @@ end
     end
  
     module KeywordOpNode
-      def unparse o
+      def unparse o=default_unparse_options
         [left.unparse(o),' ',op,' ',right.unparse(o)].to_s
       end
     end
@@ -2377,7 +2377,7 @@ end
 
       #these 3 methods are defined in RawOpNode too, hence these
       #definitions are ignored. grrrrrrr.
-      def unparse o
+      def unparse o=default_unparse_options
         result=''
       
         each_with_index{|expr,i|
@@ -2597,7 +2597,7 @@ end
 
       def real_parens; !@not_real_parens end
 
-      def unparse o
+      def unparse o=default_unparse_options
         fail if block==false
         result=[
          receiver&&receiver.unparse(o)+'.',name,      
@@ -2898,7 +2898,7 @@ end
         super()
       end
 
-      def unparse o
+      def unparse o=default_unparse_options
         ''      
       end
 
@@ -3452,7 +3452,7 @@ end
       Inf="999999999999999999999999999999999.9e999999999999999999999999999999999999"
       Nan="****shouldnt ever happen****"
 
-      def unparse o
+      def unparse o=default_unparse_options
         val=val()
         case val 
         when StringNode #ugly hack
@@ -3521,7 +3521,7 @@ end
         name
       end
 
-      def unparse o
+      def unparse o=default_unparse_options
         name      
       end
 
@@ -3619,7 +3619,7 @@ end
 
       attr_reader :empty_else
 
-      def unparse o
+      def unparse o=default_unparse_options
         result=@reverse ? "unless " : "if "
         result+="#{condition.unparse o}\n"
         result+="#{consequent.unparse(o)}\n" if consequent
@@ -3742,7 +3742,7 @@ end
 
       def image; "(#{loopword})" end
 
-      def unparse o
+      def unparse o=default_unparse_options
         [@reverse? "until " : "while ",
          condition.unparse(o), "\n",
          body&&body.unparse(o),
@@ -3945,7 +3945,7 @@ end
 
       def image; "({})" end
 
-      def unparse o
+      def unparse o=default_unparse_options
         result=''
         result << "{" unless @no_braces
         (0...size).step(2){|i| 
@@ -3975,7 +3975,7 @@ end
 
       def image; "(?:)" end
 
-      def unparse o
+      def unparse o=default_unparse_options
         "#{condition.unparse o} ? #{consequent.unparse o} : #{otherwise.unparse o}"      
       end
 
@@ -4210,7 +4210,7 @@ end
         super(to,from)
       end
 
-      def unparse o
+      def unparse o=default_unparse_options
         "alias #{str_unparse to,o} #{str_unparse from,o}"      
       end
 
@@ -4237,7 +4237,7 @@ end
 
       def image; "(undef)" end
 
-      def unparse o
+      def unparse o=default_unparse_options
         "undef #{map{|name| str_unparse name,o}.join(', ')}"
       end
 
@@ -4320,7 +4320,7 @@ end
 
       def image; "(class #{name})" end
 
-      def unparse o
+      def unparse o=default_unparse_options
         result="class #{name.unparse o}"
         result+=" < #{parent.unparse o}" if parent
         result+="\n#{body&&body.unparse(o)}\nend"
@@ -4420,7 +4420,7 @@ end
         super(exlist,rescuehdr.varname,action)
       end
 
-      def unparse o
+      def unparse o=default_unparse_options
         xx=exceptions.map{|exc| exc.unparse o}.join(',')
         "rescue #{xx} #{varname&&'=> '+varname.lhs_unparse(o)}\n#{action&&action.unparse(o)}\n"
       end
@@ -4472,7 +4472,7 @@ end
 
       def image; "(#{receiver.image}.[])" end
 
-      def unparse o
+      def unparse o=default_unparse_options
         [ receiver.unparse(o).sub(/\s+\Z/,''),
           '[',
           params&&params.map{|param| param.unparse o}.join(','),
