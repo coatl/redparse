@@ -4333,7 +4333,7 @@ end
           name=name.parsetree(o)
         end
         result=[:module, name, scope=[:scope, ]]
-        body&&scope << body.parsetree(o)
+        scope << parsetree_and_rescues(o) if body
         return result
       end
     end
@@ -4381,7 +4381,7 @@ end
           name=name.parsetree(o)
         end
         result=[:class, name, parent&&parent.parsetree(o), scope=[:scope,]]
-        body&&scope << body.parsetree(o)
+        scope << parsetree_and_rescues(o) if body
         return result
       end
     end
@@ -4411,7 +4411,7 @@ end
 
       def parsetree(o)
         result=[:sclass, expr.parsetree(o), scope=[:scope]]
-        body&&scope << body.parsetree(o)
+        scope << parsetree_and_rescues(o) if body
         return result
       end
     end
