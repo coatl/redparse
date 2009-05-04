@@ -1613,11 +1613,11 @@ end
         else
           result="begin "
           body&&result+= body.unparse(o)
-          result+="\n"
+          result+=unparse_nl(rescues.first,o)
           rescues.each{|resc| result+=resc.unparse(o) }
-          result+="\nensure "+ensure_.unparse(o) if ensure_
-          result+="\nelse "+else_.unparse(o) if else_
-          result+="\nend"
+          result+=unparse_nl(ensure_,o)+"ensure "+ensure_.unparse(o) if ensure_
+          result+=unparse_nl(else_,o)+"else "+else_.unparse(o) if else_
+          result+=";end"
         end
       end
     end
@@ -2596,7 +2596,7 @@ end
         result=[
          receiver&&receiver.unparse(o)+'.',name,      
          real_parens ? '(' : (' ' if params),
-         params&&params.map{|param| param.unparse(o)}.join(', '),
+         params&&params.map{|param|  unparse_nl(param,o,'',"\\\n")+param.unparse(o)  }.join(', '),
          real_parens ? ')' : nil,
         
          block&&[
@@ -3647,12 +3647,12 @@ end
 
       def unparse o=default_unparse_options
         result=@reverse ? "unless " : "if "
-        result+="#{condition.unparse o}\n"
-        result+="#{consequent.unparse(o)}\n" if consequent
-        result+=elsifs.map{|n| n.unparse(o)}.to_s if elsifs
-        result+="else "+else_.unparse(o)+"\n" if else_
-        result+="else \n" if defined? @empty_else
-        result+="end"
+        result+="#{condition.unparse o}"
+        result+=unparse_nl(consequent,o)+"#{consequent.unparse(o)}" if consequent
+        result+=unparse_nl(elsifs.first,o)+elsifs.map{|n| n.unparse(o)}.to_s if elsifs
+        result+=unparse_nl(else_,o)+"else "+else_.unparse(o) if else_
+        result+=";else " if defined? @empty_else
+        result+=";end"
         return result
       end
 
@@ -3770,9 +3770,9 @@ end
 
       def unparse o=default_unparse_options
         [@reverse? "until " : "while ",
-         condition.unparse(o), "\n",
+         condition.unparse(o), unparse_nl(body||self,o),
          body&&body.unparse(o),
-         "\nend"
+         ";end"
         ].to_s
       end
 
@@ -3819,8 +3819,8 @@ end
         result="case #{condition&&condition.unparse(o)}"+
                whens.map{|wh| wh.unparse o}.to_s
 
-        result += "else "+otherwise.unparse(o)+"\n" if otherwise
-        result += "end"
+        result += unparse_nl(otherwise,o)+"else "+otherwise.unparse(o) if otherwise
+        result += ";end"
 
         return result
       end
@@ -3858,8 +3858,7 @@ end
         result+=condition.class==Array ? 
                   condition.map{|cond| cond.unparse(o)}.join(',') : 
                   condition.unparse(o) 
-        result+="\n"
-        result+=consequent.unparse(o)+"\n" if consequent
+        result+=unparse_nl(consequent,o)+consequent.unparse(o) if consequent
         result
       end
 
@@ -3974,7 +3973,7 @@ end
         result=''
         result << "{" unless @no_braces
         (0...size).step(2){|i| 
-          result<<
+          result<< unparse_nl(self[i],o,'')+
             self[i].unparse(o)+' => '+
             self[i+1].unparse(o)+', '
         }
@@ -4451,7 +4450,8 @@ end
 
       def unparse o=default_unparse_options
         xx=exceptions.map{|exc| exc.unparse o}.join(',')
-        "rescue #{xx} #{varname&&'=> '+varname.lhs_unparse(o)}\n#{action&&action.unparse(o)}\n"
+        unparse_nl(self,o)+
+        "rescue #{xx} #{varname&&'=> '+varname.lhs_unparse(o)}#{unparse_nl(action||self,o)}#{action&&action.unparse(o)}"
       end
 
       def parsetree(o)
