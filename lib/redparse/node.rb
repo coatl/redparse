@@ -3176,7 +3176,8 @@ end
 #        first[/\A(?:\s|\v)+/]='' if /\A(?:\s|\v)/===first #uh-oh, changes first
         proxy.each{|x|
           if String===x
-            x=x[/\A(?:\s|\v)+(.*)\Z/,1] if /\A[\s\v]/===x
+#            x=x[/\A(?:\s|\v)+(.*)\Z/,1] if /\A[\s\v]/===x
+if false
             #split on ws preceded by an even # of backslashes or a non-backslash, non-ws char
             #this ignores backslashed ws
             #save the thing that preceded the ws, it goes back on the token preceding split
@@ -3186,6 +3187,24 @@ end
               chunks << #strtok.translate_escapes \
                 double_chunks[i,2].to_s #.gsub(/\\([\s\v\\])/){$1}
             }
+else
+            #split on ws, then ignore ws preceded by an odd number of esc's
+            #esc is \ in squote word array, \ or \c or \C- or \M- in dquote
+            chunks_and_ws=x.split(/([\s\v]+)/,-1)
+            start=chunks_and_ws.size; start-=1 if start&1==1
+            chunks=[]
+            i=start+2; 
+            while (i-=2)>=0 
+              ch=chunks_and_ws[i]||""
+              if i<chunks_and_ws.size and ch.match(@char=="[" ? /#{SQ_ODD}\Z/omx : /#{DQ_ODD}\Z/omx)
+                ch<< chunks_and_ws[i+1][0,1]
+                if chunks_and_ws[i+1].size==1
+                  ch<< chunks.shift
+                end
+              end
+              chunks.unshift ch
+            end
+end
 
             chunk1= chunks.shift          
             if chunk1.empty?
