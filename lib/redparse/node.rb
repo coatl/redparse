@@ -3021,9 +3021,11 @@ end
 
       ESCAPABLES={}
       EVEN_NUM_BSLASHES=/(^|[^\\])((?:\\\\)*)/
-      def unparse o
-      
-        [@open,unparse_interior(o),@close,@modifiers].to_s  
+      def unparse o=default_unparse_options
+        o[:linenum]+=@open.count("\n")
+        result=[@open,unparse_interior(o),@close,@modifiers].to_s  
+        o[:linenum]+=@close.count("\n")
+        return result
       end
 
       def escapable open=@open,close=@close
