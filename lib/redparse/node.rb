@@ -1786,14 +1786,8 @@ end
 
       def unparse(o=default_unparse_options)
           result="begin "
-          body&&result+= body.unparse(o)
-          result+="\n"
-          rescues.each{|resc| result+=resc.unparse(o) }
-          result+="\nelse "+else_.unparse(o) if else_
-          result+="\nelse" if @empty_else
-          result+="\nensure "+ensure_.unparse(o) if ensure_
-          result+="\nensure" if @empty_ensure
-          result+="\nend"
+          result+=unparse_and_rescues(o)
+          result+=";end"
       end
     end
 
