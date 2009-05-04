@@ -1493,6 +1493,7 @@ end
       attr_writer :lvalue
     end
 
+=begin
     class OldParenedNode<ValueNode
       param_names :body, :rescues, :else!, :ensure!
       def initialize(*args)
@@ -1621,6 +1622,7 @@ end
         end
       end
     end
+=end
 
     class ParenedNode<ValueNode
       param_names :body #, :rescues, :else!, :ensure!
