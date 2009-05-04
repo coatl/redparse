@@ -4352,12 +4352,21 @@ end
     end
 
     class MetaClassNode<NamespaceNode
-      param_names :classword_, :leftleft_, :val, :semi_, :body, :rescues,:else!,:ensure!, :endword_
+      param_names :val, :body, :rescues,:else!,:ensure!
+      def initialize classword, leftleftword, val, semiword, body, rescues,else_,ensure_, endword
+        else_=else_.val if else_
+        ensure_=ensure_.val if ensure_
+        super(val,body,rescues,else_,ensure_)
+      end 
+
       alias expr val
       alias object val
       alias obj val
       alias receiver val
       alias name val
+
+      alias ensure_ ensure
+      alias else_ else
 
       def image; "(class<<)" end
 
