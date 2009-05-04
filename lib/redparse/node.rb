@@ -3036,7 +3036,7 @@ end
         escapable             
       end
 
-      def unparse_interior o,open=@open,close=@close
+      def unparse_interior o,open=@open,close=@close,escape=nil
         escapable=escapable(open,close)
         result=map{|substr|
           if String===substr
