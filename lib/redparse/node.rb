@@ -3565,8 +3565,8 @@ end
 
       def image; "([])" end
 
-      def unparse o
-        "["+map{|item| item.unparse o}.join(', ')+"]"
+      def unparse o=default_unparse_options
+        "["+map{|item| unparse_nl(item,o,'')+item.unparse(o)}.join(', ')+"]"
       end
 
       def parsetree(o)
@@ -3802,8 +3802,8 @@ end
 
       attr_reader :empty_else
 
-      def unparse o
-        result="case #{condition&&condition.unparse(o)}\n"+
+      def unparse o=default_unparse_options
+        result="case #{condition&&condition.unparse(o)}"+
                whens.map{|wh| wh.unparse o}.to_s
 
         result += "else "+otherwise.unparse(o)+"\n" if otherwise
@@ -3840,8 +3840,8 @@ end
 
       def image; "(when)" end
 
-      def unparse o
-        result="when "
+      def unparse o=default_unparse_options
+        result=unparse_nl(self,o)+"when "
         result+=condition.class==Array ? 
                   condition.map{|cond| cond.unparse(o)}.join(',') : 
                   condition.unparse(o) 
@@ -3894,11 +3894,10 @@ end
 
       def image; "(for)" end
 
-      def unparse o
-        "
-         for #{iterator.lhs_unparse(o)[1...-1]} in #{enumerable.unparse o}
-           #{body&&body.unparse(o)}
-         end"
+      def unparse o=default_unparse_options
+        result=unparse_nl(self,o)+"         for #{iterator.lhs_unparse(o)[1...-1]} in #{enumerable.unparse o}"
+        result+=unparse_nl(body,o)+"           #{body.unparse(o)}" if body
+        result+=";end"
       end
 
       def parsetree(o)
@@ -4058,19 +4057,23 @@ end
         "(def #{receiver.image.+('.') if receiver}#{name})"
       end
 
-      def unparse o
-        result=
-         "def #{receiver&&receiver.unparse(o)+'.'}#{name}#{
-           args&&'('+args.map{|arg| arg.unparse o}.join(',')+')'
-        }
-           #{body&&body.unparse(o)}
-        "
+      def unparse o=default_unparse_options
+        result=[
+         "def ",receiver&&receiver.unparse(o)+'.',name,
+           args ? '('+args.map{|arg| arg.unparse o}.join(',')+')' : unparse_nl(body||self,o)
+        ]
+        result<<unparse_and_rescues(o)
+=begin
+        body&&result+=body.unparse(o)
+
         result+=rescues.map{|resc| resc.unparse o}.to_s 
         result+="else #{else_.unparse o}\n"  if else_
         result+="else\n" if @empty_else
         result+="ensure #{ensure_.unparse o}\n"  if ensure_
         result+="ensure\n" if @empty_ensure
-        result+="end"
+=end
+        result<<";end"
+        result.to_s
       end
 
       def to_lisp
@@ -4286,8 +4289,8 @@ end
 
       def image; "(module #{name})" end
 
-      def unparse o
-        "module #{name.unparse o}\n#{body&&body.unparse(o)}\nend"
+      def unparse o=default_unparse_options
+        "module #{name.unparse o}#{unparse_nl(body||self,o)}#{unparse_and_rescues(o)};end"
       end
 
       def parent; nil end
@@ -4383,8 +4386,8 @@ end
 
       def image; "(class<<)" end
 
-      def unparse o
-        "class << #{obj.unparse o}\n#{body&&body.unparse(o)}\nend"
+      def unparse o=default_unparse_options
+        "class << #{obj.unparse o}#{unparse_nl(body||self,o)}#{unparse_and_rescues(o)};end"
       end
 
       def parsetree(o)
