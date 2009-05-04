@@ -3042,12 +3042,13 @@ end
         escapable=escapable(open,close)
         result=map{|substr|
           if String===substr
-#            substr.gsub!( /\\+/ )do
-#              result=$&*2 
-#              result.chomp! '\\' if $&.size&1==1
-#              result
-#            end
-#            substr.gsub! escapable do '\\'+$& end
+
+            #hack: this is needed for here documents only, because their
+            #delimiter is changing.
+            substr.gsub!(escape){|ch| ch[0...-1]+"\\"+ch[-1,1]} if escape
+
+            o[:linenum]+=substr.count("\n") if o[:linenum]
+
             substr
           else
             ['#{',substr.unparse(o),'}']
