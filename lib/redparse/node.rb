@@ -3399,8 +3399,18 @@ end
         StringNode===other
       end
 
-      def unparse o
-        [@char,(unparse_interior o,@char,@char),@char].to_s
+      def unparse o=default_unparse_options
+        inner=unparse_interior o,@char,@char,
+                case @char
+                when "'" #single-quoted here doc is a special case; 
+                         #\ and ' are not special within it
+                         #(and therefore always escaped if converted to normal squote str)
+                         /['\\]/ 
+                when '"'; /#{DQ_EVEN}"/
+                when "`"; /#{DQ_EVEN}`/
+                else fail
+                end
+        [@char, inner, @char].to_s
       end
     end
 
