@@ -3129,8 +3129,9 @@ end
             data[i].endline=token.endline
           else
             #parse the token list in the string inclusion
-            klass=Thread.current[:$RedParse_parser].class
-            data[i]=klass.new(tokens, "(string inclusion)").parse
+            parser=Thread.current[:$RedParse_parser]
+            klass=parser.class
+            data[i]=klass.new(tokens, "(string inclusion)",1,[],{:rubyversion=>parser.rubyversion}).parse
           end
         } #if data
 #        was_nul_header= (String===data.first and data.first.empty?) #and o[:quirks]

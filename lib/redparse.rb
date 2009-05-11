@@ -2690,12 +2690,13 @@ if defined? END_ATTACK
   include Reducer
 end
 
-  def initialize(input,name="(eval)",line=1,lvars=[])
+  def initialize(input,name="(eval)",line=1,lvars=[],options={:rubyversion=>1.8})
+    @rubyversion=options[:rubyversion]
     if Array===input
       def input.get1token; shift end
       @lexer=input
     else
-      @lexer=RubyLexer.new(name,input,line)
+      @lexer=RubyLexer.new(name,input,line,0,:rubyversion=>@rubyversion)
       lvars.each{|lvar| @lexer.localvars[lvar]=true }
     end
     @filename=name
@@ -2713,6 +2714,7 @@ end
   end
 
   attr_accessor :lexer
+  attr :rubyversion
 
   def get_token(recursing=false)
     unless @moretokens.empty? 
