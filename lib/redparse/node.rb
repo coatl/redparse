@@ -539,11 +539,18 @@ class RedParse
       def depthwalk(parent=nil,index=nil,subindex=nil,&callback)
         each_with_index{|datum,i|
           case datum
-          when Node; datum.walk(self,i,&callback)
-          when Array;
+          when Node
+            datum.depthwalk(self,i,&callback)
+          when Array
             datum.each_with_index{|x,j| 
-              Node===x and x.walk(self,i,j,&callback)
+              if Node===x
+                x.depthwalk(self,i,j,&callback) 
+              else 
+                callback[self,i,j,x]
+              end
             }
+          else 
+            callback[self, i, nil, datum]
           end
         }
         callback[ parent,index,subindex,self ]
