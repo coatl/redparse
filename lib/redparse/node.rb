@@ -223,8 +223,8 @@ class RedParse
       warn "KeywordToken#as/infix should be in rubylexer"
       alias old_as as
       def as
-        if comma_type
-          comma_type.to_s+","
+        if tag and ident[/^[,*&]$/]
+          tag.to_s+ident
         else old_as
         end
       end
@@ -235,18 +235,19 @@ class RedParse
     end
 
     class OperatorToken
-      identity_param :ident, *%w[+@ -@ &@ *@ ! ~ not defined? * ** + - < << <= <=> > >= >> =~ == ===
-                                 % / & | ^ != !~ = => :: ? : , ; . .. ... *= **= <<= >>= &&= ||= && ||
+      identity_param :ident, *%w[+@ -@ unary& unary* lhs* ! ~ not defined? * ** + - 
+                                 < << <= <=> > >= >> =~ == ===
+                                 % / & | ^ != !~ = => :: ? : , ; . .. ... 
+                                 *= **= <<= >>= &&= ||= && ||
                                  &= |= ^= %= /= -= += and or
-                              ]+RubyLexer::OPORBEGINWORDLIST+%w<; rhs, lhs, call, array, param, rescue3>
+                              ]+RubyLexer::OPORBEGINWORDLIST+%w<; lhs, rhs, rescue3>
       #identity_param :unary, true,false,nil
-      #identity_param :comma_type, :lhs,:rhs,:param,:call,:array,nil
-      attr_accessor :comma_type 
+      #identity_param :tag, :lhs,:rhs,:param,:call,:array,:block,:nested,nil
 
       #this should be in rubylexer
       def as
-        if comma_type
-          comma_type.to_s+","
+        if tag and ident[/^[,*&]$/]
+          tag.to_s+ident
         end
       end
     end
@@ -1300,9 +1301,9 @@ end
     class UnOpNode<ValueNode
       param_names(:op,:val)
       def initialize(op,val)
-#        /^[&*+-]$/===op.ident and op.ident+="@"
         op=op.ident
-        /^(!|not)$/===op and 
+        /([&*])$/===op and op=$1+"@"
+        /^(?:!|not)$/===op and 
           val.respond_to? :special_conditions! and 
             val.special_conditions!
         super(op,val)
@@ -1353,6 +1354,11 @@ end
     end
 
     class UnaryStarNode<UnOpNode
+      def initialize(op,val)
+        op.ident="*@"
+        super(op,val)
+      end
+
       def parsetree(o)
         [:splat, val.rescue_parsetree(o)]
       end

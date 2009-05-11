@@ -2145,7 +2145,8 @@ end
 
     "?"=>106, # ":"=>106,    #not sure what to do with ":"
   
-    "*@"=>105, "&@"=>105, #unary * and & operators
+    "unary*"=>105, "unary&"=>105, #unary * and & operators
+      "lhs*"=>105,  "rhs*"=>105,  #this should remain above =, but other unary stars are below it
 
     "="=>104,    "%="=>104,   "/="=>104,   "-="=>104,    "+="=>104,
     "|="=>104,   "&="=>104,   ">>="=>104,  "<<="=>104,   "*="=>104,
@@ -2157,12 +2158,14 @@ end
     "rescue3"=>102,
 
     "=>"=>101,
-    "rhs,"=>100, "lhs,"=>100, "call,"=>100, "array,"=>100, "param,"=>100,
+    "lhs,"=>100, 
+           "rhs,"=>100, #"call,"=>100, "array,"=>100, "param,"=>100,
     ","=>100,
       #the 'precedence' of comma is somewhat controversial. it actually has
       #several different precedences depending on which kind of comma it is.
       #the precedence of , is higher than :, => and the assignment operators 
-      #in certain contexts.
+      #in certain (lhs) contexts. therefore, the precedence of lhs, should 
+      #really be above =.
 
     #"unary" prefix function names seen has operators have this precedence
     #but, rubylexer handles precedence of these and outputs fake parens 
@@ -2277,7 +2280,8 @@ end
 
   UNOP=
   (OperatorToken|KeywordToken)&-{  #sppflt! KeywordToken here is a hack too
-    :ident=>/^[*&+-]@$/,
+#    :ident=>/^(?:[+-]@|unary[&*]|(?:lhs|rhs)[*])$/,
+    :ident=>/^(?:[+-]@|unary[&])$/,
     #:unary =>true,
   }|
   (OperatorToken|KeywordToken)&-{  #sppflt! KeywordToken here is a hack too
@@ -2457,17 +2461,17 @@ end
     [
     -[UNOP, Expr, lower_op]>>UnOpNode,
     -[DEFOP, ParenedNode]>>UnOpNode,
-    -[Op('*@'), ValueNode, lower_op]>>UnaryStarNode,
+    -[Op(/^(?:unary|lhs|rhs)\*$/), ValueNode, lower_op]>>UnaryStarNode,
 
-    -[Op('=',true)|KW(/^(rescue|when|\[)$/)|Op(/^(call|array|param|rhs),$/,true),
-      Op('*@'), ValueNode, (MODIFYASSIGNOP|Op('=',true)).la]>>:shift,
+    -[Op('=',true)|KW(/^(rescue|when|\[)$/)|Op(/,$/,true),
+      Op(/^(?:unary|rhs)\*$/), ValueNode, (MODIFYASSIGNOP|Op('=',true)).la]>>:shift,
     -[MethNameToken|FUNCLIKE_KEYWORD, KW('('), 
-      Op('*@'), ValueNode, (MODIFYASSIGNOP|Op('=',true)).la]>>:shift,
+      Op(/^(?:unary|rhs)\*$/), ValueNode, (MODIFYASSIGNOP|Op('=',true)).la]>>:shift,
     #star should not be used in an lhs if an rhs or param list context is available to eat it.
     #(including param lists for keywords such as return,break,next,rescue,yield,when)
 
     #hmmm.... | in char classes below looks useless (predates GoalPostToken)
-    -[Op('*@'), (GoalPostToken|Op(/,$/,true)|KW(/^(in|[=)|;])$/)).la]>>DanglingStarNode, #dangling *
+    -[Op(/^(?:unary|lhs)\*$/), (GoalPostToken|Op(/,$/,true)|KW(/^(in|[=)|;])$/)).la]>>DanglingStarNode, #dangling *
     -[Op(/,$/,true), (GoalPostToken|KW(/^(in|[=)|;])$/)).la]>> #dangling ,
       stack_monkey("DanglingComma",1,DanglingCommaNode){|stack| 
         dcomma=DanglingCommaNode.new
@@ -2694,7 +2698,7 @@ end
     @min_sizes={}
     @compiled_rules={}
     @moretokens=[]
-    @unary_or_binary_op=/^[-+&*]$/
+    @unary_or_binary_op=/^[-+]$/
 #    @rules=self.expaneded_RULES
     @precedence=self.PRECEDENCE
     @RIGHT_ASSOCIATIVE=self.RIGHT_ASSOCIATIVE
@@ -2739,7 +2743,7 @@ end
         redo
       
       when OperatorToken
-        if @unary_or_binary_op===result.ident and result.unary
+        if @unary_or_binary_op===result.ident and result.unary || result.tag==:unary
           result=result.dup
           result.ident+="@"
         end
