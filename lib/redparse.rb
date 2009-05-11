@@ -2384,6 +2384,7 @@ end
     left,dot=*stack.slice!(-4..-3)
     right=stack[-2]
  
+    right.startline=left.startline
     right.set_receiver! left
   }
 
@@ -2662,9 +2663,12 @@ end
    -[NumberToken&-{:negative=>true}, Op('**').la]>>
       stack_monkey("fix_neg_exp",2,Op("-@",true)){|stack|
         #neg_op.unary=true
-        stack[-2,0]=OperatorToken.new("-@",stack[-2].offset)
-        stack[-2].ident.sub!(/\A-/,'')
-        stack[-2].offset+=1
+        num=stack[-2]
+        op=OperatorToken.new("-@",num.offset)
+#        op.startline=num.startline
+        stack[-2,0]=op
+        num.ident.sub!(/\A-/,'')
+        num.offset+=1
       },
  
    #treat these keywords like (rvalue) variables.
@@ -2722,7 +2726,8 @@ end
       result=@lexer.get1token or break
       p result if rpt
 
-      #set token's line if wanted
+      #set token's line
+      result.startline= @endline||=1
       result.endline||=@endline if result.respond_to? :endline=
 
       if result.respond_to?(:as) and as=result.as

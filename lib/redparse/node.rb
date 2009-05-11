@@ -3126,7 +3126,7 @@ end
 
           if tokens.size==1 and VarNameToken===tokens.first
             data[i]=VarNode.new tokens.first
-            data[i].endline=endline
+            data[i].endline=token.endline
           else
             #parse the token list in the string inclusion
             klass=Thread.current[:$RedParse_parser].class
