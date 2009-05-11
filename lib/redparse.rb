@@ -2736,6 +2736,7 @@ end
         #result=make_kw(as,result.offset)
         #result.originally=result.ident
         if OperatorToken===result #or KeywordToken===result
+          result=result.dup
           result.ident=as
         else
           result=make_kw(as,result.offset)
