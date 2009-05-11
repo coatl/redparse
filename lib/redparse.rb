@@ -19,101 +19,6 @@
 #warn 'hacking up LOAD_PATH to include the latest RubyLexer!'
 #$:.unshift Dir.pwd+'/../rubylexer/lib', Dir.pwd+'/../rubylexer'
 
-#todo:
-#v test stack_monkey mods
-#v break ParenedNode into 2 (3?) classes
-#invent BEGINNode/ENDNode? (what other keywords?)
-#at least make BEGIN/END be KWCallNode
-#v replace VarNameToken with VarNode in parser
-#x convert raw rules to lists of vertex identities?
-#v DottedRule class
-#v ParserState class (set of DottedRules)
-#MultiReduce
-#MultiShift
-#v ParserState#evolve(identity)
-#v DottedRule#evolve(identity)
-#v RedParse#enumerate_states
-#v RedParse#enumerate_exemplars
-#v Node/Token.enumerate_exemplars
-#v Node/Token.identity_param
-#v rename #lvalue? => #lvalue
-#x likewise get rid of other oddly named identity params
-#v BareMethod,WITHCOMMAS,BEGINAFTEREQUALS should have predicate methods defined for them
-#v do something about BEGINAFTEREQUALS... lots predicates, ugly to identify
-#v document identity parameters in nodes and tokens
-#operator and keyword tokens have some identity_param variations remaining
-#xx all identity readers have to have writers as well (even if fake)
-#v sort out vertex identities... call identity_param in apt classes
-#convert identities<=>small ints
-#convert ParserStates<=>small ints
-#> lower_op/proc lookahead requires special action type with shift and reduce branches
-#x stack monkeys dictate some nodes appear in s/r table... which ones?
-#x some stack monkeys pushback nodes, action table must take take those as input
-#v retype GoalPostNode => GoalPostToken 
-#v then, pushback* should go away
-#build shift/reduce table
-#build goto table
-#split tables into shift/reduce and goto....?
-#integrate with c code generator
-#finish c code generator
-#code generator needs a way to deal with :
-  #backtracking (to more than 1 node/token???)
-  #actions (stack monkeys/lower_op)
-  #every reduce requires b/ting thru the lookahead
-  #garbage collection
-#sharing ruby objects between ruby code and generated c code
-#optimizer?
-#ruby code generator?
-#v what to do with :shift ?
-#what to do with :accept ?
-#what to do with :error ?
-#Node.create (used in generated code)
-#Node.create <= takes input directly from semantic stack
-#build Node.create param list generator
-#v names for rules, dotted rules, parser states, identities
-#x StartNode may be a problem... used by a stack monkey,
-  #to remove extra ;s from the very beginning of input.
-  #use a lexer hack instead?
-#v convert StartNode to StartToken?
-#convert names to numbers and numbers to names
-  #for states, rules, vertex identities
-  #in ruby and c (??)
-#x rule for HereBodyToken should be a lexer hack?
-#v stack monkeys should have names
-#how to handle a stack monkey whose 2nd parameter is not a single identity?
-#even reduces may not have enough info since 1 node class may have multiple identities
-#v RedParse constants should be named in inspect
-#v toplevel rule?
-#v semantic stack in generated c code should be a ruby array
-#x state stack should keep size of semantic stack at the time states are pushed, 
-  #so that i can restore semantic stack to former state when b-ting/reducing
-#urk, how do I know how many levels of state stack to pop when reducing?
-  #in looping error rules, just scan back in semantic stack for rule start
-  #in regular looping rules, tramsition to loop state is saved on a special stack
-    #so that at reduce time, we can b/t to that point for a start
-  #if rule contains only scalars, b/t is easy
-  #else rule contains scalars and optionals: 
-    #scan for rule start vertex starting at highest node 
-    #on semantic stack that can contain it and working downward.
-    #also, statically verify that relevent rules contain no collisions among first (how many?) matchers
-
-#is lookahead in code generator even useful? my tables have built-in lookahead....
-#need hack to declare nonerror looping matchers as irrevokable (for speed, when reducing)
-#v assignmentRhsNode needs an identity_param for with_commas
-#v -** fixup and setter breakout rules need dedicated identity_params too
-# = rescue ternary is broken again now...
-#v instead of shift states and is_shift_state? to find them,
-  #v i should have shift transitions. (transitions that imply a shift... in response to a token input.)
-  #v all states will have 2 entry points, for shift and nonshift transitions.
-#split big table into goto(node) and sr(token) tables
-#in each state, most common sr action should be made default
-#unused entries in goto table can be ignored.
-#is the change_index arg in stack_monkey calls really correct everywhere? what are
-  #the exact semantics of that argument? what about stack_monkeys that change the stack size?
-  #should there be another arg to keep track of that?
-#maybe rewrite stack_monkeys so they're a  little clearer and easier to analyze (by hand)
-#MultiShift/MultiReduce are not supported actions in generate.rb
-#:accept/:error are not supported actions in generate.rb
 
 require 'forwardable'
 
@@ -2988,18 +2893,16 @@ if __FILE__==$0
   exit result
 end
 
-=begin todo:
+=begin old todo:
 v merge DotCallNode and CallSiteNode and CallWithBlockNode
-remove actual Tokens from parse tree...
-instead, each node has a corresponding range of tokens 
--in an (optional) array of all tokens printed by the tokenizer.
-split ParenedNode into ParenedNode + Rescue/EnsureNode
-'incomplete' subtrees such as ElseNode, ElsifNode, RescueNode 
--should not appear in final output
+v remove actual Tokens from parse tree...
+v split ParenedNode into ParenedNode + Rescue/EnsureNode
+x 'incomplete' subtrees such as ElseNode, ElsifNode, RescueNode 
+x -should not appear in final output
 v split keywordopnode into loop and if varieties?
 =end
 
-=begin optimization opportunities:
+=begin old optimization opportunities:, ha!
 top of stack slot contains mostly keywords, specific node classes, and Expr
 lookahead slot contains mostly lower_op and keywords, with a few classes and inverted keywords
 -(lower_op is hard to optimize)
@@ -3009,3 +2912,102 @@ keywords could be stored as symbols instead of strings
 a few rules may need exploding (eg, ensure) to spoon feed the optimizer
 make all Nodes descendants of Array
 =end
+
+#todo:
+#each node should have a corresponding range of tokens 
+#-in an (optional) array of all tokens printed by the tokenizer.
+#v test stack_monkey mods
+#v break ParenedNode into 2 (3?) classes
+#x invent BEGINNode/ENDNode? (what other keywords?)
+#v at least make BEGIN/END be KWCallNode
+#v replace VarNameToken with VarNode in parser
+#x convert raw rules to lists of vertex identities?
+#v DottedRule class
+#v ParserState class (set of DottedRules)
+#v MultiReduce
+#v MultiShift
+#v ParserState#evolve(identity)
+#v DottedRule#evolve(identity)
+#v RedParse#enumerate_states
+#v RedParse#enumerate_exemplars
+#v Node/Token.enumerate_exemplars
+#v Node/Token.identity_param
+#v rename #lvalue? => #lvalue
+#x likewise get rid of other oddly named identity params
+#v BareMethod,WITHCOMMAS,BEGINAFTEREQUALS should have predicate methods defined for them
+#v do something about BEGINAFTEREQUALS... lots predicates, ugly to identify
+#v document identity parameters in nodes and tokens
+#operator and keyword tokens have some identity_param variations remaining...maybe?
+#xx all identity readers have to have writers as well (even if fake)
+#v sort out vertex identities... call identity_param in apt classes
+#convert identities<=>small ints
+#convert ParserStates<=>small ints
+#> lower_op/proc lookahead requires special action type with shift and reduce branches
+#x stack monkeys dictate some nodes appear in s/r table... which ones?
+#x some stack monkeys pushback nodes, action table must take take those as input
+#v retype GoalPostNode => GoalPostToken 
+#v then, pushback* should go away
+#v build shift/reduce table
+#v build goto table
+#split tables into shift/reduce and goto....?
+#v integrate with c code generator
+#finish c code generator
+#code generator needs a way to deal with :
+  #backtracking (to more than 1 node/token???)
+  #actions (stack monkeys/lower_op)
+  #every reduce requires b/ting thru the lookahead
+  #garbage collection
+#sharing ruby objects between ruby code and generated c code
+#optimizer?
+#ruby code generator?
+#v what to do with :shift ?
+#what to do with :accept ?
+#what to do with :error ?
+#Node.create (used in generated code)
+#Node.create <= takes input directly from semantic stack
+#build Node.create param list generator
+#v names for rules, dotted rules, parser states, identities
+#x StartNode may be a problem... used by a stack monkey,
+  #to remove extra ;s from the very beginning of input.
+  #use a lexer hack instead?
+#v convert StartNode to StartToken?
+#convert names to numbers and numbers to names
+  #for states, rules, vertex identities
+  #in ruby and c (??)
+#x rule for HereBodyToken should be a lexer hack?
+#v stack monkeys should have names
+#how to handle a stack monkey whose 2nd parameter is not a single identity?
+#even reduces may not have enough info since 1 node class may have multiple identities
+#v RedParse constants should be named in inspect
+#v toplevel rule?
+#v semantic stack in generated c code should be a ruby array
+#x state stack should keep size of semantic stack at the time states are pushed, 
+  #so that i can restore semantic stack to former state when b-ting/reducing
+#urk, how do I know how many levels of state stack to pop when reducing?
+  #in looping error rules, just scan back in semantic stack for rule start
+  #in regular looping rules, transition to loop state is saved on a special stack
+    #so that at reduce time, we can b/t to that point for a start
+  #if rule contains only scalars, b/t is easy
+  #else rule contains scalars and optionals: 
+    #scan for rule start vertex starting at highest node 
+    #on semantic stack that can contain it and working downward.
+    #also, statically verify that relevent rules contain no collisions among first (how many?) matchers
+
+#is lookahead in code generator even useful? my tables have built-in lookahead....
+#need hack to declare nonerror looping matchers as irrevokable (for speed, when reducing)
+#v assignmentRhsNode needs an identity_param for with_commas
+#v -** fixup and setter breakout rules need dedicated identity_params too
+# = rescue ternary is broken again now...
+#v instead of shift states and is_shift_state? to find them,
+  #v i should have shift transitions. (transitions that imply a shift... in response to a token input.)
+  #v all states will have 2 entry points, for shift and nonshift transitions.
+#split big table into goto(node) and sr(token) tables
+#in each state, most common sr action should be made default
+#unused entries in goto table can be ignored.
+#most common goto entries (if any) can be default.
+#is the change_index arg in stack_monkey calls really correct everywhere? what are
+  #the exact semantics of that argument? what about stack_monkeys that change the stack size?
+  #should there be another arg to keep track of that?
+#maybe rewrite stack_monkeys so they're a  little clearer and easier to analyze (by hand)
+#MultiShift/MultiReduce are not supported actions in generate.rb
+#:accept/:error are not supported actions in generate.rb
