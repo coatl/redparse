@@ -2339,8 +2339,11 @@ end
 
 #  LowerOp=     proc{|parser,op2| parser.left_op_higher(parser[-3],op2) }
   def lower_op
-    @lower_op||=
-      item_that{|op| left_op_higher(@stack[-3],op) }
+    return @lower_op if defined? @lower_op
+    lower_op=item_that{|op| left_op_higher(@stack[-3],op) }
+    lower_op=(LOWEST_OP|(~VALUELIKE_LA & lower_op)).la
+    def lower_op.inspect; "lower_op" end
+    @lower_op=lower_op
   end
 
   #this is a hack, should use graphcopy to search for Deferreds and replace with double-Deferred as below
@@ -2438,8 +2441,7 @@ end
   warn "error recovery rules disabledfor now; creates too many states and masks errors"
 
   def RULES
-    lower_op=(LOWEST_OP|(~VALUELIKE_LA & lower_op())).la
-    def lower_op.inspect; "lower_op" end
+    lower_op= lower_op()
 
     [-[StartToken.lb, Expr.-, EoiToken.la]>>:accept,
      -[EoiToken]>>:error,
