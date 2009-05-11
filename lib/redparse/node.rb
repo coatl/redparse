@@ -202,9 +202,9 @@ class RedParse
         @not_real if defined? @not_real
       end
 
-      identity_param :ident, *%w<+@ -@ &@ *@ ! ~ not defined?>+ #should be unary ops
+      identity_param :ident, *%w<+@ -@ unary& unary* ! ~ not defined?>+ #should be unary ops
                                %w<end ( ) { } [ ] alias undef in>+
-                               %w<? : ; !~ rhs, lhs, call, array, param, rescue3>+ #these should be ops
+                               %w<? : ; !~ lhs, rhs, rescue3>+ #these should be ops
                                %w{*= **= <<= >>= &&= ||= |= &= ^= /= %= -= += = => ... .. . ::}+ #shouldn't be here, grrr
                                RubyLexer::FUNCLIKE_KEYWORDLIST+
                                RubyLexer::VARLIKE_KEYWORDLIST+
@@ -213,7 +213,7 @@ class RedParse
                                RubyLexer::BEGINWORDLIST
       #identity_param :unary, true,false,nil
       
-      #identity_param :comma_type, :lhs,:rhs,:param,:call,:array,nil
+      #identity_param :tag, :lhs,:rhs,:param,:call,:array,:block,:nested,nil
       identity_param :callsite?, nil, true, false
       identity_param :not_real?, nil, true, false
       identity_param :infix, nil, true
