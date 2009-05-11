@@ -396,6 +396,10 @@ class RedParse
       end
       alias unwrap data
 
+      attr_writer :startline
+      def startline
+        @startline||=endline
+      end
       attr_accessor :endline
       attr_accessor :errors
 
@@ -2571,12 +2575,14 @@ end
             arrowrange=first..last
             arrows=param_list[arrowrange]
             h=HashLiteralNode.new(nil,arrows,nil)
-            h.endline=arrows.first.endline
+            h.startline=arrows.first.startline
+            h.endline=arrows.last.endline
             param_list[arrowrange]=[h]
           end
         
         when ArrowOpNode
           h=HashLiteralNode.new(nil,param_list,nil)
+          h.startline=param_list.startline
           h.endline=param_list.endline
           param_list=[h]
 #        when KeywordOpNode
@@ -3403,6 +3409,7 @@ end
       def initialize(token)
         token.node=self
         super(token)
+        @startline=token.string.startline
       end
       attr_accessor :list_to_append
 #      attr :token
