@@ -2416,9 +2416,9 @@ end
     BeginNode&
       -{:after_equals =>true}&-{:non_empty=>true}
   
-  LHS_COMMA=Op('lhs,',true)#&-{:comma_type => :lhs}
-  RHS_COMMA=Op('rhs,',true)#&-{:comma_type => :rhs}
-  PARAM_COMMA=Op('param,',true)#&-{:comma_type => :param}
+  LHS_COMMA=Op('lhs,',true)#&-{:tag => :lhs}
+  RHS_COMMA=Op('rhs,',true)#&-{:tag => :rhs}
+  #PARAM_COMMA=Op('param,',true)#&-{:tag => :param}
   FUNCLIKE_KEYWORD=KeywordToken&-{:ident=>RubyLexer::FUNCLIKE_KEYWORDS}
   IGN_SEMI_BEFORE=KW(/^(#{RubyLexer::INNERBOUNDINGWORDS.gsub(/(rescue|then)\|/,'')[1...-1]}|end|[)}\]])$/)|EoiToken
   IGN_SEMI_AFTER=KW(/^(begin|[;:({|]|then|do|else|ensure)$/)|BlockFormalsNode
