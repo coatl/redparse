@@ -392,7 +392,7 @@ end
     #do something with error nodes
     msgs=[]
     result.walk{|parent,i,subi,node|
-      not if ErrorNode===node
+      not if node.respond_to? :error and node.error?(@rubyversion)
         msgs<< @filename+":"+node.blame.msg
       end
     } if result.respond_to? :walk #hack hack
