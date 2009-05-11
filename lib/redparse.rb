@@ -2741,7 +2741,7 @@ end
         else
           result=make_kw(as,result.offset)
         end
-        result.not_real!
+        result.not_real! if result.respond_to? :not_real!
       else
 
       case result
