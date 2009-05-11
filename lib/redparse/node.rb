@@ -379,12 +379,13 @@ class RedParse
         result
       end
 
-
       def ==(other)
         super and flattened_ivars_equal?(other)
       end
 
       def image; "(#{inspect})" end
+
+      def error? x; false end
 
       @@data_warned=nil
       def data
@@ -4001,6 +4002,11 @@ end
       def parsetree(o)
         map{|elem| elem.rescue_parsetree(o)}.unshift :hash
       end
+
+      def error? rubyversion=1.8
+        return true if @no_arrows and rubyversion>=1.9
+        return super
+      end
     end
 
     class TernaryNode<ValueNode
@@ -4599,16 +4605,8 @@ end
     end
 
     module ErrorNode
-      #pass the buck to child ErrorNodes until there's no one else
-      def blame
-        middle.each{|node| 
-          node.respond_to? :blame and return node.blame 
-        }
-        return self
-      end
- 
-
-      #def msg; ... end
+      def error?(x=nil) @error end
+      alias msg error?
     end
 
 
@@ -4620,10 +4618,19 @@ end
 
       def image; "misparsed #{what}" end
 
-      def msg
-        inner=middle.grep(MisparsedNode).first and return inner.msg
+      #pass the buck to child ErrorNodes until there's no one else
+      def blame
+        middle.each{|node| 
+          node.respond_to? :blame and return node.blame 
+        }
+        return self
+      end
+ 
+      def error? x=nil
+        inner=middle.grep(MisparsedNode).first and return inner.error?( x )
         "#@endline: misparsed #{what}: #{middle.map{|node| node&&node.image}.join(' ')}" 
       end
+      alias msg error?
     end
 
 #  end
