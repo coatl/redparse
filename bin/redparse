@@ -73,10 +73,11 @@ class ParseTree<RawParseTree
     return tree,warnings
   ensure
     STDERR.reopen oldSTDERR
-
+    if warnstash
     warnstash.rewind
     warnings.replace warnstash.read.split
     warnstash.close
+    end
   end
 end
 
