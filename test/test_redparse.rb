@@ -194,10 +194,6 @@ class RedParseTest<Test::Unit::TestCase
    '%W"is_#{x}#{"Slim_#{2?"W":"S"}_"}."',
   ]
   FAILURE_EXAMPLES=[
-    'e { |c|; print "%02X" % c }',
-    %[p <<-heredoc "x y z" and 5\n       a b c\n     heredoc],
-    "File.open() {|f|  ;  }",
-    %[     p <<-heredoc "x y z" and 5\n       a b c\n     heredoc],
   ]
   RUBYBUG_EXAMPLES=[
     'def foo(a=b=c={}) end',
