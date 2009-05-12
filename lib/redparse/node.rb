@@ -791,6 +791,18 @@ class RedParse
         return self
       end
 
+      def delete_linenums!
+        walk{|parent,i,subi,node|
+          case node
+          when Node
+            node.remove_instance_variable :@endline rescue nil
+            node.remove_instance_variable :@startline rescue nil
+          end
+          true
+        }
+        return self
+      end
+
       public :remove_instance_variable
 
       #convert to a Reg::Array expression. subnodes are also converted.
