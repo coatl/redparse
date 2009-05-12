@@ -4011,6 +4011,7 @@ end
               data.push pair.first,pair.last
             }
           else
+            @no_arrows=true
             data=Array[*contents]
           end
           super(*data)
@@ -4018,14 +4019,17 @@ end
         @no_braces=!open
       end
 
+      attr :no_arrows
+
       def image; "({})" end
 
       def unparse o=default_unparse_options
         result=''
         result << "{" unless @no_braces
+        arrow= defined?(@no_arrows) ? " , " : " => "
         (0...size).step(2){|i| 
           result<< unparse_nl(self[i],o,'')+
-            self[i].unparse(o)+' => '+
+            self[i].unparse(o)+arrow+
             self[i+1].unparse(o)+', '
         }
         result.chomp! ', '
