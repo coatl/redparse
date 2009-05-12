@@ -28,6 +28,8 @@ require "rubylexer/test/testcases"
 
 $VERBOSE=1
 
+warn "still some literal ?a..?z and a-z in regexes in RedParse... replace with RubyLexer::WHATEVER_LETTER"
+
 class Test::Unit::TestCase
   def known_error
     from=caller.first
@@ -3507,7 +3509,7 @@ EOS
   ]
   puts "warning: most data fuzzing is disabled for now"
 
-  RUBYIDENT=/((?:$|@@?)?[a-z_][a-z_0-9]*[?!]?)/i
+  RUBYIDENT=/((?:$|@@?)?#{RubyLexer::LETTER}#{RubyLexer::LETTER_DIGIT}*[?!]?)/o
 
   def self.snippet2testmethod(snippet,wrap=nil)
     escaped=snippet.gsub(/[\\']/){"\\"+$&}
