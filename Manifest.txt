@@ -1,4 +1,5 @@
 lib/redparse/decisiontree.rb
+lib/redparse/version.rb
 lib/redparse/reg_more_sugar.rb
 lib/redparse/babyparser.rb
 lib/redparse/node.rb
@@ -33,8 +34,8 @@ test/data/case.rb
 test/test_redparse.rb
 Manifest.txt
 README.txt
+History.txt
 Rakefile
 COPYING.LGPL
 nurli/test_control.nurli
-redparse.vpj
-redparse.vpw
+bin/redparse
