@@ -210,6 +210,27 @@ class RedParseTest<Test::Unit::TestCase
   ]
 
   ONELINERS=[
+    '(m).kk,(m+n).kk=3'...'',
+    '((m).kk,(m+n).kk)=3'...'',
+    '((m).kk,(m+n).kk),t=3'...'',
+    's,((m).kk,(m+n).kk)=3'...'',
+    's,((m).kk,(m+n).kk),t=3'...'',
+    'proc{|(m).kk,(m+n).kk| }'...'',
+    "p p:'b'"...'', #changes semantics in 1.9
+    "p:'b'"...'', #but this doesn't
+    't ?6e0 : 5'...'',
+    "super[]"...'',
+    'p end=5'...'', #illegal
+    'p or=5'...'', #illegal
+    'p else=5'...'', #illegal
+    'p if=5'...'', #illegal
+    "x{\x0afor i in (begin\n[44,55,66,77,88] end) do p i**Math.sqrt(i) end\n}\n"...'',
+    'e { |c|; print "%02X" % c }'...'',
+    %[p <<-heredoc "x y z" and 5\n       a b c\n     heredoc]...'',
+    "File.open() {|f|  ;  }"...'',
+    %[     p <<-heredoc "x y z" and 5\n       a b c\n     heredoc]...'',
+    'a rescue b until 1'...'',
+    'a rescue b while 1'...'',
     '%W[r\\c     3]'...'',
 
     "%w[a\\C- b]"...'',
@@ -985,6 +1006,32 @@ class RedParseTest<Test::Unit::TestCase
     '%W"is #{"Slim #{2?"W":"S"}"}."'...'',
     '"is #{"Slim #{2?"W":"S"}"}#{xx}."'...'',
     '%W"is #{"Slim #{2?"W":"S"}"}#{xx}."'...'',
+    '"is #{x}#{"Slim #{2?"W":"S"}"}#{xx}."'...'',
+    '%W"is #{x}#{"Slim #{2?"W":"S"}"}#{xx}."'...'',
+    '"is #{x}#{%W"Slim #{2?"W":"S"}"}#{xx}."'...'',
+    '%W"is #{x}#{%W"Slim #{2?"W":"S"}"}#{xx}."'...'',
+
+    '%W"is_#{x}#{"Slim_#{2?"W":"S"}"}#{xx}."'...'',
+    '%W"is_#{"Slim_#{2?"W":"S"}"}#{xx}."'...'',
+    '%W"is_#{"Slim_#{2?"W":"S"}"}."'...'',
+    '%W"is_#{x}#{"Slim_#{2?"W":"S"}_"}."'...'',
+    '%W"is_#{"Slim_#{2?"W":"S"}_"}."'...'',
+    '%W"is_#{"Slim_#{2?"W":"S"}_" "rr"}."'...'',
+
+    "%W\"is \#{x}\#{%W'Slim \#{2?W: S} '}.\""...'',
+    "%W\"is \#{x}\#{%w'Slim \#{2?W: S} '}.\""...'',
+    "%W\"is \#{x}\#{%Q'Slim \#{2?W: S} '}.\""...'',
+    "%W\"is \#{x}\#{\"Slim \#{2?W: S} \"}.\""...'',
+    "%W\"is \#{x}\#{%q'Slim \#{2?W: S} '}.\""...'',
+    "%W\"is \#{x}\#{%x'Slim \#{2?W: S} '}.\""...'',
+    "%W\"is \#{x}\#{%r'Slim \#{2?W: S} '}.\""...'',
+    "%W\"is \#{x}\#{`Slim \#{2?W: S} `}.\""...'',
+    "%W\"is \#{x}\#{/Slim \#{2?W: S} /}.\""...'',
+    "%\"is \#{x}\#{%r'Slim \#{2?W: S} '}.\""...'',
+    "\"is \#{x}\#{%r'Slim \#{2?W: S} '}.\""...'',
+    "\"is \#{x}\#{%'Slim \#{2?W: S} '}.\""...'',
+    "\"is \#{x}\#{'Slim \#{2?W: S} '}.\""...'',
+
     'case $1; when 0,*[2,66]: p 1; when 3; 4 else p 2 end'...'',
     'case $1; when 0,*a: p 1; when 3; 4 else p 2 end'...'',
     ' p(String <<- Class)'...'',
@@ -2612,7 +2659,78 @@ class RedParseTest<Test::Unit::TestCase
     ]
 
 
-  STANZAS=%q[
+   PASSTHRU_BSLASHES_ENTIRE=<<'END'
+     <<-'foo'.count('\\')==0
+       '
+     foo
+
+     <<-'foo'.count('\\')==1
+       \'
+     foo
+
+      <<-'foo'.count('\\')==2
+      \\'
+      foo
+
+      <<-'foo'.count('\\')==3
+      \\\'
+      foo
+
+      <<-'foo'.count('\\')==4
+      \\\\'
+      foo
+
+      <<-'foo'.count('\\')==5
+      \\\\\'
+      foo
+
+      <<-"foo".count('\\')==0
+      "
+      foo
+
+      <<-"foo".count('\\')==0
+      \"
+      foo
+
+      <<-"foo".count('\\')==1
+      \\"
+      foo
+
+      <<-"foo".count('\\')==1
+      \\\"
+      foo
+
+      <<-"foo".count('\\')==2
+      \\\\"
+      foo
+
+      <<-"foo".count('\\')==2
+      \\\\\"
+      foo
+
+     <<-`foo`
+       \`
+     foo
+
+     <<-`foo`
+       \\`
+     foo
+
+     <<-"foo"
+       \"
+     foo
+
+     <<-"foo"
+       "
+     foo
+
+     <<-"foo"
+       \\"
+     foo
+
+END
+
+  STANZAS=PASSTHRU_BSLASHES_ENTIRE+%q[
      begin 
        a
      rescue B=>c
@@ -3534,6 +3652,38 @@ EOS
          [:fcall, :p, [:array, [:call, [:vcall, :e], :/, [:array, [:vcall, :a]]]]]]],
       "z{|| p (1).m}"=>[
        [:iter, [:fcall, :z], 0, [:fcall, :p, [:array, [:call, [:lit, 1], :m]]]]],
+      "
+        <<-'foo'
+        \\'
+        foo
+      "=>[[:str, "        \\'\n"]],
+      "
+        <<-'foo'
+        \\\\'
+        foo
+      "=>[[:str, "        \\\\'\n"]],
+      "
+        <<-'foo'
+        \\\\\\'
+        foo
+      "=>[[:str, "        \\\\\\'\n"]],
+      "
+        <<-'foo'
+        \\\\\\\\'
+        foo
+      "=>[[:str, "        \\\\\\\\'\n"]],
+      "
+        <<-'foo'
+        \\\\\\\\\\'
+        foo
+      "=>[[:str, "        \\\\\\\\\\'\n"]],
+      "
+        <<-'foo'
+        \\\\\\\\\\\\'
+        foo
+      "=>[[:str, "        \\\\\\\\\\\\'\n"]],
+
+
     }.each_pair{|code,tree| 
       assert_equal tree,RedParse.new(code,'-').parse.to_parsetree(:quirks)
     }
