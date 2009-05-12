@@ -3589,6 +3589,7 @@ end
         if name.ident=='(' 
           #simulate nil
           replace ['nil']
+          @value=false
         else
           replace [name.ident]
           @value=name.respond_to?(:value) && name.value
