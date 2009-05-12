@@ -1251,6 +1251,8 @@ end
               x[0]=[:str,x0]
             end
             cat+x
+          elsif x.last.empty?
+            cat
           else
             cat+[x]
           end
