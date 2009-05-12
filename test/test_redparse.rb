@@ -3763,8 +3763,8 @@ EOS
 #          }
 #        }
 #        break if loops+=1 > 3
-      rescue Interrupt: raise
-      rescue Exception=>e:
+      rescue Interrupt; raise
+      rescue Exception=>e
         #pp e
         #pp e.backtrace
         #raise "last gasp ParseTree exec catcher failed!"
