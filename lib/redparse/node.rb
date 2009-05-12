@@ -3452,6 +3452,11 @@ end
         end
       end
 
+      def translate_escapes x
+        return x if @char=="'"
+        super
+      end
+
 
       def flattened_ivars_equal?(other)
         StringNode===other
