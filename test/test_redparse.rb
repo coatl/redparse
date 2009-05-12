@@ -177,7 +177,21 @@ end
 
 class RedParseTest<Test::Unit::TestCase
   ERROR_EXAMPLES=[
-    "x{\x0afor i in (begin\n[44,55,66,77,88] end) do p i**Math.sqrt(i) end\n}\n",
+   '%W"is #{x}#{"Slim #{2?"W":"S"} "}."',
+   '%W"is #{x}#{"Slim #{2?"W":"S"}"}#{xx}."',
+   '%W"is #{x}#{"Slim #{2?W: S} "}."',
+   '%W"is #{x}#{%Q\'Slim #{2?W: S} \'}."',
+   '%W"is #{x}#{%W"Slim #{2?"W":"S"}"}#{xx}."',
+   '%W"is #{x}#{%W\'Slim #{2?W: S} \'}."',
+   '%W"is #{x}#{%q\'Slim #{2?W: S} \'}."',
+   '%W"is #{x}#{%r\'Slim #{2?W: S} \'}."',
+   '%W"is #{x}#{%w\'Slim #{2?W: S} \'}."',
+   '%W"is #{x}#{%x\'Slim #{2?W: S} \'}."',
+   '%W"is #{x}#{/Slim #{2?W: S} /}."',
+   '%W"is #{x}#{`Slim #{2?W: S} `}."',
+   '%W"is_#{"Slim_#{2?"W":"S"}"}#{xx}."',
+   '%W"is_#{x}#{"Slim_#{2?"W":"S"}"}#{xx}."',
+   '%W"is_#{x}#{"Slim_#{2?"W":"S"}_"}."',
   ]
   FAILURE_EXAMPLES=[
     'e { |c|; print "%02X" % c }',
