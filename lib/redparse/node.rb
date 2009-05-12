@@ -906,20 +906,25 @@ class RedParse
 
     class VarNode<ValueNode
       include FlattenedIvars
-      attr_accessor :endline,:lvalue,:ident
+      attr_accessor :endline
       attr_reader :lvar_type,:in_def,:offset
-      alias image ident
-      alias startline endline
+      attr_writer :lvalue
+
 
       alias == flattened_ivars_equal?
 
       def initialize(tok)
-        @ident=tok.ident
+        super(tok.ident)
         @lvar_type=tok.lvar_type
         @offset=tok.offset
         @endline=tok.endline
         @in_def=tok.in_def
       end
+
+      def ident; first end
+      def ident=x; self[0]=x end
+      alias image ident
+      alias startline endline
 
       def parsetree(o)
         type=case ident[0]
@@ -3020,7 +3025,7 @@ end
         rl.instance_eval{@file=seq}
         repls=[]
         i=0
-        #ugly ugly ugly
+        #ugly ugly ugly... all so I can call @bs_handler
         while i<result.size and bs_at=result.index(/\\./m,i)
           seq.pos=$~.end(0)-1
           ch=rl.send(@bs_handler,"\\",@open[-1,1],@close)
