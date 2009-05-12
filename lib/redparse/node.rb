@@ -574,7 +574,7 @@ class RedParse
           if session.has_key? o.__id__
             new= session[o.__id__]
             if Reg::Formula===new
-              new=new.formula_value(session,o)
+              new=new.formula_value(o,session)
             end
             subi ? parent[i][subi]=new : parent[i]=new
           end
@@ -582,7 +582,7 @@ class RedParse
         if session.has_key? self.__id__
           new= session[self.__id__]
           if Reg::Formula===new
-            new=new.formula_value(session,self)
+            new=new.formula_value(self,session)
           end
           return new
         else
