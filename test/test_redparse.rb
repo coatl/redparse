@@ -3541,7 +3541,10 @@ EOS
 
     wrapped=WRAPPERS.map{|wrap|
        #apply wrapper
-      snippet2testmethod(wrap.gsub('(...)', xmpl))
+      maybe_slow="slow" if xmpl.size>1000
+      wrap=wrap.dup
+      wrap['(...)']=xmpl
+      snippet2testmethod(wrap,maybe_slow)
     }
     injected=INJECTABLES.map{|inj|
       xlist=xmpl.split(RUBYIDENT)
@@ -3550,7 +3553,8 @@ EOS
         i&1==1 or fail
         /\A#{RUBYIDENT}\Z/o===xlist[i] or fail
         xlist[i]=inj
-        snippet2testmethod(xlist.to_s)
+        maybe_slow="slow" if xmpl.size>1000
+        snippet2testmethod(xlist.to_s,maybe_slow)
       end
     }
     wrapped+injected
