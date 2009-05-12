@@ -74,6 +74,19 @@ class Test::Unit::TestCase
       at_exit {warn "unexpectedly fixed known failures: #@@known_failures_fixed"}
     end
   end
+
+  def slow
+    if ENV['SLOW']
+      yield
+    else
+      if defined? @@slow_spots
+        @@slow_spots+=1
+      else
+        @@slow_spots=1
+        at_exit {warn "slow test code skipped in #@@slow_spots places. (set SLOW to enable)"}
+      end
+    end
+  end
 end
 
 require 'test/unit/ui/console/testrunner'
