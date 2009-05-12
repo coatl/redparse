@@ -3536,7 +3536,7 @@ end
           ":"+
             val.unparse(o)
         when Float
-          s= "%#{Float::DIG}.#{Float::DIG}f"%val
+          s= "%#{Float::DIG+1}.#{Float::DIG+1}f"%val
           case s
           when /-inf/i; s="-"+Inf
           when /inf/i;  s=    Inf
