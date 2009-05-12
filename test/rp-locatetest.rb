@@ -39,7 +39,7 @@ $RUBY=ENV['RUBY']||'ruby'
 
 #$RUBYLEXERVSRUBY="#$RUBY test/code/rubylexervsruby.rb"
 
-RUBY_VERSION[/^1\.8\.7/] or raise 'need ruby>= 1.8.7'
+RUBY_VERSION[/^1\.8\.6/] or raise 'need ruby>= 1.8.6'
 
 
 
