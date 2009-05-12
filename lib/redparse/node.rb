@@ -4115,13 +4115,14 @@ end
 
       attr_reader :empty_ensure, :empty_else
 
-      def receiver= x
-        self[0]=x      
-      end
 
-      def body= x
-        self[3]=x      
-      end
+#      def receiver= x
+#        self[0]=x      
+#      end
+#
+#      def body= x
+#        self[3]=x      
+#      end
 
       def ensure_= x
         self[5]=x      
