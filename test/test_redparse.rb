@@ -3483,8 +3483,11 @@ EOS
            from_rubinius + #ESC_SEQS +
            []-ERROR_EXAMPLES-FAILURE_EXAMPLES-RUBYBUG_EXAMPLES
 
+
   WRAPPERS=[ #enable at most 2 or tests take forever!!!
     '(...)',  #normal mode, should usually be enabled
+#    "((...))",
+#    'def ((...)).foo; end',
 #    'a0 = (...) rescue b0',
 #    'a0 = ((...)) rescue b0',    
 #    '(...)  #with a comment',
