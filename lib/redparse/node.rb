@@ -886,10 +886,9 @@ class RedParse
 
         #should really only emit newlines 
         #to bring line count up to startline, not endline.
-        #but that doesn't exist yet
 
-        linenum= Integer===token ? token : token.endline rescue o[:linenum]
-        shy=linenum-o[:linenum]
+        linenum= Integer===token ? token : token.startline rescue (return alt)
+        shy=(linenum||0)-o[:linenum]
         return alt if shy<=0
         o[:linenum]=linenum
         return nl*shy
