@@ -3813,6 +3813,10 @@ EOS
       return unless nodes
       begin
         unparsed=nodes.unparse
+        if unparsed==xmpl
+          assert true
+          return
+        end
         reparsed= RedParse.new(unparsed,"-").parse
         assert_equal nodes.delete_extraneous_ivars!,
                      reparsed.delete_extraneous_ivars!
