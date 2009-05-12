@@ -200,8 +200,6 @@ class RedParseTest<Test::Unit::TestCase
     %[     p <<-heredoc "x y z" and 5\n       a b c\n     heredoc],
   ]
   RUBYBUG_EXAMPLES=[
-    'a rescue b until 1',
-    'a rescue b while 1',
     'def foo(a=b=c={}) end',
     "$11111111111111111111111111111111111111111111111111111111111111111111",
     "c do p (110).m end",
