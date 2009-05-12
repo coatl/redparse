@@ -3458,6 +3458,7 @@ end
       end
 
       def unparse o=default_unparse_options
+        lead=unparse_nl(self,o,'',"\\\n")
         inner=unparse_interior o,@char,@char,
                 case @char
                 when "'" #single-quoted here doc is a special case; 
@@ -4133,7 +4134,7 @@ end
         result+="ensure #{ensure_.unparse o}\n"  if ensure_
         result+="ensure\n" if @empty_ensure
 =end
-        result<<";end"
+        result<<unparse_nl(endline,o)+"end"
         result.to_s
       end
 
