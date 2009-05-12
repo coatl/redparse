@@ -3345,11 +3345,11 @@ end
     end
 
         location_display = if(location.size == 1)
-          location[0].sub(/\A(.+:\d+).*/, ' [\\1]')
+          location[0].sub(/\\A(.+:\\d+).*/, ' [\\1]')
         else
-          "\n#{location.join("\n")}"
+          "\\n#{location.join("\\n")}"
         end
-        "Failure:\n#@test_name#{location_display}:\n#@message"
+        "Failure:\\n#@test_name#{location_display}:\\n#@message"
 
   def parse_date(aString)
     return Time.rfc822(aString) rescue Time.parse(aString)
