@@ -3473,8 +3473,9 @@ end
                 when '"'; /#{DQ_EVEN}"/
                 when "`"; /#{DQ_EVEN}`/
                 else fail
-                end
-        [@char, inner, @char].to_s
+                end 
+        
+        [lead,@char, inner, @char].to_s
       end
     end
 
