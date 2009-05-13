@@ -250,211 +250,74 @@ existing format in the future, but no incompatibility-creating changes.
 
 
 == Known failing expressions
-*  The following expressions are known to parse incorrectly currently:
-* m.cn= 1, V
-* "#{}"""
-* $11111111111111111111111111111111111111111111111111111111111111111111
-* begin;mode;rescue;o_chmod rescue nil;end
-* case F;when G; else;case; when j; end;end
-* def i;"..#{@@c = 1}";end
-* e { |c|; print "%02X" % c }
-* File.open() {|f|  ;  }
-* %W(white\  \  \ \  \ space).should == ["white ", " ", "  ", " space"]
-* %w[- \\ e]
-* %w[- \\ ]
-* module A; b; rescue C=>d; e; else g; ensure f; end
-* class A; b; rescue C=>d; e; else g; ensure f; end
-* class<<A; b; rescue C=>d; e; else g; ensure f; end
+* The following expressions are known to parse incorrectly currently:
+* x{
+    for i in (begin
+    [44,55,66,77,88] end) do p i**Math.sqrt(i) end
+  }
+* def foo(a = 1)    end; def foo(a=b=c={})  end; def bar(a=b=c=1,d=2)  end
+* <<-EOS<<__LINE__
+  EOS
+* %W"is #{"Slim #{2?"W":"S"}"}#{xx}."
 
 == Homie doan' play dat
 * These expressions don't parse the same as in MRI, I believe because of 
   bug(s) in MRI. 
 * p = p m %(1)
 * p=556;p (e) /a
+* c do p (110).m end
+
+== Bugs in ParseTree
+* $11111111111111111111111111111111111111111111111111111111111111111111
+* case F;when G; else;case; when j; end;end
+* def foo(a=b=c={}) end
 
 ==Known failing files
 *  And here's a list of files which are known to parse incorrectly:
-* alib-0.5.1/lib/alib-0.5.1/util.rb
-* stick-1.3.3/test/test_matrix.rb
-* rubyslippers-1.03/extras/rconftool.rb
-* rubysync-0.2.1/lib/ruby_sync/connectors/base_connector.rb
-* karmasphere-client-0.6.4/lib/karmasphere/query.rb
-* roby-0.7.2/test/test_transactions.rb
-* rwddemo-0.92/extras/rconftool.rb
-* rmail-1.0.0/test/testmessage.rb
-* passenger-2.0.1/lib/passenger/abstract_server.rb
-* rubywebdialogs/rubywebdialogs.rb
-* aspectr-0.3.7/lib/aspectr.rb
-* rubywebdialogs-0.2.0/realstuff.rb
-* stick-1.3.3/lib/stick/matrix.rb
-* rb2html-2.4/rb2html/haskell_lexer.rb
-* mspire-0.3.9/lib/spec_id/srf.rb
-* rb-wartslib-0.9.14/lib/wartslib/wl-file.rb
-* sqliki_generator-0.0.4/templates/lib_sanitize_html.rb
-* rwdshell-1.00/extras/rconftool.rb
-* main-2.8.0/lib/main/base.rb
-* pseudoxml-0.1.0/RAKEFILE
-* rubytorrent-0.3/lib/rubytorrent/server.rb
-* Nephila-0.6.0/config/environment.rb
-* ruby-rpm-1.2.3/lib/rpm.rb
-* ya2yaml-0.26/lib/ya2yaml.rb
-* spree-0.2.0/vendor/rails/activesupport/lib/active_support/multibyte/handlers/utf8_handler.rb
-* rq-3.4.0/rails/vendor/rails/actionpack/test/controller/fragment_store_setting_test.rb
-* typo-5.0.3.98.1/config/environment.rb
-* aeditor-1.9/lib/aeditor/test_lexer.rb
-* gecoder-with-gecode-0.8.2/lib/gecoder/interface/constraints/set/connection.rb
-* onebody-0.3.0/vendor/rails/actionpack/test/controller/caching_test.rb
-* rwdhypernote-0.10/extras/rconftool.rb
-* radiant-0.6.7/vendor/rails/railties/lib/initializer.rb
-* rwdgutenberg-0.07/extras/rconftool.rb
-* aspectr-0-3-5/lib/aspectr.rb
-* rubygems-update-1.2.0/lib/rubygems/test_utilities.rb
-* live_console-0.1.0/lib/live_console.rb
-* html-table-1.3.1/test/tc_header.rb
-* authorails-1.0.0/lib/initializer.rb
-* allinoneruby-0.2.11/realstuff.rb
-* typo-5.0.3.98.1/db/migrate/040_attach_content_to_blog.rb
-* rq-3.4.0/lib/rq/lockfile.rb
-* rubygame-2.3.0/lib/rubygame/rect.rb
-* html-table-1.3.1/test/tc_foot.rb
-* html-table-1.3.1/test/tc_caption.rb
-* extract-curves-0.1.1/ruby_libs/pav/string/observable.rb
-* starling-0.9.3/lib/starling/runner.rb
-* RbYAML-0.2.0/lib/rbyaml/types.rb
-* rwdaddresses-1.03/extras/vpim/rrule.rb
-* Dnsruby-1.0/test/tc_tsig.rb
-* rubyscript2exe/rubyscript2exe.rb
-* rq-3.4.0/rails/vendor/rails/railties/builtin/rails_info/rails/info.rb
-* extract_curves-0.0.1/ruby_libs/pav/string/observable.rb
-* simplemapper-0.0.6/lib/simple_mapper/default_plugins/oauth.rb
-* text-hyphen-1.0.0/lib/text/hyphen/language/id.rb
-* ruby-nxt-0.8.1/examples/commands.rb
-* gettext-1.91.0/test/test_rails_caching.rb
-* rwdschedule-1.02/extras/rconftool.rb
-* rabbit-0.5.6/lib/rabbit/image/base.rb
-* sqliki-0.0.4/templates/lib_sanitize_html.rb
-* whistle-0.1.1/lib/resource.rb
-* html-table-1.3.1/examples/intermediate2.rb
-* xmlparser-0.6.8/xmlparser/samples/digesttest.rb
-* datamapper-0.3.2/lib/data_mapper/adapters/sql/mappings/table.rb
-* openwferu-0.9.17/test/raw_prog_test.rb
-* rubytorrent-0.3/lib/rubytorrent/controller.rb
-* rails-2.1.0/builtin/rails_info/rails/info.rb
-* mongrel-1.1.5/lib/mongrel.rb
-* stream-0.5/lib/stream.rb
-* dhaka-2.2.1/lib/dhaka/lexer/alphabet.rb
-* roby-0.7.2/lib/roby/planning/model.rb
-* data_objects-0.9.2/lib/data_objects/connection.rb
-* logging-0.8.0/test/test_logger.rb
-* hobo-0.7.5/hobo_files/plugin/lib/hobo/scopes/defined_scope_proxy_extender.rb
-* logtwuncator-0.1.2/lib/log_twuncator/win32_file.rb
-* Dnsruby-1.0/test/tc_axfr.rb
-* spree-0.2.0/vendor/rails/railties/builtin/rails_info/rails/info.rb
-* margot-0.5.0/Rakefile
-* ruby-style-1.2.1/lib/style.rb
-* preferences-0.1.3/test/functional/preferences_test.rb
-* mogilefs-client-1.2.1/lib/mogilefs/backend.rb
-* flatulent-0.0.4/lib/flatulent.rb
-* actionpack-2.1.0/test/controller/caching_test.rb
-* buildr-1.3.1.1/lib/buildr/packaging/zip.rb
-* typo-5.0.3.98.1/vendor/syntax/lib/syntax/lang/ruby.rb
-* starling-0.9.3/lib/starling/server.rb
-* ruby-odbc-0.9995/ruby-odbc-0.9995/extconf.rb
-* ruby-ajp-0.2.1/lib/net/ajp13.rb
-* radiant-0.6.7/vendor/rails/railties/builtin/rails_info/rails/info.rb
-* xmlparser-0.6.8/xmlparser/samples/digesttest2.rb
-* rwdtorrent-0.05/extras/rubytorrent/controller.rb
-* typo-5.0.3.98.1/db/migrate/039_serialize_blog_attributes.rb
-* sparrow-0.3.1/lib/sparrow/runner.rb
-* rubyscript2exe-0.5.3/realstuff.rb
-* stomp-1.0.5/lib/stomp.rb
-* adhearsion-0.7.7/lib/rami.rb
-* bigtinker-0.93/extras/rconftool.rb
-* Buildr-0.17.0/lib/tasks/zip.rb
-* rmail-1.0.0/test/testheader.rb
-* datamapper-0.3.2/lib/data_mapper/adapters/sql/mappings/column.rb
-* fhlow-1.91.0/lib/module_cmdparse/cmdparse.rb
-* can_has_bots-0.1.0/adapters/jabber/bot.rb
-* spree-0.2.0/vendor/rails/actionpack/test/controller/caching_test.rb
-* nitro-0.41.0/lib/nitro/compiler/include.rb
-* wwwsrv-0.15.3/test/test_token.rb
-* wwwsrv-0.15.3/wwwsrv/fastcgi.rb
-* rgen-0.4.2/redist/xmlscan/tests/deftestcase.rb
-* muding-0.2.0/lib/initializer.rb
-* bj-1.0.1/lib/bj/runner.rb
-* dnsruby-1.1/test/tc_tsig.rb
-* ruote-0.9.18/test/ft_0c_testname.rb
-* aquarium-0.4.2/spec/aquarium/aspects/aspect_spec.rb
-* Ruby-MemCache-0.0.1/tests/stats.tests.rb
-* docdiff-0.3.2/docdiff/charstring.rb
-* automateit-0.80624/lib/automateit/account_manager/posix.rb
-* simplemapper-0.0.6/lib/simple_mapper/default_plugins/associations.rb
-* onebody-0.3.0/vendor/rails/activesupport/lib/active_support/multibyte/handlers/utf8_handler.rb
-* notification-0.2/Rakefile
-* websitary-0.5/lib/websitary/htmldiff.rb
-* feedupdater-0.2.5/lib/feed_updater/vendor/daemons/daemonize.rb
-* rogdl-0.2.3/lib/string.rb
-* yapra-0.1.1/legacy_plugins/Filter/sort.rb
-* rwdaddresses-1.03/extras/rconftool.rb
-* ruote-0.9.18/test/raw_prog_test.rb
-* sequel_core-2.2.0/lib/sequel_core/core_sql.rb
-* html-table-1.3.1/examples/advanced.rb
-* swivel-0.0.175/vendor/activesupport-2.0.2-/lib/active_support/multibyte/handlers/utf8_handler.rb
-* Rubernate-0.1.7/tests/rubernate/impl/dbi_generic_stub.rb
-* logmerge-1.0.0/lib/logmerge/resolv.rb
-* mongoose-0.2.5/lib/mongoose/column.rb
-* aquarium-0.4.2/spec/aquarium/aspects/advice_chain_node_spec.rb
-* qualitysmith_extensions-0.0.64/lib/qualitysmith_extensions/object/ancestry_of_method.rb
-* rubygame-2.3.0/samples/chimp.rb
-* rshell-0.1.0/lib/g/misc.rb
-* bibliomori-0.2.3/src/filter.rb
-* Ruby-MemCache-0.0.4/lib/memcache.rb
-* raggle-0.4.2/extras/test_html_renderer.rb
-* vpim-0.619/lib/vpim/rrule.rb
-* command-set-0.10.4/lib/command-set/arguments.rb
-* activerdf-1.6.10/lib/active_rdf/queryengine/query2jars2.rb
-* hobofields-0.7.5/lib/hobo_fields/field_spec.rb
-* mssqlclient-0.1.0/RAKEFILE
-* html-table-1.3.1/test/tc_head.rb
-* ruby-odbc-0.9995/ruby-odbc-0.9995/utf8/extconf.rb
-* ditz-0.3/lib/operator.rb
-* tolerances-1.0.0/lib/tolerance.rb
-* raingrams-0.0.9/lib/raingrams/multigram_model.rb
-* cheat-1.2.1/lib/site.rb
-* ap4r-0.3.6/lib/ap4r/mongrel.rb
-* radiant-0.6.7/vendor/rails/actionpack/test/controller/fragment_store_setting_test.rb
-* datamapper-0.3.2/lib/data_mapper/associations/belongs_to_association.rb
-* rools-0.4/RAKEFILE
-* gettext-1.91.0/test/test_gettext.rb
-* multibyte-0.0.1/lib/multibyte/handlers/utf8_handler.rb
-* data_objects-0.9.2/lib/data_objects/transaction.rb
-* onebody-0.3.0/vendor/rails/railties/builtin/rails_info/rails/info.rb
-* mongrel_esi-0.5.4/test/net/server_test.rb
-* dbc-2.0.0/lib/dbc/ocl.rb
-* rubylexer/test/data/heremonsters_dos.rb
-* lib/ftools.rb
-* lib/rdoc/generators/template/html/html.rb
-* lib/yaml/types.rb
-* ruby-1.8.7/sample/test.rb
-* ruby-1.8.7/test/fileutils/test_fileutils.rb
-* ruby-1.8.7/test/ruby/test_proc.rb
-* reg/regcompiler.rb
-* reg/regvar.rb
-* rubyparser/rubyparser.rb
-* /usr/lib/ruby/1.9.0/resolv.rb
-* /usr/lib/ruby/1.8/cmdparse2.rb
-* /usr/lib/ruby/1.8/puppet/provider/package/appdmg.rb
-* /usr/lib/ruby/1.8/qwik/util-css.rb
-* /usr/lib/ruby/1.8/rbbr/doc/ri2.rb
-* libxml-parser-ruby1.8/examples/digesttest.rb
-* glark/optproc.rb
-* hiki/hiki/plugin.rb
-* kagemai/lib/xmlscan/parser.rb
-* actionpack/test/controller/caching_test.rb
-* activesupport/lib/active_support/multibyte/handlers/utf8_handler.rb
-* railties/builtin/rails_info/rails/info.rb
-* railties/lib/initializer.rb
-* skktools/filters/skkdictools.rb
-* cursor-0.9/duck.rb
-* Ron-0.1.0/lib/ron.rb
-* ruby-debug-0.10.0/cli/ruby-debug/processor.rb
+stick-1.3.3/lib/stick/matrix.rb
+main-2.8.0/lib/main/base.rb
+ya2yaml-0.26/lib/ya2yaml.rb
+typo-5.0.3.98.1/config/environment.rb
+gecoder-with-gecode-0.8.2/lib/gecoder/interface/constraints/set/connection.rb
+radiant-0.6.7/vendor/rails/railties/lib/initializer.rb
+aspectr-0-3-5/lib/aspectr.rb
+rubygems-update-1.2.0/lib/rubygems/test_utilities.rb
+authorails-1.0.0/lib/initializer.rb
+rq-3.4.0/lib/rq/lockfile.rb
+rubygame-2.3.0/lib/rubygame/rect.rb
+extract-curves-0.1.1/ruby_libs/pav/string/observable.rb
+extract_curves-0.0.1/ruby_libs/pav/string/observable.rb
+logging-0.8.0/test/test_logger.rb
+typo-5.0.3.98.1/vendor/syntax/lib/syntax/lang/ruby.rb
+ruby-ajp-0.2.1/lib/net/ajp13.rb
+stomp-1.0.5/lib/stomp.rb
+wwwsrv-0.15.3/wwwsrv/fastcgi.rb
+rgen-0.4.2/redist/xmlscan/tests/deftestcase.rb
+muding-0.2.0/lib/initializer.rb
+aquarium-0.4.2/spec/aquarium/aspects/aspect_spec.rb
+docdiff-0.3.2/docdiff/charstring.rb
+sequel_core-2.2.0/lib/sequel_core/core_sql.rb
+logmerge-1.0.0/lib/logmerge/resolv.rb
+bibliomori-0.2.3/src/filter.rb
+activerdf-1.6.10/lib/active_rdf/queryengine/query2jars2.rb
+gettext-1.91.0/test/test_gettext.rb
+data_objects-0.9.2/lib/data_objects/transaction.rb
+rubylexer/test/data/heremonsters_dos.rb
+/usr/lib/ruby/1.8/qwik/util-css.rb
+/usr/lib/ruby/1.9.0/resolv.rb
+skktools/filters/skkdictools.rb
+reg/regcompiler.rb
+/usr/lib/ruby/1.8/puppet/provider/nameservice.rb
+/usr/lib/ruby/1.8/tkextlib/bwidget/buttonbox.rb
+
+? ruby-1.8.7/sample/test.rb
+? ruby-1.8.7/test/fileutils/test_fileutils.rb
+? rubyparser/rubyparser.rb
+? actionpack/test/controller/caching_test.rb
+? activesupport/lib/active_support/multibyte/handlers/utf8_handler.rb
+? railties/builtin/rails_info/rails/info.rb
+? railties/lib/initializer.rb
+? cursor-0.9/duck.rb
+? ruby-debug-0.10.0/cli/ruby-debug/processor.rb
+
+

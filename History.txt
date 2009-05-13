@@ -1,6 +1,42 @@
+=== 0.8.2 / 2009-04-21
+* 14 Minor Enhancements:
+  * should be no tokens left in Node tree now
+  * lots of code trying to make things faster (no luck so far)
+  * declare types and parameters of variation of all inputs
+  * to_parsetree now outputs 1.8.6 (new default) as well as 1.8.7 tree formats
+  * #parsetree takes a session arg instead of thread-local variables
+  * reduce number of warnings/noise in test output
+  * created #to_parsetree_and_warnings: returns warnings along with a tree
+  * (for now, no warnings are ever emitted, tho)
+  * some utilities for working with node trees
+  * split off rescue operator and begin..end from ParenedNode
+  * made a VarNode to replace VarNameToken in node trees
+  * Reg::Repeat#subregs was missing, had to hack one up
+  * Reg::LookBack/LookAhead#subregs were missing too
+  * unparse now tracks lines in the original src
+  * beginnings of support for 1.9 syntax
+
+* 10 Bugfixes:
+  * don't panic if rubygems not available
+  * @lvalue is not useful to clients, so ignore it when comparing trees
+  * many improvements to unparser; most expressions now unparse correctly
+  * rescue and friends now work in modules, classes and metaclasses
+  * word array splitter is perfect now
+  * comma and unary star now have right precedence wrt = in all cases
+  * fixed miscellaneous minor misparsings
+  * some of the remaining ParseTree compatibility bugs removed
+  * string contents are now always left unaltered in Node tree output
+  * (so escape translation has to be done later, when Nodes are used)
+  * #to_parsetree of an empty source text should be happier now
+
+=== 0.8.1 / 2009-04-21
+* 4 Minor Enhancements:
+  * fixed embarassing permissions problems
+  * version.rb and History.txt were missing from the release
+  * I left off the dependancy on reg, oops!
+  * hacked up tests to ignore sudden problem with extra nils
+
 === 0.8.0 / 2008-10-10
-
-* 1 major enhancement
-
+* 1 Major Enhancement:
   * Birthday!
 
