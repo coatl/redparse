@@ -209,9 +209,17 @@ class RedParseTest<Test::Unit::TestCase
     "p = p m %(1) do end",
     "p=556;p (e) /a",
     "z{|| p (1).m}",
+    'def sum(options = {:weights => weights = Hash.new(1)}); options.empty? or options.keys.size > 1; end',
   ]
 
   ONELINERS=[
+    ' /\A#{__FILE__}tcase/n =~ i '...'',
+    'doc_status, err_args = Documeh_status{fcgi_state = 3; docespond do doc_response =fcgi_state =  1; end }'...'',
+    'print "coled: " + $! +" wiin #{@ray}\n";'...'',
+    'class A;def b;class <<self;@@p = false end;end;end'...'',
+    'def d; return (block_given? ? begin; yield f; ensure; f.close; end : f); end'...'',
+    'def sum(options = {:weights => weights = Hash.new(1)}); options.empty? or options.keys.size > 1; end'...'',
+    'def d;e install_dir;end'...'',
     '(m).kk,(m+n).kk=3'...'',
     '((m).kk,(m+n).kk)=3'...'',
     '((m).kk,(m+n).kk),t=3'...'',
@@ -2733,6 +2741,7 @@ class RedParseTest<Test::Unit::TestCase
 END
 
   STANZAS=PASSTHRU_BSLASHES_ENTIRE+%q[
+
      begin 
        a
      rescue B=>c
