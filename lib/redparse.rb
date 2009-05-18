@@ -1835,8 +1835,8 @@ end
   def expanded_RULES
     result=RULES()
     return result if (-[:foo, -[:bar]]).subregs.grep(Reg::Subseq).empty?
-    result.map{|rule| 
-      unless rule.left.subregs.include?(Reg::Subseq) 
+    result.map!{|rule| 
+      unless rule.left.subregs.grep(Reg::Subseq) 
       then rule 
       else
         right=rule.right
