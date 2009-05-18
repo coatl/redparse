@@ -213,6 +213,8 @@ class RedParseTest<Test::Unit::TestCase
   ]
 
   ONELINERS=[
+    '"#{publi}#{}>"'...'',
+    'return (@images = @old_imgs)'...'',
     ' /\A#{__FILE__}tcase/n =~ i '...'',
     'doc_status, err_args = Documeh_status{fcgi_state = 3; docespond do doc_response =fcgi_state =  1; end }'...'',
     'print "coled: " + $! +" wiin #{@ray}\n";'...'',
@@ -2741,6 +2743,20 @@ class RedParseTest<Test::Unit::TestCase
 END
 
   STANZAS=PASSTHRU_BSLASHES_ENTIRE+%q[
+    return @senders[1] =
+      2
+
+    case
+    when 0
+      guecoding     
+    else case
+      when eucjp_match_length 
+        guing
+      end
+    end
+
+     %w[ ac
+         df]
 
      begin 
        a
