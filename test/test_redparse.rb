@@ -213,6 +213,7 @@ class RedParseTest<Test::Unit::TestCase
   ]
 
   ONELINERS=[
+    'z = valueo_s rescue "?"'...'',
     '"#{publi}#{}>"'...'',
     'return (@images = @old_imgs)'...'',
     ' /\A#{__FILE__}tcase/n =~ i '...'',
@@ -3513,6 +3514,7 @@ EOS
 
   WRAPPERS=[ #enable at most 2 or tests take forever!!!
     '(...)',  #normal mode, should usually be enabled
+#    'a rescue (...)',
 #    "((...))",
 #    'def ((...)).foo; end',
 #    'a0 = (...) rescue b0',
