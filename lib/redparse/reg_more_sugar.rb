@@ -20,6 +20,7 @@
   unless Array===(Class*5).subregs
     module ::Reg
       class Repeat
+        undef subregs if instance_methods.include? "subregs"
         def subregs
           [@reg]
         end
