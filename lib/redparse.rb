@@ -2151,7 +2151,7 @@ if defined? SPECIALIZED_KEYWORDS
       }.inject{|sum,kw| sum|kw}
     else
       fail unless String===ident
-      ident=Punc2name[ident] unless /^[a-z_]+$/i===ident
+      ident=Punc2name[ident] unless /^(?:(?!#{LETTER_DIGIT}).)+$/o===ident
       fail "no name for #{orig_ident}" unless ident
       eval %{
         class Keyword_#{ident} < SpecializedKeywordToken
@@ -2179,7 +2179,7 @@ end
 
 if defined? SPECIALIZED_KEYWORDS
   def make_specialized_kw(name,offset)
-    name=Punc2name[name] unless /^[a-z]+$/===name
+    name=Punc2name[name] unless /^((?!#{LETTER_DIGIT}).)+$/o===name
     KW2class[name].new(offset)
   end
   alias make_kw make_specialized_kw

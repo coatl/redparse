@@ -261,7 +261,7 @@ class RedParse
 
     class MethNameToken
       alias to_lisp to_s
-      def has_equals; /[a-z_0-9]=$/i===ident end unless instance_methods.include? "has_equals"
+      def has_equals; /#{LETTER_DIGIT}=$/o===ident end unless instance_methods.include? "has_equals"
 
       identity_param :has_equals, true,false
     end
@@ -1087,9 +1087,9 @@ end
 
       def unparse o=default_unparse_options
         result=l=left.unparse(o)
-        result+=" " if /\A!|a-z_/i===op
+        result+=" " if /\A(?:!|#{LCLETTER})/o===op
         result+=op
-        result+=" " if /a-z_/i===op or / \Z/===l
+        result+=" " if /#{LETTER_DIGIT}\Z/o===op or / \Z/===l
         result+=right.unparse(o)      
       end
 
@@ -1373,7 +1373,7 @@ end
         op=op()
         op=op.chomp "@"
         result=op
-        result+=" " if /[a-z_]/i===op or /^[+-]/===op && LiteralNode===val
+        result+=" " if /#{LETTER}/o===op or /^[+-]/===op && LiteralNode===val
         result+=val.unparse(o)
       end
     end
@@ -1487,8 +1487,8 @@ end
       alias right constant
       def initialize(val1,op,val2=nil)
         val1,op,val2=nil,val1,op unless val2
-        val1=val1.ident if VarNode===val1 and /\A[A-Z]/===val1.ident
-        val2=val2.ident if VarNode===val1 and /\A[A-Z]/===val2.ident
+        val1=val1.ident if VarNode===val1 and /\A#{UCLETTER}/o===val1.ident
+        val2=val2.ident if VarNode===val1 and /\A#{UCLETTER}/o===val2.ident
         replace [val1,val2]
       end
 
