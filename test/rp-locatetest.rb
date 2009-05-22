@@ -140,6 +140,7 @@ RUBYLIST=(pf.badlist+
     split("\n")
 ].sort_by{rand})-pf.goodlist + pf.goodlist
 RUBYLIST.reject!{|x| %r{japanese/zipcodes\.rb$}===x } #65M of ruby src!!!
+RUBYLIST.reject!{|x| /\A\s*\Z/===x }
 RUBYLIST.uniq!
 
 def self.main
