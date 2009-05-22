@@ -219,7 +219,7 @@ class RedParse
       alias image ident
 
 
-      warn "KeywordToken#as/infix should be in rubylexer"
+      #KeywordToken#as/infix should be in rubylexer
       alias old_as as
       def as
         if tag and ident[/^[,*&]$/]
