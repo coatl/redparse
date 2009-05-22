@@ -37,5 +37,6 @@ README.txt
 History.txt
 Rakefile
 COPYING.LGPL
-nurli/test_control.nurli
 bin/redparse
+lib/redparse/generate.rb
+test/data/def_spec.rb
