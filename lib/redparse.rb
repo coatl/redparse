@@ -30,7 +30,6 @@ rescue LoadError=>e
 end
 require 'rubylexer'
 require 'reg'
-require 'ron/graphedge'
 
 require "redparse/node"
 #require "redparse/decisiontree"
