@@ -1970,6 +1970,12 @@ end
   ###### specific to parsing ruby
 
 
+  UCLETTER=RubyLexer::UCLETTER
+
+  LCLETTER=RubyLexer::LCLETTER
+  LETTER=RubyLexer::LETTER
+  LETTER_DIGIT=RubyLexer::LETTER_DIGIT
+
   def vertices; self.class.constants.grep(Node|Token) end
 
   def self.has_return_hash_fix? #is this needed? it's not used in this file....
