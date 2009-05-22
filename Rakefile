@@ -27,9 +27,9 @@ end
 #     _.test_globs=["test/*"]
      _.description=desc
      _.summary=desc[/\A[^.]+\./]
-     _.spec_extras={:bindir=>''}
+     _.spec_extras={:bindir=>'bin/'}
 #     _.rdoc_pattern=/\A(README\.txt|lib\/.*\.rb)\Z/
-     _.remote_rdoc_dir="/"
+#     _.remote_rdoc_dir="/"
    end
 
 
