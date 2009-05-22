@@ -3002,6 +3002,7 @@ end
 
         return
 
+=begin
 #this should have been taken care of by with_string_data        
         first=shift
         delete_if{|x| ''==x }
@@ -3015,6 +3016,7 @@ end
             strfrag
           end
         }
+=end
       end
 
       def translate_escapes(str)
