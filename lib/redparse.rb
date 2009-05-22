@@ -616,6 +616,9 @@ end
         r.action.exemplars=@inputs.grep r.action.hint
       end
     }
+ 
+    warn "error recovery rules disabled for now; creates too many states and masks errors"
+    @all_rules.reject!{|r| r.action==MisparsedNode }
 
     #names have to be allocated globally to make sure they don't collide
     names=@all_rules.map{|r| 
@@ -2354,8 +2357,6 @@ end
 
   inspect_constant_names
 
-  warn "error recovery rules disabledfor now; creates too many states and masks errors"
-
   def RULES
     lower_op= lower_op()
 
@@ -2363,12 +2364,10 @@ end
      -[EoiToken]>>:error,
     ]+
 
-=begin disabled temporarily, to see how many states it saves
     #these must be the lowest possible priority, and hence first in the rules list
     BEGIN2END.map{|_beg,_end| 
       -[KW(_beg), (KW(_beg)|KW(_end)).~.*, KW(_end), KW(/^(do|\{)$/).~.la]>>MisparsedNode
     }+
-=end
 
     [
     -[UNOP, Expr, lower_op]>>UnOpNode,
