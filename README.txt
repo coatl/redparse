@@ -1,6 +1,6 @@
 = RedParse
-* redparse.rubyforge.org
 * rubyforge.org/projects/redparse
+* github.com/coatl/redparse
 
 == DESCRIPTION:
 
@@ -20,8 +20,8 @@ the wild. For known problems, see below.
   (external iterators). Reg depends on Sequence's predecessor, Cursor, 
   altho Cursor isn't used at all in RedParse. The (long-delayed) next 
   version of Reg will use Sequence. To summarize:
-  *  RedParse 0.9.0 requires RubyLexer>=0.7.1 and Reg>=0.4.7
-  *  RubyLexer 0.7.1 requires Sequence>=0.2.0
+  *  RedParse 0.8.2 requires RubyLexer>=0.7.4 and Reg>=0.4.7
+  *  RubyLexer 0.7.4 requires Sequence>=0.2.0
   *  Reg 0.4.7 requires Cursor (not really needed here)
 * All are available as gems. (Or tarballs on rubyforge, if you must.)
 
@@ -60,16 +60,14 @@ Please see COPYING.LGPL for details.
 
 == Drawbacks:
 
-* Pathetically, rediculously slow (to be addressed soon, really).
+* Pathetically, rediculously slow (ok, compiler-compilers are hard...)
 * Error handling is very minimal right now.
 * No warnings at all.
 * Some expressions aren't parsed correctly. see below.
-* Line numbers in ParseTrees not supported yet. 
 * Unit test takes a fairly long time.
 * Lots of warnings printed during unit test.
 * Debugging parse rules is not straightforward.
-* No support for ruby 1.9.
-* No support for any charset but ascii (until rubylexer gets it).
+* Incomplete support for ruby 1.9.
 * "loosey-goosey" parser happily parses many expressions which normal 
   ruby considers errors.
 
@@ -92,8 +90,7 @@ Please see COPYING.LGPL for details.
 
   #presumably tree was altered somehow in the walk-"loop" above
   #when done mucking with the tree, you can turn it into one
-  #of two other formats: ParseTree s-exps or (experimental)
-  #ruby source code.
+  #of two other formats: ParseTree s-exps or ruby source code.
 
   tree.to_parsetree #=> turns a tree into an ParseTree-style s-exp.
 
@@ -251,73 +248,110 @@ existing format in the future, but no incompatibility-creating changes.
 
 == Known failing expressions
 * The following expressions are known to parse incorrectly currently:
-* x{
-    for i in (begin
-    [44,55,66,77,88] end) do p i**Math.sqrt(i) end
-  }
 * def foo(a = 1)    end; def foo(a=b=c={})  end; def bar(a=b=c=1,d=2)  end
 * <<-EOS<<__LINE__
-  EOS
-* %W"is #{"Slim #{2?"W":"S"}"}#{xx}."
+    EOS
+* z = valueo_s rescue "?"
+* self.<=>:p8
+* return (@images = @old_imgs)
+* p ?e.<<?y
+* doc_status, err_args = Documeh_status{fcgi_state = 3; docespond do doc_response =fcgi_state =  1; end }
+* class A;def b;class <<self;@@p = false end;end;end
+* return @senders[1] =
+    2
 
-== Homie doan' play dat
-* These expressions don't parse the same as in MRI, I believe because of 
-  bug(s) in MRI. 
+== Not exactly right, but semantically equivalent
+* These don't return exactly the same s-exp as MRI/ParseTree, but close enough:  
+* for i in (begin
+    [44,55,66,77,88] end) do p i**Math.sqrt(i) end
+* %W"is #{"Slim #{2?"W":"S"}"}#{xx}."
+* def d; return (block_given? ? begin; yield f; ensure; f.close; end : f); end
+* "#{publi}#{}>"
+* /__A#{__FILE__}tcase/n =~ i
+
+== Bugs in ruby
+* These expressions don't parse the same as in MRI because of bug(s) in MRI:
 * p = p m %(1)
 * p=556;p (e) /a
 * c do p (110).m end
 
 == Bugs in ParseTree
-* $11111111111111111111111111111111111111111111111111111111111111111111
+* Unit tests see failures in these cases, but due to bugs in ParseTree:
 * case F;when G; else;case; when j; end;end
 * def foo(a=b=c={}) end
+* $11111111111111111111111111111111111111111111111111111111111111111111
+* proc{|&b| }
+* def sum(options = {:weights => weights = Hash.new(1)}); opt; end
 
 ==Known failing files
 *  And here's a list of files which are known to parse incorrectly:
-stick-1.3.3/lib/stick/matrix.rb
-main-2.8.0/lib/main/base.rb
-ya2yaml-0.26/lib/ya2yaml.rb
-typo-5.0.3.98.1/config/environment.rb
-gecoder-with-gecode-0.8.2/lib/gecoder/interface/constraints/set/connection.rb
-radiant-0.6.7/vendor/rails/railties/lib/initializer.rb
-aspectr-0-3-5/lib/aspectr.rb
-rubygems-update-1.2.0/lib/rubygems/test_utilities.rb
-authorails-1.0.0/lib/initializer.rb
-rq-3.4.0/lib/rq/lockfile.rb
-rubygame-2.3.0/lib/rubygame/rect.rb
-extract-curves-0.1.1/ruby_libs/pav/string/observable.rb
-extract_curves-0.0.1/ruby_libs/pav/string/observable.rb
-logging-0.8.0/test/test_logger.rb
-typo-5.0.3.98.1/vendor/syntax/lib/syntax/lang/ruby.rb
-ruby-ajp-0.2.1/lib/net/ajp13.rb
-stomp-1.0.5/lib/stomp.rb
-wwwsrv-0.15.3/wwwsrv/fastcgi.rb
-rgen-0.4.2/redist/xmlscan/tests/deftestcase.rb
-muding-0.2.0/lib/initializer.rb
-aquarium-0.4.2/spec/aquarium/aspects/aspect_spec.rb
-docdiff-0.3.2/docdiff/charstring.rb
-sequel_core-2.2.0/lib/sequel_core/core_sql.rb
-logmerge-1.0.0/lib/logmerge/resolv.rb
-bibliomori-0.2.3/src/filter.rb
+
+
 activerdf-1.6.10/lib/active_rdf/queryengine/query2jars2.rb
-gettext-1.91.0/test/test_gettext.rb
+aquarium-0.4.2/spec/aquarium/aspects/aspect_spec.rb
+aspectr-0-3-5/lib/aspectr.rb
+authorails-1.0.0/lib/initializer.rb
+bibliomori-0.2.3/src/filter.rb
+cursor-0.9/cursor/circular.rb
+cursor-0.9/duck.rb
 data_objects-0.9.2/lib/data_objects/transaction.rb
-rubylexer/test/data/heremonsters_dos.rb
-/usr/lib/ruby/1.8/qwik/util-css.rb
-/usr/lib/ruby/1.9.0/resolv.rb
-skktools/filters/skkdictools.rb
+docdiff-0.3.2/docdiff/charstring.rb
+extract_curves-0.0.1/ruby_libs/pav/string/observable.rb
+extract-curves-0.1.1/ruby_libs/pav/string/observable.rb
+gecoder-with-gecode-0.8.2/lib/gecoder/interface/constraints/set/connection.rb
+gettext-1.91.0/test/test_gettext.rb
+lazytools-0.1.0/lib/dirstructure.rb
+lockfile-1.4.3/lib/lockfile-1.4.3.rb
+lockfile-1.4.3/lib/lockfile.rb
+logging-0.8.0/test/test_logger.rb
+logmerge-1.0.0/lib/logmerge/resolv.rb
+main-2.8.0/lib/main/base.rb
+muding-0.2.0/lib/initializer.rb
+net-mdns-0.4/lib/net/dns/resolv.rb
+not_naughty-0.5.1/spec/not_naughty_spec.rb
+radiant-0.6.7/vendor/rails/railties/lib/initializer.rb
+redparse/test/data/def_spec.rb
 reg/regcompiler.rb
+rgen-0.4.2/redist/xmlscan/tests/deftestcase.rb
+rq-3.4.0/lib/rq/lockfile.rb
+ruby-ajp-0.2.1/lib/net/ajp13.rb
+ruby-contract-0.1.1/lib/contract/overrides.rb
+ruby-debug-0.10.0/cli/ruby-debug/processor.rb
+rubygame-2.3.0/lib/rubygame/rect.rb
+rubygems-update-1.2.0/lib/rubygems/test_utilities.rb
+rubylexer/test/data/heremonsters_dos.rb
+ruby-nuggets-0.2.1.246/lib/nuggets/array/to_hash.rb
+sequel_core-2.2.0/lib/sequel_core/core_sql.rb
+skktools/filters/skkdictools.rb
+stick-1.3.3/lib/stick/matrix.rb
+stomp-1.0.5/lib/stomp.rb
+syntax-1.0.0/lib/syntax/lang/ruby.rb
+tournament-1.1.0/lib/tournament/bracket.rb
+typo-5.0.3.98.1/config/environment.rb
+typo-5.0.3.98.1/vendor/syntax/lib/syntax/lang/ruby.rb
+/usr/lib/ruby/1.8/docdiff/charstring.rb
 /usr/lib/ruby/1.8/puppet/provider/nameservice.rb
+/usr/lib/ruby/1.8/qwik/util-css.rb
+/usr/lib/ruby/1.8/resolv.rb
+/usr/lib/ruby/1.8/rexml/doctype.rb
 /usr/lib/ruby/1.8/tkextlib/bwidget/buttonbox.rb
-
-? ruby-1.8.7/sample/test.rb
-? ruby-1.8.7/test/fileutils/test_fileutils.rb
-? rubyparser/rubyparser.rb
-? actionpack/test/controller/caching_test.rb
-? activesupport/lib/active_support/multibyte/handlers/utf8_handler.rb
-? railties/builtin/rails_info/rails/info.rb
-? railties/lib/initializer.rb
-? cursor-0.9/duck.rb
-? ruby-debug-0.10.0/cli/ruby-debug/processor.rb
-
-
+/usr/lib/ruby/1.9.0/resolv.rb
+/usr/lib/ruby/1.9.0/rexml/doctype.rb
+/usr/share/doc/libtcltk-ruby1.8/examples/tkextlib/tkHTML/ss.rb
+/usr/share/doc/libtcltk-ruby1.9/examples/tkextlib/tkHTML/ss.rb
+/usr/share/doc/libxml-ruby/tests/tc_xml_parser8.rb
+/usr/share/glark/options.rb
+/usr/share/hiki/hiki/docdiff/charstring.rb
+/usr/share/nadoka/rice/irc.rb
+/usr/share/rails/actionpack/test/controller/caching_test.rb
+/usr/share/rails/actionpack/test/controller/fragment_store_setting_test.rb
+/usr/share/rails/activesupport/lib/active_support/multibyte/handlers/utf8_handler.rb
+/usr/share/rails/railties/builtin/rails_info/rails/info.rb
+/usr/share/rails/railties/lib/initializer.rb
+/usr/share/skktools/filters/skkdictools.rb
+/usr/share/tdiary/TC_tdiary-setup.rb
+wwwsrv-0.15.3/wwwsrv/fastcgi.rb
+xmlscan-0.2.3/tests/deftestcase.rb
+ya2yaml-0.26/lib/ya2yaml.rb
+ActiveRecord-JDBC-0.5/lib/jdbc_adapter/jdbc_hsqldb.rb
+ruby-web-1.1.1/lib/webunit/parser.rb
