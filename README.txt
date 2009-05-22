@@ -1,6 +1,6 @@
 = RedParse
-* rubyforge.org/projects/redparse
-* github.com/coatl/redparse
+* http://rubyforge.org/projects/redparse
+* http://github.com/coatl/redparse
 
 == DESCRIPTION:
 
