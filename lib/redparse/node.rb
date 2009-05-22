@@ -27,7 +27,6 @@ require 'tempfile'
 require 'pp'
 require "rubylexer"
 require "reg"
-require "regxform"
 
 
 
