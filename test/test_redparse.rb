@@ -28,8 +28,6 @@ require "rubylexer/test/testcases"
 
 $VERBOSE=1
 
-warn "still some literal ?a..?z and a-z in regexes in RedParse... replace with RubyLexer::WHATEVER_LETTER"
-
 class Test::Unit::TestCase
   def known_error
     from=caller.first
