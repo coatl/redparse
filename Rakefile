@@ -21,7 +21,7 @@ end
    hoe=Hoe.new("redparse", RedParse::VERSION) do |_|
      _.author = "Caleb Clausen"
      _.email = "redparse-owner @at@ inforadical .dot. net"
-     _.url = ["http://redparse.rubyforge.org/", "http://rubyforge.org/projects/redparse/"]
+     _.url = ["http://github.com/coatl/redparse/", "http://rubyforge.org/projects/redparse/"]
      _.extra_deps << ['rubylexer', '>= 0.7.4']
      _.extra_deps << ['reg', '>= 0.4.7']
 #     _.test_globs=["test/*"]
