@@ -355,3 +355,4 @@ xmlscan-0.2.3/tests/deftestcase.rb
 ya2yaml-0.26/lib/ya2yaml.rb
 ActiveRecord-JDBC-0.5/lib/jdbc_adapter/jdbc_hsqldb.rb
 ruby-web-1.1.1/lib/webunit/parser.rb
+filemanager-0.2.0/filemanager/app/controllers/fm/filemanager_controller.rb
