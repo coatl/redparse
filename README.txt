@@ -60,7 +60,7 @@ Please see COPYING.LGPL for details.
 
 == Drawbacks:
 
-* Pathetically, rediculously slow (ok, compiler-compilers are hard...)
+* Pathetically, ridiculously slow (ok, compiler-compilers are hard...)
 * Error handling is very minimal right now.
 * No warnings at all.
 * Some expressions aren't parsed correctly. see below.
@@ -82,8 +82,8 @@ Please see COPYING.LGPL for details.
 
   tree.walk{|parent,i,subi,node|
     case node
-    when CallNode: #... do something with method calls
-    when AssignNode: #... maybe alter assignments somehow
+    when RedParse::CallNode: #... do something with method calls
+    when RedParse::AssignNode: #... maybe alter assignments somehow
     #.... and so on
     end
   }
