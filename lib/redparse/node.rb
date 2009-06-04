@@ -3354,14 +3354,14 @@ end
           each{|elem| 
             case elem
             when String
+              was_esc_nl= (elem=="\\\n") #ick
               elem=translate_escapes elem
               if saw_string
-                result=[:str, elem]
+                vals.push [:str, elem] if !elem.empty? or was_esc_nl
               else
                 saw_string=true
-                result=elem
+                vals.push elem
               end
-              vals.push result
             when NopNode
               vals.push [:evstr]
             when Node #,VarNameToken
