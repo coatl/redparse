@@ -196,6 +196,16 @@ class RedParseTest<Test::Unit::TestCase
   FAILURE_EXAMPLES=[
   ]
   RUBYBUG_EXAMPLES=[
+'    case
+    when 0
+      guecoding
+    else case
+      when eucjp_match_length
+        guing
+      end
+    end',
+
+    'case; when false; else case; when nil; else 5; end; end',
     'def foo(a=b=c={}) end',
     "$11111111111111111111111111111111111111111111111111111111111111111111",
     "c do p (110).m end",
@@ -211,6 +221,18 @@ class RedParseTest<Test::Unit::TestCase
   ]
 
   ONELINERS=[
+    'case; when false; else case; when nil; else 5; end; end'...'',
+    'case;else case; else; end;end'...'',
+    'case; else; end'...'',
+    'c while d and 2.a?(b)..8'...'',
+    'c while d and 888888888888888888888888888888888888888888888888888888..2.a?(b)'...'',
+    'c while d and 8.8..2.a?(b)'...'',
+    'c while d and 8..2.a?(b)'...'',
+    'c while d and :a8..2.a?(b)'...'',
+    'c while d and /8/..2.a?(b)'...'',
+    'c while d and /8/../2.a?(b)/'...'',
+    'c while d and 8../2.a?(b)/'...'',
+    'c while d and a8../2.a?(b)/'...'',
     'z = valueo_s rescue "?"'...'',
     '"#{publi}#{}>"'...'',
     'return (@images = @old_imgs)'...'',
