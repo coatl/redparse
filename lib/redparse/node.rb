@@ -1921,7 +1921,7 @@ end
     class AssignmentRhsNode < Node #not to appear in final parse tree
       param_names :open_, :val, :close_
       def initialize(*args)
-        if args.size==1: super args.first
+        if args.size==1; super args.first
         else super args[1]
         end
       end
