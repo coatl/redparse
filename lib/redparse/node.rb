@@ -3391,7 +3391,7 @@ end
                      charset=set
                    end
                  }
-                 vals.push numopts|charset unless numopts|charset==0
+                 regex_options= numopts|charset unless numopts|charset==0
                  val=/#{val}/
                  type
                when '{'
@@ -3439,6 +3439,7 @@ end
             type=DOWNSHIFT_STRING_TYPE[type]
           end
           result= vals.unshift(type)
+          result.push regex_options if regex_options
         end
         result=[:match, result] if defined? @implicit_match and @implicit_match
         return result
