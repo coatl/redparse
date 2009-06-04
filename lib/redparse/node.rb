@@ -360,6 +360,17 @@ class RedParse
       attr :string
     end
 
+    module ListInNode
+      def []=(*args)
+        val=args.last
+        #inline symbols as callnodes
+        if Symbol===val
+          val=CallNode[nil,val.to_s]
+        end
+        super
+      end
+    end
+
     class Node<Array
       include Stackable
       extend Stackable::Meta
