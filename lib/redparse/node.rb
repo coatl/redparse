@@ -4058,6 +4058,30 @@ end
         return result
       end
 
+      def get k
+        case k
+        when Node; 
+          k.delete_extraneous_ivars!
+          k.delete_linenums!
+        when Symbol, Numeric; k=LiteralNode[k]
+        when true,false,nil; k=VarLikeNode[k.inspect]
+        else raise ArgumentError
+        end
+        return as_h[k]
+      end
+
+      def as_h
+        return @h if defined? @h
+        @h={}
+        (0...size).step(2){|i|
+          k=self[i].dup
+          k.delete_extraneous_ivars!
+          k.delete_linenums!
+          @h[k]=self[i+1]
+        }
+        return @h
+      end
+
       def parsetree(o)
         map{|elem| elem.rescue_parsetree(o)}.unshift :hash
       end
