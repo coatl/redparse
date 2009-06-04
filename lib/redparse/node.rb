@@ -394,6 +394,25 @@ class RedParse
         super and flattened_ivars_equal?(other)
       end
 
+      def +(other)
+        p "Node#+ called unexpectedly"
+        if SequenceNode===other
+          SequenceNode[self,*other]
+        else
+          SequenceNode[self,other]
+        end
+      end
+
+      alias original_brackets_assign []= #needed by LiteralNode
+      def []=(*args)
+        val=args.last
+        #inline symbols as callnodes
+        if Symbol===val
+          val=CallNode[nil,val.to_s]
+        end
+        super
+      end
+
       def image; "(#{inspect})" end
 
       def error? x; false end
@@ -414,9 +433,19 @@ class RedParse
       end
       attr_accessor :endline
       attr_accessor :errors
+      attr_reader :offset
+
+      def self.inline_symbols data
+        data.map!{|datum| 
+          Symbol===datum ? 
+            CallNode[nil,datum.to_s,nil,nil,nil] : 
+            datum 
+        }
+      end
 
       def self.[](*data)
         options=data.pop if Hash===data.last
+        inline_symbols data
         result=allocate
         result.instance_eval{
           replace data
@@ -1185,6 +1214,28 @@ end
     class VarLikeNode<ValueNode; end  #nil,false,true,__FILE__,__LINE__,self
 
     class SequenceNode<ListOpNode
+      def +(other)
+        p "Node#+ called unexpectedly"
+        if SequenceNode===other
+          dup.push *other
+        else
+          dup.push other
+        end
+      end
+
+      def []=(args,val)
+        if SequenceNode===val
+          val=Array.new(val)
+          #munge args too
+          if args.size==1 and Integer===args.first
+            args<<1
+          end
+          super args,val
+        else
+          super
+        end
+      end
+
       def image; '(;)' end
       def to_lisp
         "#{map{|x| x.to_lisp}.join("\n")}"
@@ -3533,6 +3584,20 @@ end
           end
         end
         super(val)
+      end
+
+      def self.inline_symbols data
+        #don't mangle symbols when constructing node like: LiteralNode[:foo]
+        data
+      end
+
+      def []=(*args)
+        val=args.last
+        #don't mangle symbols in this node
+        if Symbol===val
+          return( original_brackets_assign args, val )
+        end
+        super
       end
 
       def bare_method
