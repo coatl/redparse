@@ -1780,6 +1780,7 @@ end
       def initialize(*args)
         @empty_ensure=@empty_else=@op_rescue=nil
           body,rescues,else_,ensure_=*args[1...-1]
+          rescues.extend ListInNode
           if else_
             else_=else_.val or @empty_else=true
           end
@@ -1850,7 +1851,7 @@ end
     #  include OpNode
       param_names :body, :rescues #, :else!, :ensure!
       def initialize(expr,rescueword,backup)
-            replace [expr,[RescueNode[[],nil,backup]]]
+            replace [expr,[RescueNode[[],nil,backup]].extend(ListInNode)]
       end
 
       def else; nil end
@@ -1980,6 +1981,10 @@ end
         end
 
         op=op.ident
+
+        if Array==rhs.class
+          rhs.extend ListInNode
+        end
 
         return super(lhs,op,rhs)  
         #punting, i hope the next layer can handle += and the like
@@ -2633,6 +2638,8 @@ end
         else
           param_list=[param_list]
         end
+
+        param_list.extend ListInNode if param_list
 
         if block
           @do_end=block.do_end
@@ -3695,6 +3702,7 @@ end
           else_=else_.val or @empty_else=true
         end
         condition.special_conditions! if condition.respond_to? :special_conditions!
+        elsifs.extend ListInNode if elsifs
         super(condition,consequent,elsifs,else_)
         @reverse=  iftok.ident=="unless"
         if @reverse
@@ -3876,6 +3884,7 @@ end
         if otherwise
           otherwise=otherwise.val or @empty_else=true
         end
+        whens.extend ListInNode
         super(condition,whens,otherwise)
       end
 
@@ -3917,6 +3926,7 @@ end
       param_names(:whenword_,:when!,:thenword_,:then!)
       def initialize(whenword,when_,thenword,then_)
         when_=Array.new(when_) if CommaOpNode===when_
+        when_.extend ListInNode if when_.class==Array
         super(when_,then_)
       end
       alias body then
@@ -4149,6 +4159,8 @@ end
         if ensure_
           ensure_=ensure_.val or @empty_ensure=true
         end
+        args.extend ListInNode if args
+        rescues.extend ListInNode if rescues
         replace [receiver,header,args,body,rescues,else_,ensure_]
       end
 
@@ -4399,6 +4411,7 @@ end
       def initialize moduleword,name,semiword,body,rescues,else_,ensure_,endword
         else_=else_.val if else_
         ensure_=ensure_.val if ensure_
+        rescues.extend ListInNode if rescues
         super(name,body,rescues,else_,ensure_)        
       end
 
@@ -4446,6 +4459,7 @@ end
         end
         else_=else_.val if else_
         ensure_=ensure_.val if ensure_
+        rescues.extend ListInNode if rescues
         super(name,parent,body,rescues,else_,ensure_)
       end
 
@@ -4490,6 +4504,7 @@ end
       def initialize classword, leftleftword, val, semiword, body, rescues,else_,ensure_, endword
         else_=else_.val if else_
         ensure_=ensure_.val if ensure_
+        rescues.extend ListInNode if rescues
         super(val,body,rescues,else_,ensure_)
       end 
 
@@ -4551,6 +4566,7 @@ end
         exlist=rescuehdr.exceptions||[]
         exlist=[exlist] unless exlist.class==Array
         fail unless exlist.class==Array
+        exlist.extend ListInNode
         super(exlist,rescuehdr.varname,action)
       end
 
@@ -4602,6 +4618,7 @@ end
         when nil
         else [params]
         end
+        params.extend ListInNode if params
         super(receiver,params)
       end
 
