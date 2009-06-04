@@ -2637,7 +2637,7 @@ end
         if block
           @do_end=block.do_end
           blockparams=block.params
-          block=SequenceNode[*block.body] #||[]
+          block=block.body #||[]
         end
         @offset=method.offset
         method=method.ident
@@ -2906,11 +2906,7 @@ end
     class BlockNode<ValueNode #not to appear in final parse tree
       param_names :params,:body
       def initialize(open_brace,formals,stmts,close_brace)
-        case stmts
-        when SequenceNode; stmts=Array.new(stmts)
-        when nil; stmts=[]
-        else stmts=[stmts]
-        end
+        stmts||=SequenceNode[{:@offset => open_brace.offset, :@startline=>open_brace.startline}]
         
         formals&&=BlockParams.new(Array.new(formals))
         @do_end=true unless open_brace.not_real?
