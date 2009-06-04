@@ -444,7 +444,7 @@ class RedParse
           ivars[ivarname.to_sym]=instance_variable_get(ivarname)
         }
         q.group(1, self.class.name+'[', ']') {
-          displaylist= ivars.empty? ? self : self+[ivars]
+          displaylist= ivars.empty? ? self : dup<<ivars
           q.seplist(displaylist) {|v|
             q.pp v
           }
