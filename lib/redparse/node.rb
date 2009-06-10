@@ -1227,17 +1227,16 @@ end
         end
       end
 
-      def []=(args,val)
+      def []=(*args)
+        val=args.pop
         if SequenceNode===val
           val=Array.new(val)
           #munge args too
           if args.size==1 and Integer===args.first
             args<<1
           end
-          super args,val
-        else
-          super
         end
+        super *args<<val
       end
 
       def image; '(;)' end
