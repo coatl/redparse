@@ -362,12 +362,13 @@ class RedParse
 
     module ListInNode
       def []=(*args)
-        val=args.last
+        val=args.pop
         #inline symbols as callnodes
-        if Symbol===val
+        case val
+        when Symbol
           val=CallNode[nil,val.to_s]
         end
-        super
+        super *args<<val
       end
     end
 
@@ -405,12 +406,13 @@ class RedParse
 
       alias original_brackets_assign []= #needed by LiteralNode
       def []=(*args)
-        val=args.last
+        val=args.pop
         #inline symbols as callnodes
-        if Symbol===val
+        case val
+        when Symbol
           val=CallNode[nil,val.to_s]
         end
-        super
+        super *args<<val
       end
 
       def image; "(#{inspect})" end
