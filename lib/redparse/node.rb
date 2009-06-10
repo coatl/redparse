@@ -3612,12 +3612,7 @@ end
       end
 
       def []=(*args)
-        val=args.last
-        #don't mangle symbols in this node
-        if Symbol===val
-          return( original_brackets_assign args, val )
-        end
-        super
+        original_brackets_assign *args
       end
 
       def bare_method
