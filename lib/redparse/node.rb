@@ -461,6 +461,7 @@ class RedParse
             instance_variable_set name,val
           } if options
         }
+        result.initialize_ivars
         return result
       end
 
