@@ -381,6 +381,12 @@ class RedParse
         replace data
       end
 
+      def initialize_ivars
+        @offset||=0
+        @startline||=0
+        @endline||=0
+      end
+
       def flattened_ivars
         result=super
         result.each_with_index{|x,i|
@@ -3085,6 +3091,16 @@ end
           end
         }
 =end
+      end
+
+      def initialize_ivars
+        @char||='"' 
+        @open||='"' 
+        @close||='"' 
+        @bs_handler||=:dquote_esc_seq
+        if /[\[{]/===@char
+          @parses_like||=split_into_words(str)
+        end
       end
 
       def translate_escapes(str)
