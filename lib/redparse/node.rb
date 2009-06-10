@@ -966,6 +966,8 @@ class RedParse
       def ident=x; self[0]=x end
       alias image ident
       alias startline endline
+      alias name ident
+      alias name= ident=
 
       def parsetree(o)
         type=case ident[0]
