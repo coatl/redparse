@@ -1881,7 +1881,7 @@ end
       def special_conditions!; nil end
 
       def non_empty
-        body.size+rescues.size > 0 or !!ensures
+        rescues.size > 0 or !!ensures or body
       end
 
       identity_param :non_empty, false, true
