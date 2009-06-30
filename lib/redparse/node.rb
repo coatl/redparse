@@ -2221,7 +2221,7 @@ end
           UnaryStarNode===right and rhs=[:svalue, rhs]
           
 #          case left
-#          when VarNode: 
+#          when VarNode; 
                [node_type, left.ident.to_sym, rhs]
 #          else [node_type, left.data[0].parsetree(o), left.data[1].data[0].ident.+('=').to_sym  ,[:array, rhs]]
 #          end
@@ -4360,11 +4360,11 @@ end
               case arg
                   when VarNode
                     args.push arg.ident.to_sym
-                  when UnaryStarNode:
+                  when UnaryStarNode
                     args.push "*#{arg.val.ident}".to_sym
-                  when UnOpNode:
+                  when UnOpNode
                     nil
-                  when AssignNode:
+                  when AssignNode
                     initvals << arg.parsetree(o)
                     initvals[-1][-1]=arg.right.rescue_parsetree(o) #ugly
                     args.push arg[0].ident.to_sym
@@ -4657,13 +4657,13 @@ end
         @offset=rescueword.offset
         case exceptions
         when nil
-        when VarNode:
+        when VarNode
           if arrowword
             exvarname=exceptions
             exceptions=nil
             arrowword=nil
           end
-        when ArrowOpNode: 
+        when ArrowOpNode
           exvarname=exceptions.last
           exceptions=exceptions.first
         when CommaOpNode
