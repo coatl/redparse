@@ -1808,8 +1808,9 @@ end
 
           rescues=rescues().map{|resc| resc.parsetree(o)}
           if rescues.empty?
-            else_ and
-              body=SequenceNode.new(body,nil,else_)
+            if else_
+              body= body ? SequenceNode.new(body,nil,else_) : else_
+            end
             else_=nil
           else
             target.push newtarget=[:rescue, ]
