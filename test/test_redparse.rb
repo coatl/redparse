@@ -3927,9 +3927,6 @@ EOS
         
       end #until output.equal? tree 
 
-#      puts "warning: unparser tests disabled for now"
-#      return #skip unparse tests for now
-
       return unless nodes
       begin
         unparsed=nodes.unparse
