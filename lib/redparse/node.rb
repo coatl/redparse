@@ -2425,7 +2425,7 @@ end
           @had_parens=true
         end
 
-        super(data)
+        super(data) unless data.empty?
       end
 
       def unparse o=default_unparse_options
