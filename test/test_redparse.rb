@@ -221,6 +221,11 @@ class RedParseTest<Test::Unit::TestCase
   ]
 
   ONELINERS=[
+    'p (a,b=c,d); a +h'...'',
+    'x{return (a,b=c,d)}'...'',
+    'x{r (a,b=c,d)}'...'',
+    'x{return (a,b=c,d)|1}'...'',
+    'x{r (a,b=c,d)|1}'...'',
     'case; when false; else case; when nil; else 5; end; end'...'',
     'case;else case; else; end;end'...'',
     'case; else; end'...'',
@@ -2764,6 +2769,24 @@ class RedParseTest<Test::Unit::TestCase
 END
 
   STANZAS=PASSTHRU_BSLASHES_ENTIRE+%q[
+module 
+=begin =end
+=end
+ A; end
+
+module A
+=begin =end
+=end
+ ::B; end
+
+module A::
+=begin =end
+=end
+ B; end
+
+=begin =end
+=end
+
     return @senders[1] =
       2
 
