@@ -965,7 +965,7 @@ class RedParse
         super(tok.ident)
         @lvar_type=tok.lvar_type
         @offset=tok.offset
-        @endline=tok.endline
+        @endline=@startline=tok.endline
         @in_def=tok.in_def
       end
 
@@ -1225,6 +1225,10 @@ end
     class VarLikeNode<ValueNode; end  #nil,false,true,__FILE__,__LINE__,self
 
     class SequenceNode<ListOpNode
+      def initialize(*args)
+        super
+        @offset=self.first.offset
+      end
       def +(other)
         p "Node#+ called unexpectedly"
         if SequenceNode===other
@@ -1397,6 +1401,7 @@ end
     class UnOpNode<ValueNode
       param_names(:op,:val)
       def initialize(op,val)
+        @offset=op.offset
         op=op.ident
         /([&*])$/===op and op=$1+"@"
         /^(?:!|not)$/===op and 
@@ -1480,7 +1485,8 @@ end
       #param_names :op,:val
       def initialize(star)
         @offset= star.offset
-        replace ['*@',VarNode.new(VarNameToken.new('',offset))]
+        replace ['*@',var=VarNode.new(VarNameToken.new('',offset))]
+        var.startline=var.endline=star.startline
       end
       attr :offset
       def lvars_defined_in; [] end
@@ -1506,6 +1512,7 @@ end
 
     class ConstantNode<ListOpNode
       def initialize(*args)
+        @offset=args.first.offset
         args.unshift nil if args.size==2
         args.map!{|node| 
           if VarNode===node and (?A..?Z)===node.ident[0]
@@ -1741,6 +1748,7 @@ end
     class ParenedNode<ValueNode
       param_names :body #, :rescues, :else!, :ensure!
       def initialize(lparen,body,rparen)
+        @offset=lparen.offset
         self[0]=body
       end
 
@@ -1839,6 +1847,7 @@ end
       include HasRescue
       param_names :body, :rescues, :else!, :ensure!
       def initialize(*args)
+        @offset=args.first.offset
         @empty_ensure=@empty_else=@op_rescue=nil
           body,rescues,else_,ensure_=*args[1...-1]
           rescues.extend ListInNode
@@ -2047,6 +2056,7 @@ end
           rhs.extend ListInNode
         end
 
+        @offset=lhs.offset
         return super(lhs,op,rhs)  
         #punting, i hope the next layer can handle += and the like
 
@@ -2299,6 +2309,9 @@ end
           end
         }
         replace data
+        @offset=self.first.offset
+        @startline=self.first.startline
+        @endline=self.last.endline
       end
 
       def  unparse o=default_unparse_options
@@ -2683,6 +2696,7 @@ end
             arrowrange=first..last
             arrows=param_list[arrowrange]
             h=HashLiteralNode.new(nil,arrows,nil)
+            h.offset=arrows.first.offset
             h.startline=arrows.first.startline
             h.endline=arrows.last.endline
             param_list[arrowrange]=[h]
@@ -3010,6 +3024,7 @@ end
 
     class NopNode<ValueNode
       def initialize(*args)
+        @startline=@endline=1
         super()
       end
 
@@ -3069,6 +3084,7 @@ end
 
         @open=token.open
         @close=token.close
+        @offset=token.offset
         @bs_handler=str.bs_handler
 
         if /[\[{]/===@char
@@ -3237,7 +3253,8 @@ end
 
           if tokens.size==1 and VarNameToken===tokens.first
             data[i]=VarNode.new tokens.first
-            data[i].endline=token.endline
+            data[i].startline=data[i].endline=token.endline
+            data[i].offset=tokens.first.offset
           else
             #parse the token list in the string inclusion
             parser=Thread.current[:$RedParse_parser]
@@ -3296,6 +3313,7 @@ end
              ]omx
       SQ_ODD=/#{SQ_EVEN}#{SQ_ESC}/omx
       def split_into_words strtok
+        @offset=strtok.offset
         return unless /[{\[]/===@char
         result=ArrayLiteralNode[]
         result << StringNode['',{:@char=>'"',:@open=>@open,:@close=>@close,:@bs_handler=>@bs_handler}]
@@ -3682,6 +3700,7 @@ end
     class VarLikeNode<ValueNode #nil,false,true,__FILE__,__LINE__,self
       param_names :name
       def initialize(name,*more)
+        @offset=name.offset
         if name.ident=='(' 
           #simulate nil
           replace ['nil']
@@ -3721,6 +3740,7 @@ end
 
     class ArrayLiteralNode<ValueNode
       def initialize(lbrack,contents,rbrack)
+        @offset=lbrack.offset
         contents or return super()
         if CommaOpNode===contents
           super( *contents )
@@ -3778,6 +3798,7 @@ end
     class IfNode < ValueNode
       param_names :condition,:consequent,:elsifs,:otherwise
       def initialize(iftok,condition,thentok,consequent,elsifs,else_,endtok)
+        @offset=iftok.offset
         if else_ 
           else_=else_.val or @empty_else=true
         end
@@ -3885,6 +3906,7 @@ end
     class ElsifNode<Node
       param_names(:elsifword_,:condition,:thenword_,:consequent)
       def initialize(elsifword,condition,thenword,consequent)
+        @offset=elsifword.offset
         condition.special_conditions! if condition.respond_to? :special_conditions!
         super(condition,consequent)
       end
@@ -3912,6 +3934,7 @@ end
       #this class should be abstract and have 2 concrete descendants for while and until
       param_names :condition, :body
       def initialize(loopword,condition,thenword,body,endtok)
+        @offset=loopword.offset
         condition.special_conditions! if condition.respond_to? :special_conditions!
         super(condition,body)
         @reverse=  loopword.ident=="until"
@@ -3961,6 +3984,7 @@ end
       alias otherwise else
 
       def initialize(caseword, condition, semi, whens, otherwise, endword)
+        @offset=caseword.offset
         if otherwise
           otherwise=otherwise.val or @empty_else=true
         end
@@ -4005,6 +4029,7 @@ end
     class WhenNode<Node #not to appear in final tree?
       param_names(:whenword_,:when!,:thenword_,:then!)
       def initialize(whenword,when_,thenword,then_)
+        @offset=whenword.offset
         when_=Array.new(when_) if CommaOpNode===when_
         when_.extend ListInNode if when_.class==Array
         super(when_,then_)
@@ -4056,6 +4081,7 @@ end
     class ForNode<ValueNode
       param_names(:forword_,:for!,:inword_,:in!,:doword_,:do!,:endword_)
       def initialize(forword,for_,inword,in_,doword,do_,endword)
+        @offset=forword.offset
         #elide 1 layer of parens if present
         for_=for_.first if ParenedNode===for_
         for_=CommaOpNode===for_ ? Array.new(for_) : [for_]
@@ -4111,6 +4137,7 @@ end
 
     class HashLiteralNode<ValueNode
       def initialize(open,contents,close)
+        @offset=open.offset rescue contents.first.offset
         case contents
         when nil; super()
         when ArrowOpNode; super(contents.first,contents.last)
@@ -4131,6 +4158,7 @@ end
       end
 
       attr :no_arrows
+      attr_writer :offset
 
       def image; "({})" end
 
@@ -4190,6 +4218,7 @@ end
       def initialize(if_,qm,then_,colon,else_)
         super(if_,then_,else_)
         condition.special_conditions! if condition.respond_to? :special_conditions!
+        @offset=self.first.offset
       end
 
       def image; "(?:)" end
@@ -4216,8 +4245,9 @@ end
       alias else elses
       alias params args
       
-      def initialize(defword_,header,maybe_eq_,semi_,
+      def initialize(defword,header,maybe_eq_,semi_,
                      body,rescues,else_,ensure_,endword_)
+        @offset=defword.offset
         @empty_else=@empty_ensure=nil
 #        if DotCallNode===header
 #          header=header.data[1]
@@ -4431,6 +4461,7 @@ end
       include BareSymbolUtils
       param_names(:aliasword_,:to,:from)
       def initialize(aliasword,to,from)
+        @offset=aliasword.offset
         to=baresym2str(to)
         from=baresym2str(from)
         super(to,from)
@@ -4453,6 +4484,7 @@ end
     class UndefNode < ValueNode
       include BareSymbolUtils
       def initialize(first,middle,last=nil)
+        @offset=first.offset
         if last
           node,newsym=first,last
           super(*node << baresym2str(newsym))
@@ -4489,6 +4521,7 @@ end
       param_names(:name,:body,:rescues,:else!,:ensure!)
 
       def initialize moduleword,name,semiword,body,rescues,else_,ensure_,endword
+        @offset=moduleword.offset
         else_=else_.val if else_
         ensure_=ensure_.val if ensure_
         rescues.extend ListInNode if rescues
@@ -4533,6 +4566,7 @@ end
     class ClassNode<NamespaceNode
       param_names(:name,:parent,:body,:rescues,:else!,:ensure!)
       def initialize(classword,name,semi,body,rescues, else_, ensure_, endword)
+        @offset=classword.offset
         if OpNode===name
           name,op,parent=*name
           op=="<" or fail "invalid superclass expression: #{name}"
@@ -4582,6 +4616,7 @@ end
     class MetaClassNode<NamespaceNode
       param_names :val, :body, :rescues,:else!,:ensure!
       def initialize classword, leftleftword, val, semiword, body, rescues,else_,ensure_, endword
+        @offset=classword.offset
         else_=else_.val if else_
         ensure_=ensure_.val if ensure_
         rescues.extend ListInNode if rescues
@@ -4613,6 +4648,7 @@ end
     class RescueHeaderNode<Node  #not to appear in final tree
       param_names :exceptions,:varname
       def initialize(rescueword,arrowword,exceptions,thenword)
+        @offset=rescueword.offset
         case exceptions
         when nil
         when VarNode:
@@ -4643,6 +4679,7 @@ end
     class RescueNode<Node
       param_names :exceptions,:varname,:action
       def initialize(rescuehdr,action,semi)
+        @offset=rescuehdr.offset
         exlist=rescuehdr.exceptions||[]
         exlist=[exlist] unless exlist.class==Array
         fail unless exlist.class==Array
@@ -4699,6 +4736,7 @@ end
         else [params]
         end
         params.extend ListInNode if params
+        @offset=receiver.offset
         super(receiver,params)
       end
 
