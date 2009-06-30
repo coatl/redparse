@@ -1855,15 +1855,15 @@ end
       def initialize(*args)
         @offset=args.first.offset
         @empty_ensure=@empty_else=@op_rescue=nil
-          body,rescues,else_,ensure_=*args[1...-1]
-          rescues.extend ListInNode
-          if else_
-            else_=else_.val or @empty_else=true
-          end
-          if ensure_
-            ensure_=ensure_.val or @empty_ensure=true
-          end
-          replace [body,rescues,else_,ensure_]
+        body,rescues,else_,ensure_=*args[1...-1]
+        rescues.extend ListInNode
+        if else_
+          else_=else_.val or @empty_else=true
+        end
+        if ensure_
+          ensure_=ensure_.val or @empty_ensure=true
+        end
+        replace [body,rescues,else_,ensure_]
       end
 
       def op?; false end
