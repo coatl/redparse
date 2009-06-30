@@ -4211,7 +4211,7 @@ end
       end
 
       def error? rubyversion=1.8
-        return true if @no_arrows and rubyversion>=1.9
+        return true if defined?(@no_arrows) and rubyversion>=1.9
         return super
       end
     end
