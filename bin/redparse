@@ -95,6 +95,9 @@ while /^-/===ARGV.first
       when "--vsparsetree"; output=:vsparsetree
       when "--vsparsetree2"; output=:vsparsetree2
       when "--update-problemfiles"; problemfiles=ProblemFiles.new
+      when "--tokens"; ENV['PRINT_TOKENS']='1'
+      when "--rawtokens"; ENV['RAW_PRINT_TOKENS']='1'
+      when "--stack"; ENV['PRINT_STACK']='1'
       when "--unparse"; output=:unparse
       when "--compile", "-c"; compile=true
       when "--macros", "--macro", "-m": 
