@@ -89,6 +89,7 @@ class Test::Unit::TestCase
   end
 end
 
+#print output immediately on failing test (at end too....)
 require 'test/unit/ui/console/testrunner'
 class Test::Unit::UI::Console::TestRunner
   alias add_fault__no_immed_output add_fault
@@ -98,6 +99,55 @@ class Test::Unit::UI::Console::TestRunner
     add_fault__no_immed_output fault
   end
 end
+
+=begin nice idea, don't work yet
+class Test::Unit::TestResult
+  @@FAILING_CASES=[]
+
+  begin
+    huh #but this is running at the wrong time... 
+    huh #need to run before tests are run but after defined
+    eval Marshal.load(huh).map{|name,case|
+      name=huh quote name
+      "
+       class #{case}      
+         alias_method :'first_off_#{name}', :'#{name}'
+         undef_method :'#{name}'
+       end
+      "
+    }.to_s
+    
+    in_a_loop{
+      huh #ensure methods named first_off_test* get run first
+      some_test_case._method=name
+      some_test_case.run(huh result){huh}
+    }
+
+  rescue Exception
+    #ignore it
+  end
+
+  alias add_error__no_error_memory add_error
+  def add_error x
+    name=x.test_name
+    i=name.rindex('(')
+    @@FAILING_CASES.push [name[0...i],name[i..-1]]
+
+    add_error__no_error_memory x
+  end
+
+  alias add_failure__no_error_memory add_failure
+  def add_failure x
+    name=x.test_name
+    i=name.rindex('(')
+    @@FAILING_CASES.push [name[0...i],name[i..-1]]
+
+    add_failure__no_error_memory x
+  end
+
+  at_exit {huh @@FAILING_CASES}
+end
+=end
 
 class ParseTree
   def put o
