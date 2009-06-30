@@ -368,7 +368,7 @@ class RedParse
         when Symbol
           val=CallNode[nil,val.to_s]
         end
-        super *args<<val
+        super( *args<<val )
       end
     end
 
@@ -418,7 +418,7 @@ class RedParse
         when Symbol
           val=CallNode[nil,val.to_s]
         end
-        super *args<<val
+        super( *args<<val )
       end
 
       def image; "(#{inspect})" end
@@ -1228,7 +1228,7 @@ end
       def +(other)
         p "Node#+ called unexpectedly"
         if SequenceNode===other
-          dup.push *other
+          dup.push( *other )
         else
           dup.push other
         end
@@ -1243,7 +1243,7 @@ end
             args<<1
           end
         end
-        super *args<<val
+        super( *args<<val )
       end
 
       def image; '(;)' end
@@ -3612,7 +3612,7 @@ end
       end
 
       def []=(*args)
-        original_brackets_assign *args
+        original_brackets_assign( *args )
       end
 
       def bare_method
