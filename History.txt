@@ -1,3 +1,17 @@
+=== 0.8.3 / 2009-07-01
+* 7 Minor Enhancements:
+  * most nodes now have startline, endline, and offset
+  * Node.[] is more fun to use now (most attributes can be left off)
+  * a SequenceNode inserted into a SequenceNode now gets inlined
+  * new ListInNode module for the various vanilla arrays found in node trees
+  * HashLiteralNode#get; retrieve values from hash literal kinda like from a hash
+  * Nodes can be catenated with the + operator now
+  * Symbols inserted into the slot of a Node are converted to CallSiteNodes
+
+* 2 Bugfixes:
+  * more faithful ParseTree emulation in a couple of cases
+  * minor fixes in node processing for some rare conditions 
+
 === 0.8.2 / 2009-04-21
 * 14 Minor Enhancements:
   * should be no tokens left in Node tree now
