@@ -1049,10 +1049,6 @@ class RedParse
       def unparse o=default_unparse_options; ident end
       alias lhs_unparse unparse
 
-#      def delete_extraneous_ivars!
-#        remove_instance_variable :@lvalue
-#        super
-#      end
 
 if false
       def walk #is this needed?
