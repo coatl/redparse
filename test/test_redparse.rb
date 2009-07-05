@@ -3842,7 +3842,7 @@ EOS
     end
   end
 
-  BEGIN{p Dir.getwd; File.unlink "problemexprs" rescue nil}
+  BEGIN{File.unlink "problemexprs" rescue nil}
   def problem_exprs
     @problem_exprs||=nil
     return @problem_exprs if @problem_exprs
