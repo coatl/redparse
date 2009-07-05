@@ -3207,11 +3207,6 @@ end
 
       def image; '(#@char)' end
 
-      def delete_extraneous_ivars!
-        @parses_like.delete_extraneous_ivars! if defined? @parses_like
-        return super
-      end
-
       def walk(*args,&callback)
         @parses_like.walk(*args,&callback) if defined? @parses_like
         super
