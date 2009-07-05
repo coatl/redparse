@@ -100,7 +100,7 @@ while /^-/===ARGV.first
       when "--stack"; ENV['PRINT_STACK']='1'
       when "--unparse"; output=:unparse
       when "--compile", "-c"; compile=true
-      when "--macros", "--macro", "-m": 
+      when "--macros", "--macro", "-m";
         require 'rubygems'
         require 'macro'
         parserclass=Macro::RedParseWithMacros
