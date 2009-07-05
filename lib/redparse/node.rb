@@ -3212,7 +3212,7 @@ end
       end
 
       def walk(*args,&callback)
-        return @parses_like.walk(*args,&callback) if defined? @parses_like
+        @parses_like.walk(*args,&callback) if defined? @parses_like
         super
       end
 
