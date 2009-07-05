@@ -953,8 +953,8 @@ class RedParse
 
     class VarNode<ValueNode
       include FlattenedIvars
-      attr_accessor :endline
-      attr_reader :lvar_type,:in_def,:offset
+      attr_accessor :endline,:offset
+      attr_reader :lvar_type,:in_def
       attr_writer :lvalue
 
 
