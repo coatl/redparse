@@ -6,7 +6,7 @@
   * new ListInNode module for the various vanilla arrays found in node trees
   * HashLiteralNode#get; retrieve values from hash literal kinda like from a hash
   * Nodes can be catenated with the + operator now
-  * Symbols inserted into the slot of a Node are converted to CallSiteNodes
+  * Symbols inserted into a tree are converted to CallSiteNodes
 
 * 2 Bugfixes:
   * more faithful ParseTree emulation in a couple of cases
