@@ -402,7 +402,6 @@ class RedParse
       end
 
       def +(other)
-        p "Node#+ called unexpectedly"
         if SequenceNode===other
           SequenceNode[self,*other]
         else
@@ -1230,7 +1229,6 @@ end
         @offset=self.first.offset
       end
       def +(other)
-        p "Node#+ called unexpectedly"
         if SequenceNode===other
           dup.push( *other )
         else
