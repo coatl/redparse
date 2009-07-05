@@ -2726,8 +2726,10 @@ end
           block=block.body #||[]
         end
         @offset=method.offset
-        method=method.ident
-        fail unless String===method
+        if Token===method 
+          method=method.ident
+          fail unless String===method
+        end
         super(nil,method,param_list,blockparams,block)
         #receiver, if any, is tacked on later
       end
@@ -2957,7 +2959,6 @@ end
 
     class CallNode<CallSiteNode #normal method calls
       def initialize(method,open_paren,param_list,close_paren,block)
-        MethNameToken===method or fail
         super
       end
     end
