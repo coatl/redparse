@@ -2756,7 +2756,8 @@ end
       end
      
       def with_commas
-         !real_parens and args.size>0
+         !real_parens and 
+         args and args.size>0
       end
 
 #      identity_param :with_commas, false, true
