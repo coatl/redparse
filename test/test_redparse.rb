@@ -268,6 +268,7 @@ class RedParseTest<Test::Unit::TestCase
     "p=556;p (e) /a",
     "z{|| p (1).m}",
     'def sum(options = {:weights => weights = Hash.new(1)}); options.empty? or options.keys.size > 1; end',
+    'def sum(options = {:weights => weights = Hash}); 1 end',
   ]
 
   ONELINERS=[
@@ -284,6 +285,9 @@ class RedParseTest<Test::Unit::TestCase
     'c while d and 8.8..2.a?(b)'...'',
     'c while d and 8..2.a?(b)'...'',
     'c while d and :a8..2.a?(b)'...'',
+    'c while d and :a8..:b8'...'',
+    'c while d and a8..:b8'...'',
+    'c while d and 8..:b8'...'',
     'c while d and /8/..2.a?(b)'...'',
     'c while d and /8/../2.a?(b)/'...'',
     'c while d and 8../2.a?(b)/'...'',
