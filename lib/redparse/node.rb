@@ -4125,7 +4125,12 @@ end
 =end
 
         vars=self.for.lvalue_parsetree(o)
-        result=[:for, self.in.begin_parsetree(o), vars]
+        collection= self.in.begin_parsetree(o)
+        if ParenedNode===self.in and collection.first==:begin
+          assert collection.size==2
+          collection=collection[1]
+        end
+        result=[:for, collection, vars]
         result.push self.do.parsetree(o) if self.do
         result
       end
