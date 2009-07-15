@@ -4014,6 +4014,7 @@ end
         result=[:case, condition&&condition.parsetree(o)]+ 
                  whens.map{|whennode| whennode.parsetree(o)}
         other=otherwise&&otherwise.parsetree(o)
+        return [] if result==[:case, nil] and !other
         if other and other[0..1]==[:case, nil] and !condition
           result.concat other[2..-1]
         else
