@@ -17,6 +17,40 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 =end
 
+
+=begin 
+rp-locatetest passes all the ruby files it can find on the system (using 
+the unix command locate) to bin/redparse --vsparsetree. In other words, 
+it's comparing the output of RedParse (when cvt'd to a ParseTree-style 
+tree) to the actual output of ParseTree.
+
+I usually run it like this:
+
+  nice ruby test/rp-locatetest.rb >test.log 2>&1 &
+
+That runs rp-locatetest at low priority, in the background, saving 
+stdout and stderr to test.log.
+
+You can then trawl through test.log, looking for lines that don't start 
+with 'no differences in '. (Other than the page of warnings in the 
+beginning, which is repeated every so often.) Or, you can look for 
+non-commented lines in the file 'problemfiles'. (Which is just a list of 
+files that caused failures in rp-locatetest.)
+
+Ok, this is more complicated than it ought to be. Sorry.
+
+rp-locatetest takes a LONG time to run, and hogs the cpu at 100%. That's 
+why I was using nice. So, make sure it's ok to do that on whatever 
+server you run it on. I always get impatient and kill it after some 
+hours or days. On a subsequent run it'll pick up again where it left 
+off.
+
+Right now, about 0.5% of my ruby files cause problems for rp-locatetest.  
+Most of those failures correspond to known problems (the file is listed 
+at the end of the README and/or there's a case in test_redparse.rb for 
+that failure).
+=end
+
 #require 'test/code/rubylexervsruby'
 #require 'test/code/strgen'
 require "redparse/problemfiles"
@@ -343,3 +377,5 @@ __END__
 /usr/lib/ruby/1.8/hpricot/traverse.rb
 /home/caleb/sandbox/rubylexer/jewels/net-netrc-0.2.1/lib/net/netrc.rb
 /home/caleb/sandbox/rubylexer/jewels/etc-0.2.0/lib/etc.rb
+
+
