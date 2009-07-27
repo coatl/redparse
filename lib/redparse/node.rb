@@ -611,10 +611,12 @@ class RedParse
 
       attr_accessor :parent
 
-      def xform_tree!(xformer)
+      def xform_tree!(*xformers)
         session={}
         depthwalk{|parent,i,subi,o|
-          xformer.xform!(o,session) if o
+          xformers.each{|xformer|
+            xformer.xform!(o,session) if o
+          }
         }
         session["final"]=true
         depthwalk{|parent,i,subi,o|
