@@ -790,10 +790,10 @@ class RedParse
             transform[child.__id__]
           else
             case child
-            when Node: 
+            when Node 
                 override&&override[child] or 
                   child.deep_copy(transform,&override)
-            when Array: 
+            when Array
                 child.map(&handler)
             when Integer,Symbol,Float,nil,false,true,Module:
                 child
@@ -864,8 +864,8 @@ class RedParse
       def +@
         node2matcher=proc{|n|
           case n
-          when Node: +n
-          when Array: +[*n.map(&node2matcher)]
+          when Node; +n
+          when Array; +[*n.map(&node2matcher)]
           else n
           end
         }

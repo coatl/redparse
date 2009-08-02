@@ -165,7 +165,7 @@ inputs.each_index{|i|
 #      require 'pp'
 #      pp e.stack[-[15,e.stack.size].min..-1]
 #      raise
-#    rescue NeverExecThis:
+#    rescue NeverExecThis
         puts "RedParse attempted to execute parse data in #{name}"
         next
       end
@@ -217,10 +217,10 @@ inputs.each_index{|i|
           ryans,warns=ParseTree.new.parse_tree_and_warnings_leaks_stderr(input,name); nil
         } and raise NeverExecThis
         delta,is_diff=arraydiff(mine,ryans)
-      rescue NeverExecThis:
+      rescue NeverExecThis
         puts "ParseTree attempted to execute parse data in #{name}"
         next
-      rescue Interrupt: exit 2
+      rescue Interrupt; exit 2
       rescue Exception=>e
         #raise( RuntimeError.new( "#{e} during to_parsetree of #{name}" ) )
         puts "error during to_parsetree of #{name}"
@@ -247,10 +247,10 @@ inputs.each_index{|i|
       end
     end
 
-  rescue NeverExecThis:
+  rescue NeverExecThis
     puts "mysterious attempt to execute parse data in #{name}"
     next
-  rescue Interrupt,SystemExit: exit 2
+  rescue Interrupt,SystemExit; exit 2
   rescue Exception=>e
     puts "#{e}:#{e.class}"
     puts e.backtrace.join("\n")
