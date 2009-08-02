@@ -367,6 +367,8 @@ class RedParse
         case val
         when Symbol
           val=CallNode[nil,val.to_s]
+        when Integer,Float
+          val=LiteralNode[val]
         end
         super( *args<<val )
       end
@@ -416,6 +418,8 @@ class RedParse
         case val
         when Symbol
           val=CallNode[nil,val.to_s]
+        when Integer,Float
+          val=LiteralNode[val]
         end
         super( *args<<val )
       end
