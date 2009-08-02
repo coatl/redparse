@@ -1286,9 +1286,9 @@ end
       end
     end
 
-    def make_sr_goto_tables
+    def make_sr_goto_tables inputs
       name2exemplar={}
-      @inputs.each{|i| name2exemplar[i.name]=i }
+      inputs.each{|i| name2exemplar[i.name]=i }
 
       @goto={}; @sr={}
       goto_counts=Hash.new(0); sr_counts=Hash.new(0)
@@ -1761,7 +1761,7 @@ end
 
     #divide each state's actions into sr and goto tables
     #also scan states for the most common sr and goto actions and make them default
-    states.each{|state| state.make_sr_goto_tables }
+    states.each{|state| state.make_sr_goto_tables @inputs}
 
 
 #    pp states
