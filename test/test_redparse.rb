@@ -150,18 +150,31 @@ end
 =end
 
 class ParseTree
+  @@out=@@in=nil
   def put o
     o=Marshal.dump o
-    @@out.write [o.size].pack("N")+o
+    msg= [o.size].pack("N")+o
+    begin
+      @@out.write msg
+    rescue Exception
+      @@out=@@in=nil
+      raise
+    end
   end
   def get
-    Marshal.load @@in.read(@@in.read(4).unpack("N")[0])
+    begin
+      msg=@@in.read(@@in.read(4).unpack("N")[0])
+    rescue Exception
+      @@in=@@out=nil
+      raise
+    end
+    Marshal.load msg
   end
   def fork_server?
-    return if defined? @@out 
+    return if @@out
     si,co=IO::pipe
     ci,so=IO::pipe
-    fork{
+    @@server=fork{
       begin
       co.close; ci.close
       @@out=so; @@in=si
@@ -192,15 +205,25 @@ class ParseTree
     }
     si.close; so.close
     @@out=co; @@in=ci
-    at_exit { put :exit! }
+    at_exit { 
+      begin 
+        put :exit!
+        Process.wait(@@server)
+      rescue Exception
+      end 
+    }
   end
 
   #returns +[parse_tree|Exception, +[String.*]]
   def parse_tree_and_warnings str
     fork_server?
-    put str
-    tree=get
-    warnings=get
+    begin
+      put str
+      tree=get
+      warnings=get
+    rescue Exception
+      return nil,nil
+    end
     raise tree if Exception===tree
     return tree,warnings
   end
