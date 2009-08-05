@@ -29,7 +29,7 @@
   end
 
 
-  unless defined? ::Reg::Transform and ::Reg::Transform.ancestors.include? ::Reg::HasCmatch
+  unless defined? ::Reg::Transform #and ::Reg::Transform.ancestors.include? ::Reg::HasBmatch
   #hack, until support for this syntax makes it into the release of reg
     module ::Reg
       class Transform;
