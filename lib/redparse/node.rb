@@ -788,6 +788,7 @@ class RedParse
       def unary; false end
       def lvalue; nil end
 
+      #why not use Ron::GraphWalk.graph_copy instead here?
       def deep_copy transform={},&override
         handler=proc{|child|
           if transform.has_key? child.__id__ 
@@ -798,11 +799,11 @@ class RedParse
                 override&&override[child] or 
                   child.deep_copy(transform,&override)
             when Array
-                child.map(&handler)
-            when Integer,Symbol,Float,nil,false,true,Module:
+                child.clone.map!(&handler)
+            when Integer,Symbol,Float,nil,false,true,Module
                 child
             else 
-                child.dup
+                child.clone
             end
           end
         }
@@ -818,7 +819,7 @@ class RedParse
             result_module=val if iv=="@module" #hacky
           end
         }
-        result= self.class[*newdata << h]
+        result= clone.replace newdata<<h
         result.extend result_module if result_module
         return result
       end
