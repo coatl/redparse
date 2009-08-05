@@ -619,28 +619,58 @@ class RedParse
         session={}
         depthwalk{|parent,i,subi,o|
           xformers.each{|xformer|
-            xformer.xform!(o,session) if o
+            tempsession={}
+            xformer.xform!(o,tempsession) if o
+            resolve_variables_in_session session, tempsession
           }
         }
         session["final"]=true
+        
         depthwalk{|parent,i,subi,o|
-          if session.has_key? o.__id__
-            new= session[o.__id__]
-            if Reg::Formula===new
-              new=new.formula_value(o,session)
-            end
+          next unless parent
+          replace_ivars_and_self o, session do |new|
             subi ? parent[i][subi]=new : parent[i]=new
           end
         }
-        if session.has_key? self.__id__
-          new= session[self.__id__]
-          if Reg::Formula===new
-            new=new.formula_value(self,session)
-          end
+        replace_ivars_and_self self,session do |new|
           return new
-        else
-          return self
         end
+        return self
+      end
+
+      def replace_ivars_and_self o,session,&replace_self_action
+          o.instance_variables.each{|ovname|
+            ov=o.instance_variable_get(ovname)
+            
+            replace_value ov.__id__,ov,session do |new|
+              o.instance_variable_set(ovname,new)
+            end
+          }
+          replace_value o.__id__,o,session, &replace_self_action
+      end
+
+      def replace_value ovid,ov,session,&replace_action
+          if session.has_key? ovid
+              new= session[ovid]
+              if Reg::Formula===new
+                new=new.formula_value(ov,session)
+              end
+              replace_action[new]
+          end
+      end
+
+      def resolve_variables_in_session session,tempsession
+        tempsession.each_pair{|k,v|
+          unless Symbol===k
+            v=Ron::GraphWalk.graphcopy(v){|cntr,o,i,ty,useit|
+              if Reg::BoundRef===o
+                useit[0]=true
+                tempsession[o.name]
+              end
+            }
+            session[k]=v
+          end
+        }
       end
 
       def linerange
