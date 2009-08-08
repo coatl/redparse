@@ -2,7 +2,7 @@
 # Distributed under the terms of Ruby's license.
 require 'rubygems'
 require 'hoe'
-require 'lib/redparse/version.rb'
+require './lib/redparse/version.rb'
 
 if $*==["test"]
   #hack to get 'rake test' to stay in one process
