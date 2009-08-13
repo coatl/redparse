@@ -619,9 +619,17 @@ class RedParse
         session={}
         depthwalk{|parent,i,subi,o|
           xformers.each{|xformer|
-            tempsession={}
-            xformer.xform!(o,tempsession) if o
-            resolve_variables_in_session session, tempsession
+            if o
+              tempsession={}
+              xformer.xform!(o,tempsession)
+              resolve_variables_in_session session, tempsession
+            elsif xformer===o and Reg::Transform===xformer
+              new=xformer.right
+              if Reg::Formula===right
+                new=new.formula_value(o,session)
+              end
+              subi ? parent[i][subi]=new : parent[i]=new
+            end
           }
         }
         session["final"]=true
