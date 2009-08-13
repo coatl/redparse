@@ -840,16 +840,16 @@ class RedParse
 
         newdata=map(&handler)
 
-        h={}
         result_module=nil
+        result=clone
         instance_variables.each{|iv| 
           unless iv=="@data"
             val=instance_variable_get(iv)
-            h[iv]=handler[val]
+            result.instance_variable_set(iv,handler[val])
             result_module=val if iv=="@module" #hacky
           end
         }
-        result= clone.replace newdata<<h
+        result.replace newdata
         result.extend result_module if result_module
         return result
       end
