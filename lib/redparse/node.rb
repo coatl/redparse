@@ -2078,12 +2078,12 @@ end
           lhs=MultiAssign.new([lhs]) unless lhs.after_comma
         when ParenedNode
           if !lhs.after_comma      #look for () around lhs
-          if CommaOpNode===lhs.first
-            lhs=MultiAssign.new(Array.new(lhs.first))
-          else
-            lhs=MultiAssign.new([lhs.first])
-          end
-          @lhs_parens=true
+            if CommaOpNode===lhs.first
+              lhs=MultiAssign.new(Array.new(lhs.first))
+            else
+              lhs=MultiAssign.new([lhs.first])
+            end
+            @lhs_parens=true
           end
         when CommaOpNode: 
           lhs=MultiAssign.new lhs
