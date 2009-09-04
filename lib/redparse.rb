@@ -296,8 +296,11 @@ end
     #do something with error nodes
     msgs=[]
     result.walk{|parent,i,subi,node|
-      not if node.respond_to? :error? and node.error?(@rubyversion)
+      if node.respond_to? :error? and node.error?(@rubyversion)
         msgs<< @filename+":"+node.blame.msg
+        false
+      else
+        true
       end
     } if result.respond_to? :walk #hack hack
     result.errors=msgs unless msgs.empty?
