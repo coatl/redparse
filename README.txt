@@ -248,17 +248,9 @@ existing format in the future, but no incompatibility-creating changes.
 
 == Known failing expressions
 * The following expressions are known to parse incorrectly currently:
-* def foo(a = 1)    end; def foo(a=b=c={})  end; def bar(a=b=c=1,d=2)  end
 * <<-EOS<<__LINE__
     EOS
-* z = valueo_s rescue "?"
-* self.<=>:p8
-* return (@images = @old_imgs)
-* p ?e.<<?y
 * doc_status, err_args = Documeh_status{fcgi_state = 3; docespond do doc_response =fcgi_state =  1; end }
-* class A;def b;class <<self;@@p = false end;end;end
-* return @senders[1] =
-    2
 
 == Not exactly right, but semantically equivalent
 * These don't return exactly the same s-exp as MRI/ParseTree, but close enough:  
@@ -282,6 +274,7 @@ existing format in the future, but no incompatibility-creating changes.
 * $11111111111111111111111111111111111111111111111111111111111111111111
 * proc{|&b| }
 * def sum(options = {:weights => weights = Hash.new(1)}); opt; end
+* def foo(a = 1)    end; def foo(a=b=c={})  end; def bar(a=b=c=1,d=2)  end
 
 ==Known failing files
 *  And here's a list of files which are known to parse incorrectly:
