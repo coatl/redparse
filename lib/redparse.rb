@@ -2061,8 +2061,10 @@ end
 
     "?"=>106, # ":"=>106,    #not sure what to do with ":"
   
-    "unary*"=>105, "unary&"=>105, #unary * and & operators
-      "lhs*"=>105,  "rhs*"=>105,  #this should remain above =, but other unary stars are below it
+    "unary&"=>105, #unary * and & operators
+      "lhs*"=>105,  #this should remain above =
+    "lhs,"=>105, 
+    "rescue3"=>105,
 
     "="=>104,    "%="=>104,   "/="=>104,   "-="=>104,    "+="=>104,
     "|="=>104,   "&="=>104,   ">>="=>104,  "<<="=>104,   "*="=>104,
@@ -2071,12 +2073,10 @@ end
     "defined?"=>103,
     "not"=>103,
     ":"=>102, #but not when used as a substitute for 'then'
-    "rescue3"=>102,
 
     "=>"=>101,
-    "lhs,"=>100, 
            "rhs,"=>100, #"call,"=>100, "array,"=>100, "param,"=>100,
-    ","=>100,
+    ","=>100, "rhs*"=>100, "unary*"=>100, 
       #the 'precedence' of comma is somewhat controversial. it actually has
       #several different precedences depending on which kind of comma it is.
       #the precedence of , is higher than :, => and the assignment operators 
