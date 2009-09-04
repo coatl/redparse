@@ -85,7 +85,7 @@ end
 
 output=:pp
 quiet=true
-ruby187=false
+ruby187=ruby19=false
 while /^-/===ARGV.first
     case opt=ARGV.shift
       when "--"; break
@@ -108,6 +108,7 @@ while /^-/===ARGV.first
       when "-v"; quiet=false
       when "-e"; inputs=[ARGV.join(" ")]; names=["-e"]; break
       when "-7"; ruby187=true
+      when "-9"; ruby19=true
       else fail "unknown option: #{opt}"
     end
 end
@@ -153,11 +154,16 @@ inputs.each_index{|i|
     begin
       tree=nil
       if catch(:never_exec_this){
+        if ruby19
+          options={:rubyversion=>1.9}
+        else
+          options={:rubyversion=>1.8}
+        end
         tree=if compile
-          huh (parserclass||RedParse).new(input,name).compile
+          huh (parserclass||RedParse).new(input,name,1,[],options).compile
           huh parse
         else
-          (parserclass||RedParse).new(input,name).parse
+          (parserclass||RedParse).new(input,name,1,[],options).parse
         end
         nil
       } #raise NeverExecThis
