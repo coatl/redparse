@@ -2584,8 +2584,7 @@ end
 #        [:masgn, *super]
 #      end
       def unparse o=default_unparse_options
-        "("+super+")"
-      
+        "("+super+")"      
       end
     end
 
