@@ -1215,6 +1215,12 @@ end
     end
 
     module OpNode
+      def self.[] *list
+        result=RawOpNode[*list]
+        result.extend OpNode
+        return result
+      end
+
       def initialize(left,op,right)
         #@negative_of="="+$1 if /^!([=~])$/===op
         @module=OpNode
@@ -1246,6 +1252,15 @@ end
     module MatchNode
       include OpNode
 
+      def initialize(left,op,right)
+        @module=MatchNode
+      end
+      def self.[] *list
+        result=RawOpNode[*list]
+        result.extend MatchNode
+        return result
+      end
+
       def parsetree(o)
         if StringNode===left and left.char=='/'
           [:match2, left.parsetree(o), right.parsetree(o)]
@@ -1261,6 +1276,15 @@ end
     module NotEqualNode
       include OpNode
 
+      def initialize(left,op,right)
+        @module=NotEqualNode
+      end
+      def self.[] *list
+        result=RawOpNode[*list]
+        result.extend NotEqualNode
+        return result
+      end
+
       def parsetree(o)
         result=opnode_parsetree(o)
         result[2]="=#{op[1..1]}".to_sym
@@ -1271,7 +1295,16 @@ end
     end
 
     module NotMatchNode
-      include NotEqualNode
+      include OpNode
+
+      def initialize(left,op,right)
+        @module=NotMatchNode
+      end
+      def self.[] *list
+        result=RawOpNode[*list]
+        result.extend NotMatchNode
+        return result
+      end
 
       def parsetree(o)
         if StringNode===left and left.char=="/"
@@ -1473,6 +1506,12 @@ end
       def first; left end
       def last; right end
       def exclude_end?; @exclude_end end
+
+      def self.[] *list
+        result=RawOpNode[*list]
+        result.extend RangeNode
+        return result
+      end
 
       def parsetree(o)
         first=first().parsetree(o)
@@ -2575,6 +2614,12 @@ end
 
     module LogicalNode
       include KeywordOpNode
+      def self.[] *list
+        result=RawOpNode[*list]
+        result.extend LogicalNode
+        return result
+      end
+
       def initialize(left,op,right)
         @opmap=op[0,1]
         case op
@@ -2660,6 +2705,12 @@ end
       def while; condition end
       def do; consequent end
 
+      def self.[] *list
+        result=RawOpNode[*list]
+        result.extend WhileOpNode
+        return result
+      end
+
       def parsetree(o)
         cond=condition.rescue_parsetree(o)
         body=consequent.parsetree(o)
@@ -2694,6 +2745,12 @@ end
 
       def while; negate condition end
       def do; consequent end
+
+      def self.[] *list
+        result=RawOpNode[*list]
+        result.extend UntilOpNode
+        return result
+      end
 
       def parsetree(o)
         cond=condition.rescue_parsetree(o)
@@ -2733,6 +2790,12 @@ end
       def else; consequent end
       def elsifs; [] end
 
+      def self.[] *list
+        result=RawOpNode[*list]
+        result.extend UnlessOpNode
+        return result
+      end
+
       def parsetree(o)
         cond=condition.rescue_parsetree(o)
         actions=[nil, consequent.parsetree(o)]
@@ -2760,6 +2823,12 @@ end
       def then; consequent end
       def else; nil end
       def elsifs; [] end
+
+      def self.[] *list
+        result=RawOpNode[*list]
+        result.extend IfOpNode
+        return result
+      end
 
       def parsetree(o)
         cond=condition.rescue_parsetree(o)
