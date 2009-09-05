@@ -740,6 +740,8 @@ end
               v=v.chain_to session[k]
             end
             session[k]=v
+          elsif "finally"==k
+            session["finally"]=Array(session["finally"]).concat v
           end
         }
       end
