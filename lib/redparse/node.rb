@@ -2683,8 +2683,6 @@ end
         OP_EQUIV[@opmap[0]]
       end
 
-      #these 3 methods are defined in RawOpNode too, hence these
-      #definitions are ignored. grrrrrrr.
       def unparse o=default_unparse_options
         result=''
       
