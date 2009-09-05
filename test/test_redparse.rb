@@ -312,6 +312,10 @@ class RedParseTest<Test::Unit::TestCase
   ]
 
   ONELINERS=[
+    'k=z=c,d'...'',
+    'd=a=b do end'...'',
+    't p = m do 666 end'...'',
+    'a if 1'...'',
     'p (a,b=c,d); a +h'...'',
     'x{return (a,b=c,d)}'...'',
     'x{r (a,b=c,d)}'...'',
@@ -339,6 +343,7 @@ class RedParseTest<Test::Unit::TestCase
     'doc_status, err_args = Documeh_status{fcgi_state = 3; docespond do doc_response =fcgi_state =  1; end }'...'',
     'print "coled: " + $! +" wiin #{@ray}\n";'...'',
     'class A;def b;class <<self;@@p = false end;end;end'...'',
+    'class A;def b;class <<self;"#{@@p = false}" end;end;end'...'',
     'def d; return (block_given? ? begin; yield f; ensure; f.close; end : f); end'...'',
     'def sum(options = {:weights => weights = Hash.new(1)}); options.empty? or options.keys.size > 1; end'...'',
     'def d;e install_dir;end'...'',
