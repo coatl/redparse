@@ -2406,7 +2406,7 @@ end
     #assignment
     -[Lvalue, MODIFYASSIGNOP, Expr, lower_op]>>AssignNode,
     -[Lvalue, Op('=',true), AssignmentRhsNode, lower_op]>>AssignNode,
-    -[Op('=',true).lb, Expr, lower_op]>>AssignmentRhsNode,
+    -[AssignmentRhsListStartToken, Expr, AssignmentRhsListEndToken]>>AssignmentRhsNode,
 
     # a = b rescue c acts like a ternary,,,
     #provided that both a and b are not multiple and b
@@ -2714,6 +2714,8 @@ end
 
       when EoiToken; break
       when HereBodyToken; break
+      when AssignmentRhsListStartToken; break
+      when AssignmentRhsListEndToken; break
       when IgnoreToken; redo
       end
       end
