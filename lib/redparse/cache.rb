@@ -83,7 +83,15 @@ class RedParse
         end
       end
     end
-    private :find_home, :entry_files, :redparse_rb_hexdigest, :retire_old_entries
+    private :find_home, :entry_files, :redparse_rb_hexdigest, :retire_old_entries, :max_size, :hexdigest_of_file
+
+    def hash_of_input input
+      if IO===input
+        hexdigest_of_file input
+      else
+        Digest::SHA2.hexdigest input
+      end
+    end
 
     def get input
       huh
