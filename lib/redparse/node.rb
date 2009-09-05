@@ -711,6 +711,7 @@ end
         replace_ivars_and_self self,session do |new|
           return new
         end
+
         return self
       end
 
