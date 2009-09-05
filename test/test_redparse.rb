@@ -3968,35 +3968,47 @@ EOS
         
       end #until output.equal? tree 
 
-      return unless nodes
-      begin
-        unparsed=nodes.unparse
-        if unparsed==xmpl
-          assert true
-          return
-        end
-        reparsed= RedParse.new(unparsed,"-").parse
-        if nodes.delete_extraneous_ivars! != reparsed.delete_extraneous_ivars!
-          assert_equal nodes.delete_linenums!, reparsed.delete_linenums!
-          warn "unparser doesn't preserve linenums perfectly in #{xmpl}"
-          if defined? @@unparse_mismatched_linenums
-              @@unparse_mismatched_linenums+=1
-          else
-              @@unparse_mismatched_linenums=1
-              at_exit{warn "unparse mismatched linenums: #@@unparse_mismatched_linenums"}
+      if nodes
+        #test reading back form the cache just created
+        nodes2=RedParse.new(xmpl,"-",1,[],:cache_mode=>:read_only).parse
+        assert_equal nodes,nodes2
+
+        begin
+          unparsed=nodes.unparse
+          if unparsed==xmpl
+            assert true
+            done_already=true
           end
-        else
-          assert true 
+        rescue Exception
+          raise unless Exception===tree
         end
-      rescue Exception
-        raise unless Exception===tree
+        begin
+          reparsed= RedParse.new(unparsed,"-",1,[],:cache_mode=>:none).parse
+          if nodes.delete_extraneous_ivars! != reparsed.delete_extraneous_ivars!
+            assert_equal nodes.delete_linenums!, reparsed.delete_linenums!
+            warn "unparser doesn't preserve linenums perfectly in #{xmpl}"
+            if defined? @@unparse_mismatched_linenums
+                @@unparse_mismatched_linenums+=1
+            else
+                @@unparse_mismatched_linenums=1
+                at_exit{warn "unparse mismatched linenums: #@@unparse_mismatched_linenums"}
+            end
+          else
+            assert true 
+          end
+        rescue Exception
+          raise unless Exception===tree
+        end unless done_already
+
+        assert_equal nodes, Marshal.load(Marshal.dump(nodes))
+
+        unless done_already or Exception===tree or differed_by_begin
+          tree3=reparsed.to_parsetree(*pt_opts)
+          assert_equal tree, tree3
+        else #missing a syntax errr, but that's been noted already
+        end
       end
 
-      unless Exception===tree
-        tree3=reparsed.to_parsetree(*pt_opts)
-        assert_equal tree, tree3
-      else #missing a syntax errr, but that's been noted already
-      end
 
 #  rescue Exception=>e:
 #      raise "error: #{e}:#{e.class} while testing '#{xmpl}'"
