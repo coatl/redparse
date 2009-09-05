@@ -2960,8 +2960,9 @@ end
          block&&[
            @do_end ? " do " : "{", 
              block_params&&block_params.unparse(o),
-             " ",
+             unparse_nl(block,o," "),
              block.unparse(o),
+             unparse_nl(endline,o),
            @do_end ? " end" : "}"
          ]
         ]
@@ -4523,7 +4524,7 @@ end
       def unparse o=default_unparse_options
         result=[
          "def ",receiver&&receiver.unparse(o)+'.',name,
-           args ? '('+args.map{|arg| arg.unparse o}.join(',')+')' : unparse_nl(body||self,o)
+           args && '('+args.map{|arg| arg.unparse o}.join(',')+')', unparse_nl(body||self,o)
         ]
         result<<unparse_and_rescues(o)
 =begin
@@ -4757,7 +4758,7 @@ end
       def image; "(module #{name})" end
 
       def unparse o=default_unparse_options
-        "module #{name.unparse o}#{unparse_nl(body||self,o)}#{unparse_and_rescues(o)};end"
+        "module #{name.unparse o}#{unparse_nl(body||self,o)}#{unparse_and_rescues(o)}#{unparse_nl(endline,o)}end"
       end
 
       def parent; nil end
@@ -4808,7 +4809,10 @@ end
       def unparse o=default_unparse_options
         result="class #{name.unparse o}"
         result+=" < #{parent.unparse o}" if parent
-        result+=unparse_nl(body||self,o)+"#{unparse_and_rescues(o)};end"
+        result+=unparse_nl(body||self,o)+
+                  unparse_and_rescues(o)+
+                unparse_nl(endline,o)+
+                "end"
         return result
       end
 
