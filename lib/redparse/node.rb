@@ -2214,7 +2214,7 @@ end
             end
             @lhs_parens=true
           end
-        when CommaOpNode: 
+        when CommaOpNode
           lhs=MultiAssign.new lhs
           #rhs=Array.new(rhs) if CommaOpNode===rhs
         end 
