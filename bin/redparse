@@ -83,7 +83,7 @@ end
 
 
 
-output=:pp
+output=:p
 quiet=true
 ruby187=ruby19=false
 while /^-/===ARGV.first
@@ -192,6 +192,8 @@ inputs.each_index{|i|
     when :pp
       require 'pp'
       pp tree
+    when :p
+      p tree
     when :lisp
       puts tree.to_lisp
     when :unparse
