@@ -269,6 +269,18 @@ class RedParseTest<Test::Unit::TestCase
   FAILURE_EXAMPLES=[
   ]
   RUBYBUG_EXAMPLES=[
+
+    #bugs in ruby itself
+    "c do p (110).m end",
+    "p = p m %(1)",
+    "p = p m %(1) ,&t",
+    "p = p m %(1) ,*t",
+    "p = p m %(1) ,t",
+    "p = p m %(1) do end",
+    "p=556;p (e) /a",
+    "z{|| p (1).m}",
+
+    #bugs in ParseTree
 '    case
     when 0
       guecoding
@@ -277,19 +289,9 @@ class RedParseTest<Test::Unit::TestCase
         guing
       end
     end',
-
     'case; when false; else case; when nil; else 5; end; end',
-    'def foo(a=b=c={}) end',
-    "$11111111111111111111111111111111111111111111111111111111111111111111",
-    "c do p (110).m end",
     "case F;when G; else;case; when j; end;end",
-    "p = p m %(1)",
-    "p = p m %(1) ,&t",
-    "p = p m %(1) ,*t",
-    "p = p m %(1) ,t",
-    "p = p m %(1) do end",
-    "p=556;p (e) /a",
-    "z{|| p (1).m}",
+    'def foo(a=b=c={}) end',
     'def sum(options = {:weights => weights = Hash.new(1)}); options.empty? or options.keys.size > 1; end',
     'def sum(options = {:weights => weights = Hash}); 1 end',
   ]
