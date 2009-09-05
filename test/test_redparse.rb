@@ -2786,9 +2786,6 @@ class RedParseTest<Test::Unit::TestCase
       'a,b=(*c=b,a)'...'',
       
     ]
-    NOTWORKINGYET=[
-      #later...
-    ]
 
 
    PASSTHRU_BSLASHES_ENTIRE=<<'END'
