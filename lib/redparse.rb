@@ -2261,11 +2261,15 @@ end
   end
 
 #  LowerOp=     proc{|parser,op2| parser.left_op_higher(parser[-3],op2) }
+  module LowerOp_inspect
+    def inspect; "lower_op" end
+  end
+
   def lower_op
     return @lower_op if defined? @lower_op
     lower_op=item_that{|op| left_op_higher(@stack[-3],op) }
     lower_op=(LOWEST_OP|(~VALUELIKE_LA & lower_op)).la
-    def lower_op.inspect; "lower_op" end
+    lower_op.extend LowerOp_inspect
     @lower_op=lower_op
   end
 
