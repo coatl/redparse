@@ -679,7 +679,7 @@ end
             if o
               tempsession={}
               xformer.xform!(o,tempsession)
-              resolve_variables_in_session session, tempsession
+              merge_replacement_session session, tempsession
             elsif xformer===o and Reg::Transform===xformer
               new=xformer.right
               if Reg::Formula===right
@@ -724,7 +724,7 @@ end
           end
       end
 
-      def resolve_variables_in_session session,tempsession
+      def merge_replacement_session session,tempsession
         tempsession.each_pair{|k,v|
           unless Symbol===k
             v=Ron::GraphWalk.graphcopy(v){|cntr,o,i,ty,useit|
