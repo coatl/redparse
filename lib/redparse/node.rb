@@ -1698,6 +1698,13 @@ end
       end
       attr_writer :lvalue
       identity_param :lvalue, nil, true
+
+      def inspect label=nil,indent=0
+        result=' '*indent
+        result+="#{label}: " if label 
+        result+='Constant '
+        result+=map{|name| name.inspect}.join(', ')+"\n"
+      end
     end
     LookupNode=ConstantNode
 
