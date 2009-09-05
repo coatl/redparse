@@ -1328,7 +1328,9 @@ end
         elsif StringNode===right and right.char=="/"
           [:not, [:match3, right.parsetree(o), left.parsetree(o)]]
         else
-          super
+          result=opnode_parsetree(o)
+          result[2]="=#{op[1..1]}".to_sym
+          result=[:not, result]
         end
       end
 
