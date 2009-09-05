@@ -1524,11 +1524,29 @@ end
       def parsetree(o)
         first=first().parsetree(o)
         last=last().parsetree(o)
-        if :lit==first.first and :lit==last.first and
-           Fixnum===first.last and Fixnum===last.last
-          return [:lit, Range.new(first.last,last.last,@exclude_end)]
+        if @as_flow_control
+          if :lit==first.first and Integer===first.last 
+            first=[:call, [:lit, first.last], :==, [:array, [:gvar, :$.]]]
+          elsif :lit==first.first && Regexp===first.last or 
+                :dregx==first.first || :dregx_once==first.first
+            first=[:match, first]
+          end
+
+          if :lit==last.first and Integer===last.last
+            last=[:call, [:lit, last.last], :==, [:array, [:gvar, :$.]]]
+          elsif :lit==last.first && Regexp===last.last or 
+                :dregx==last.first || :dregx_once==last.first
+            last=[:match, last]
+          end
+
+          tag="flip"
+        else
+          if :lit==first.first and :lit==last.first and
+             Fixnum===first.last and Fixnum===last.last
+            return [:lit, Range.new(first.last,last.last,@exclude_end)]
+          end
+          tag="dot"
         end
-        tag= @as_flow_control ? "flip" : "dot"
         count= @exclude_end ? ?3 : ?2
         tag << count
         [tag.to_sym, first, last]
