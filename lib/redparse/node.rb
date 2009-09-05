@@ -2945,11 +2945,13 @@ end
           method=method.ident
           fail unless String===method
         end
+
         super(nil,method,param_list,blockparams,block)
         #receiver, if any, is tacked on later
       end
 
       def real_parens; !@not_real_parens end
+      def real_parens= x; @not_real_parens=!x end
 
       def unparse o=default_unparse_options
         fail if block==false
