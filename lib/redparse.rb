@@ -2351,12 +2351,14 @@ end
                  KW(/^(not | defined\? | rescue3 | .*[@,] | [ ~ ! ; \( \[ \{ ? : ] | \.{1,3} | :: | => | ![=~])$/x)|
                  KW(%r{^( \*\*? | << | >> | &&? | \|\|? | \^ | % | / | - | \+ )?=$}x)|
                  KW(BEGINWORDS)|KW(/^#{INNERBOUNDINGWORDS}$/)|RescueHeaderNode|StartToken|
-                 GoalPostToken|BlockFormalsNode
+                 GoalPostToken|BlockFormalsNode|AssignmentRhsListStartToken
 
   #for use in lookahead patterns
   VALUELIKE_LA=KW(RubyLexer::VARLIKE_KEYWORDS)|NumberToken|SymbolToken|StringToken|UNOP|DEFOP|
-               KW(/^( \( | \{ | )$/x)|VarNameToken|MethNameToken|HerePlaceholderToken|KW(BEGINWORDS)|FUNCLIKE_KEYWORD
-  LOWEST_OP=KW(/^(#{ENDWORDS})$/)|KW(/^#{INNERBOUNDINGWORDS.sub('rescue|','')}$/)|EoiToken|GoalPostToken
+               KW(/^[({]$/x)|VarNameToken|MethNameToken|HerePlaceholderToken|
+               KW(BEGINWORDS)|FUNCLIKE_KEYWORD|AssignmentRhsListStartToken
+  LOWEST_OP=KW(/^(#{ENDWORDS})$/)|KW(/^#{INNERBOUNDINGWORDS.sub('rescue|','')}$/)|
+            EoiToken|GoalPostToken|AssignmentRhsListEndToken
 
   RESCUE_BODY=-[Expr.-, RescueNode.*, ElseNode.-, EnsureNode.-,]
 
