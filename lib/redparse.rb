@@ -268,7 +268,7 @@ end
       @stack.push tok
     }}
 
-    @stack.size==2 and return NopNode.new #handle empty parse string
+    @stack.size==2 and return result=NopNode.new #handle empty parse string
 
     #unless the @stack is 3 tokens, 
     #with the last an Eoi, and first a StartToken
