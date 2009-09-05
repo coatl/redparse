@@ -2219,8 +2219,10 @@ end
           if !lhs.after_comma      #look for () around lhs
             if CommaOpNode===lhs.first
               lhs=MultiAssign.new(Array.new(lhs.first))
-            else
+            elsif UnaryStarNode===lhs.first
               lhs=MultiAssign.new([lhs.first])
+            else
+              lhs=lhs.first
             end
             @lhs_parens=true
           end
