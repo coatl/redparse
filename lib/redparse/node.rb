@@ -554,23 +554,23 @@ end
       def self.param_names(*names)
         accessors=[]
         namelist=[]
-        namelist2=[]
+        @namelist=[]
         names.each{|name| 
           name=name.to_s
           last=name[-1]
           name.chomp! '!' and name << ?_
-          namelist2 << name
+          namelist << name
           unless last==?_
-            accessors << "def #{name.chomp('_')}; self[#{namelist.size}] end\n"
-            accessors << "def #{name.chomp('_')}=(newval); self[#{namelist.size}]=newval end\n"
-            namelist << name
+            accessors << "def #{name.chomp('_')}; self[#{@namelist.size}] end\n"
+            accessors << "def #{name.chomp('_')}=(newval); self[#{@namelist.size}]=newval end\n"
+            @namelist << name
           end
         }
         init="
-          def initialize(#{namelist2.join(', ')})
-            replace [#{namelist.size==1 ? 
-                      namelist.first : 
-                      namelist.join(', ')
+          def initialize(#{namelist.join(', ')})
+            replace [#{@namelist.size==1 ? 
+                      @namelist.first : 
+                      @namelist.join(', ')
                   }]
           end
           alias init_data initialize
@@ -586,6 +586,15 @@ end
         else
           eval code
         end
+
+        @namelist.reject!{|name| /_\Z/===name }
+      end
+
+      def self.namelist
+        #@namelist
+        result=superclass.namelist||[] rescue []
+        result.concat @namelist if defined? @namelist
+        return result
       end
 
       def lhs_unparse o; unparse(o) end
@@ -4481,6 +4490,9 @@ end
 
       attr_reader :empty_ensure, :empty_else
 
+      def self.namelist
+        %w[receiver name args body rescues elses ensures]
+      end
 
 #      def receiver= x
 #        self[0]=x      
