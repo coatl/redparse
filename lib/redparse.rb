@@ -2316,7 +2316,7 @@ end
 
   BareMethod=MethNameToken|(LiteralNode&-{:bare_method=>true})
 
-  BEGINWORDLIST=RubyLexer::BEGINWORDLIST + %w"( [ {"  
+  #BEGINWORDLIST=RubyLexer::BEGINWORDLIST + %w"( [ {"  
   ENDWORDLIST=%w"end ) ] }"
   ENDWORDS=ENDWORDLIST.map{|x| Regexp.quote x}.join('|')
   BEGINWORDS=RubyLexer::BEGINWORDS
