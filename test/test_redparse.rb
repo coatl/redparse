@@ -3880,6 +3880,7 @@ EOS
   end
 
   def check_parsing xmpl,pt=ParseTree.new
+    xmpl=xmpl.dup.freeze
     pt_opts=[:quirks]
     pt_opts<<:ruby187 if ::VERSION["1.8.7"]
     /unparse/===xmpl and warn 'unparse in parser test data!'
