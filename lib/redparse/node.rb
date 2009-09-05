@@ -733,7 +733,7 @@ end
             v=Ron::GraphWalk.graphcopy(v){|cntr,o,i,ty,useit|
               if Reg::BoundRef===o
                 useit[0]=true
-                tempsession[o.name]
+                tempsession[o.name]||o
               end
             }
             session[k]=v
