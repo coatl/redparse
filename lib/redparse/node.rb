@@ -729,7 +729,7 @@ end
 
       def merge_replacement_session session,tempsession
         tempsession.each_pair{|k,v|
-          unless Symbol===k
+          if Integer===k
             v=Ron::GraphWalk.graphcopy(v){|cntr,o,i,ty,useit|
               if Reg::BoundRef===o
                 useit[0]=true
