@@ -691,6 +691,9 @@ end
         }
         session["final"]=true
         
+        finallys=session["finally"]
+        finallys.each{|(action,arg)| action[arg] } if finallys
+
         depthwalk{|parent,i,subi,o|
           next unless parent
           replace_ivars_and_self o, session do |new|
