@@ -16,7 +16,15 @@ class RedParse
     end
   
     def entry_files
-      Dir[@homedir+"/*"].grep(%r{/[0-9a-f]+\Z}i)
+      Dir[cachedir+"*"]
+    end
+
+    def all_entry_files
+      Dir[@homedir+"*"].select{|fn| 
+        File.directory? fn 
+      }.map{|dirname|
+        Dir[dirname+"/*"]
+      }.flatten
     end
 
     def retire_old_entries
