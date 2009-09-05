@@ -3943,7 +3943,13 @@ EOS
           h=nodes.hash
           tree2,warnings2=nodes.to_parsetree_and_warnings(*pt_opts)
           assert_equal h,nodes.hash
-          assert_equal tree, tree2
+          if tree==tree2
+            assert true
+          else
+            assert_equal tree, RedParse.remove_silly_begins(tree2)
+            warn "parse_trees differed by a :begin in #{xmpl}"
+            differed_by_begin=true
+          end
           assert_equal warnings, warnings2 if ENV['WARN_PICKINESS']
           if warnings != warnings2
             if defined? @@mismatched_warnings
