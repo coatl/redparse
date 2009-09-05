@@ -472,6 +472,59 @@ class RedParse
         return result
       end
 
+if true
+      def inspect label=nil,indent=0
+        ivarnames=instance_variables-%w[@data @offset @startline @endline]
+        ivarnodes=[]
+        ivars=ivarnames.map{|ivarname|
+          ivar=instance_variable_get(ivarname)
+          if Node===ivar
+            ivarnodes.push [ivarname,ivar]
+            nil
+          else
+            ivarname[1..-1]+"="+ivar.inspect if ivar
+          end
+        }.compact.join(' ')
+
+
+        pos=@startline.to_s
+        pos<<"..#@endline" if @endline!=@startline
+        pos<<"@#@offset"
+        classname=self.class.name
+        classname.sub!(/^(?:RedParse::)?(.*?)(?:Node)?$/){$1}
+        result= [' '*indent,"+",(label+': ' if label),classname," pos=",pos," ",ivars,"\n"]
+        indent+=2
+
+        namelist=self.class.namelist
+        if namelist and !namelist.empty?
+          namelist.each{|name|
+            val=send name
+            case val
+              when Node; result<< val.inspect(name,indent)
+              when ListInNode 
+                result.push ' '*indent,"#{name}:\n",*val.map{|v| 
+                  v.inspect(nil,indent+2) rescue ' '*(indent+2)+"-#{v.inspect}\n"
+                }
+              when nil;
+              else ivars<< " #{name}=#{val.inspect}"
+            end
+          }
+        else
+          each{|val|
+            case val
+            when Node; result<< val.inspect(nil,indent) 
+            else result<< ' '*indent+"-#{val.inspect}\n"
+            end
+          }
+        end
+
+        ivarnodes.each{|(name,val)|
+          result<< val.inspect(name,indent)
+        }
+
+        return result.join
+      end
+else
       def inspect
         ivarnames=instance_variables-["@data"]
         ivars=ivarnames.map{|ivarname| 
@@ -481,7 +534,7 @@ class RedParse
         bare.gsub!(/\]\Z/, ", {"+ivars+"}]") unless ivarnames.empty?
         return self.class.name+bare
       end
- 
+end
       def pretty_print(q)
         ivarnames=instance_variables-["@data"]
         ivars={}
