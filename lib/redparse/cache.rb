@@ -106,8 +106,23 @@ class RedParse
     end
 
     def get input
-      huh
-      huh touch
+      hash=hash_of_input input
+      cachefile=cachedir+hash
+      if File.exist? cachefile
+        result=File.open(cachefile){|fd| 
+          Marshal.load fd; 
+        }
+
+        begin
+          t=Time.now
+          File.utime(t,t,cachefile)
+        rescue Exception
+          File.open(cachefile,"a"){|fd| } #touch cache date
+        end
+        return result
+      end
+    rescue EOFError
+      return nil
     end
 
     def put input,result
