@@ -241,10 +241,13 @@ end
   end
 
   def parse
+
     #hack, so StringToken can know what parser its called from
     #so it can use it to parse inclusions
     oldparser=Thread.current[:$RedParse_parser]
     Thread.current[:$RedParse_parser]||=self
+
+    return @cached_result if defined? @cached_result
 
     @rules||=expanded_RULES()
 #    @inputs||=enumerate_exemplars
@@ -2602,8 +2605,24 @@ if defined? END_ATTACK
   include Reducer
 end
 
-  def initialize(input,name="(eval)",line=1,lvars=[],options={:rubyversion=>1.8})
-    @rubyversion=options[:rubyversion]
+  def initialize(input,name="(eval)",line=1,lvars=[],options={})
+    @rubyversion=options[:rubyversion]||1.8
+
+    cache=Cache.new(name,line,lvars.sort.join(" "),@rubyversion,self.class.name)
+    cache_mode=options[:cache_mode]||:read_write
+    raise ArgumentError unless /^(?:read_(?:write|only)|write_only|none)$/===cache_mode.to_s    
+    read_cache= /read/===cache_mode.to_s
+    if read_cache and cache and result=cache.get(input)
+      @cached_result=result
+      @write_cache=nil
+      return
+    end
+    if /write/===cache_mode.to_s
+      @write_cache,@input= cache,input 
+    else
+      @write_cache=nil
+    end
+
     if Array===input
       def input.get1token; shift end
       @lexer=input
