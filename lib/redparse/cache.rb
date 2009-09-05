@@ -22,7 +22,7 @@ class RedParse
     def retire_old_entries
       size=max_size||10_000_000
       files=entry_files
-      total=files.inject(0){|fn,sum| sum+File.size(fn) }
+      total=files.inject(0){|sum,fn| sum+File.size(fn) }
       if total>size
         files=files.sort_by{|fn| File::mtime(fn)}
         while total>size
