@@ -33,7 +33,6 @@ require "reg"
 
 
 class RedParse
-#  module Nodes
     #import token classes from rubylexer
     RubyLexer::constants.each{|k| 
       t=RubyLexer::const_get(k)
@@ -5079,7 +5078,16 @@ end
       alias msg error?
     end
 
-#  end
+
+    module Nodes
+      node_modules=%w[ArrowOpNode RangeNode LogicalNode
+                      WhileOpNode UntilOpNode IfOpNode UnlessOpNode
+                      OpNode NotEqualNode MatchNode NotMatchNode]
+      ::RedParse::constants.each{|k| 
+        const=::RedParse::const_get(k)
+        const_set( k,const ) if Module===const and (::RedParse::Node>=const || node_modules.include?( k ))
+      }
+    end
 
 end
 =begin a (formal?) description
