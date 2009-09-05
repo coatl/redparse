@@ -736,6 +736,9 @@ end
                 tempsession[o.name]||o
               end
             }
+            if session.has_key? k
+              v=v.chain_to session[k]
+            end
             session[k]=v
           end
         }
