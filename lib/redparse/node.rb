@@ -389,6 +389,10 @@ class RedParse
         @endline||=0
       end
 
+      def self.create(*args)
+        new(*args)
+      end
+
       def flattened_ivars
         result=super
         result.each_with_index{|x,i|
