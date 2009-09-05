@@ -324,18 +324,10 @@ class RedParseTest<Test::Unit::TestCase
     'case; when false; else case; when nil; else 5; end; end'...'',
     'case;else case; else; end;end'...'',
     'case; else; end'...'',
-    'c while d and 2.a?(b)..8'...'',
     'c while d and 888888888888888888888888888888888888888888888888888888..2.a?(b)'...'',
-    'c while d and 8.8..2.a?(b)'...'',
     'c while d and 8..2.a?(b)'...'',
-    'c while d and :a8..2.a?(b)'...'',
-    'c while d and :a8..:b8'...'',
     'c while d and a8..:b8'...'',
     'c while d and 8..:b8'...'',
-    'c while d and /8/..2.a?(b)'...'',
-    'c while d and /8/../2.a?(b)/'...'',
-    'c while d and 8../2.a?(b)/'...'',
-    'c while d and a8../2.a?(b)/'...'',
     'z = valueo_s rescue "?"'...'',
     '"#{publi}#{}>"'...'',
     'return (@images = @old_imgs)'...'',
@@ -393,8 +385,6 @@ class RedParseTest<Test::Unit::TestCase
     "begin begin; ync; p1; end;rr end"...'',
     "begin;mode;rescue;o_chmod rescue nil;end"...'',
     "%w![ ] { } ( ) | - * . \\\\ ? + ^ $ #!"...'',
-
-    'def foo(a = 1)    end; def foo(a=b=c={})  end; def bar(a=b=c=1,d=2)  end'...'',
     '() until 1'...'',
     '(a) until 1'...'',
     '(a) while l 1'...'',
@@ -2062,7 +2052,6 @@ class RedParseTest<Test::Unit::TestCase
       'p(a and b)'...'',   #not legal
 
       '1..2'...'',
-      'a if 1..2'...'',
 
       'nc=(nextchar unless eof?)'...'',
       'super'...'',
@@ -2885,15 +2874,6 @@ module A::
 
     return @senders[1] =
       2
-
-    case
-    when 0
-      guecoding     
-    else case
-      when eucjp_match_length 
-        guing
-      end
-    end
 
      %w[ ac
          df]
