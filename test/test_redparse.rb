@@ -3782,19 +3782,19 @@ EOS
   def test_case_that_segfaults_ruby185
     assert_equal \
       [[:op_asgn1, [:call, [:vcall, :a], :b], [:zarray], :%, [:vcall, :d]]],
-      RedParse.new('a.b[]%=d','-').parse.to_parsetree(:quirks)
+      RedParse.new('a.b[]%=d','(eval)',1,[],:cache_mode=>:none).parse.to_parsetree(:quirks)
   end
 
   def test_case_that_segfaults_ruby186_slash_parsetree211
     assert_equal  [[:cdecl, [:colon3, :B], [:lit,1]]],
-       RedParse.new('::B=1','-').parse.to_parsetree(:quirks)
+       RedParse.new('::B=1','-',1,[],:cache_mode=>:none).parse.to_parsetree(:quirks)
     assert_equal  [[:cdecl, [:colon2, [:const, :A], :B], [:lit,1]]],
-       RedParse.new('A::B=1','-').parse.to_parsetree(:quirks)
+       RedParse.new('A::B=1','-',1,[],:cache_mode=>:none).parse.to_parsetree(:quirks)
   end
   
   def test_case_that_segfaults_ruby187_slash_parsetree220
     assert_equal  [[:iter, [:fcall, :Proc], [:block_pass, [:dasgn_curr, :b], 0]]],
-       RedParse.new('Proc{|&b|}','-').parse.to_parsetree(:quirks)
+       RedParse.new('Proc{|&b|}','-',1,[],:cache_mode=>:none).parse.to_parsetree(:quirks)
   end
 
   def test_cases_misparsed_by_ruby186_slash_parsetree
@@ -3857,7 +3857,7 @@ EOS
 
 
     }.each_pair{|code,tree| 
-      assert_equal tree,RedParse.new(code,'-').parse.to_parsetree(:quirks)
+      assert_equal tree,RedParse.new(code,'-',1,[],:cache_mode=>:none).parse.to_parsetree(:quirks)
     }
   end
 
@@ -3932,14 +3932,14 @@ EOS
         tree=e
         tree2=nodes=h=nil
         assert_hopefully_raises_Exception(xmpl){
-          nodes=RedParse.new(xmpl,"-").parse
+          nodes=RedParse.new(xmpl,"-",1,[],:cache_mode=>:write_only).parse
           h=nodes.hash
           tree2,warnings2=nodes.to_parsetree_and_warnings(*pt_opts)
         }
         assert_equal h,nodes.hash if h
       else
         begin
-          nodes=RedParse.new(xmpl,"-").parse
+          nodes=RedParse.new(xmpl,"-",1,[],:cache_mode=>:write_only).parse
           h=nodes.hash
           tree2,warnings2=nodes.to_parsetree_and_warnings(*pt_opts)
           assert_equal h,nodes.hash
