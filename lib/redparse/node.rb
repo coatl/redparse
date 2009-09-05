@@ -2703,11 +2703,17 @@ end
         }
         return result
       end
-      def left(*args,&block)
-        method_missing(:left,*args,&block)  
+      def left
+        self[0]
       end
-      def right(*args,&block)
-        method_missing(:right,*args,&block)
+      def left= val
+        self[0]=val
+      end
+      def right
+        self[1]
+      end
+      def right= val
+        self[1]=val
       end
 
       def parsetree(o)
