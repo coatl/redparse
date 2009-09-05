@@ -34,9 +34,25 @@ class RedParse
     end
 
     def redparse_rb_hexdigest
-      huh
+      full_name=nil
+      $:.find{|dir| File.exist? full_name=dir+"/redparse.rb"}
+      File.open(full_name){|fd| hexdigest_of_file fd }
     end
-      
+
+    def hexdigest_of_file fd
+      sha2=Digest::SHA2.new
+      fd.rewind
+      while chunk=fd.read(4096)
+        sha2.update chunk
+      end
+      fd.rewind
+      return sha2.hexdigest
+    end
+
+    def max_size
+       File.open(@homedir+"/size"){|fd| fd.read.chomp } rescue nil
+    end
+
     ##
     # Finds the user's home directory. 
     #--
