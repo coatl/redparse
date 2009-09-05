@@ -10,6 +10,10 @@ class RedParse
       end
       retire_old_entries
     end
+
+    def cachedir
+      @homedir+@callersfile+"/"
+    end
   
     def entry_files
       Dir[@homedir+"/*"].grep(%r{/[0-9a-f]+\Z}i)
