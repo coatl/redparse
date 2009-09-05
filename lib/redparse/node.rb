@@ -3821,7 +3821,7 @@ end
             assert !old_val.raw.has_str_inc?
             val=old_val.raw.translate_escapes(old_val.raw.elems.first).to_sym
           when ?" #"
-            if old_val.raw.has_str_inc?
+            if old_val.raw.has_str_inc? or old_val.raw.elems==[""]
               val=StringNode.new(old_val.raw) #ugly hack: this isn't literal
             else
               val=old_val.raw.translate_escapes(old_val.raw.elems.first).to_sym
