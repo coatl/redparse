@@ -23,7 +23,7 @@ require 'parse_tree'
 require 'tempfile'
 
 require "redparse"
-
+require "redparse/pthelper"
 require "rubylexer/test/testcases"
 
 $VERBOSE=1
