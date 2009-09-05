@@ -3868,8 +3868,8 @@ EOS
     end
   end
 
-  BEGIN{File.unlink "problemexprs" rescue nil}
   def problem_exprs
+    return nil
     @problem_exprs||=nil
     return @problem_exprs if @problem_exprs
 
