@@ -16,8 +16,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =end
 
-#warn 'hacking up LOAD_PATH to include the latest RubyLexer!'
-#$:.unshift Dir.pwd+'/../rubylexer/lib', Dir.pwd+'/../rubylexer'
 
 
 require 'forwardable'
