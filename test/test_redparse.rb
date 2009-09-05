@@ -294,6 +294,21 @@ class RedParseTest<Test::Unit::TestCase
     'def foo(a=b=c={}) end',
     'def sum(options = {:weights => weights = Hash.new(1)}); options.empty? or options.keys.size > 1; end',
     'def sum(options = {:weights => weights = Hash}); 1 end',
+    'def foo(a = 1)    end; def foo(a=b=c={})  end; def bar(a=b=c=1,d=2)  end',
+    'def bar(a=b=1,d=2)  end',
+    'x if /f/../o/',
+    'c while d and a8../2.a?(b)/',
+    'c while d and :a8..:b8',
+    'c while d and :a8..2.a?(b)',
+    'c while d and 8.8..2.a?(b)',
+    'c while d and 8../2.a?(b)/',
+    'c while d and 2.a?(b)..8',
+    'c while d and /8/..2.a?(b)',
+    'c while d and /8/../2.a?(b)/',
+    'a if 1..2',
+
+    #not sure which, doesn't really matter anyway
+    "$11111111111111111111111111111111111111111111111111111111111111111111",
   ]
 
   ONELINERS=[
