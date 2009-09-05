@@ -3575,6 +3575,14 @@ EOS
   ###############################################################################################
 
 
+  RUBY_1_9_TO_1_8_EQUIVALENCES=[
+    '{a:  b}'...'{:a=>b}',
+    '{a:  b, c:  d}'...'{:a=>b, :c=>d}',
+    "a ? b\n :  c"..."a ? b : \n c",
+    'not(true)'...'not true',
+    'not(+1)'...'not +1',
+  ]
+
   SINGLE_OPEN2CLOSE={
     "'"=>"'",
     ":'"=>"'",
@@ -3707,6 +3715,15 @@ EOS
   }.to_s
   #puts code.split("\n")[5880..5890].join("\n")
   eval code
+
+  def test_ruby19_equivs
+    RUBY_1_9_TO_1_8_EQUIVALENCES.map{|pair|
+      new,old=pair.first,pair.last
+      pt19=RedParse.new(new,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
+      pt18=RedParse.new(old,'(eval)',1,[],:cache_mode=>:none).parse
+      assert_equal pt18,pt19
+    }
+  end
 
   error_code=RUBYBUG_EXAMPLES.map{|xmpl| 
     #remove comment if present
