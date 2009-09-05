@@ -126,8 +126,14 @@ class RedParse
     end
 
     def put input,result
-      huh
+      hash=hash_of_input input
+      File.open(cachedir+hash, "w"){|fd|
+        Marshal.dump(result,fd)
+      }
+    rescue TypeError=>e #dump failed
+      puts "#{e.class}: #{e}"
+      puts "cache write failed for:\n#{result.inspect}"
+      File.unlink cachedir+hash
     end
-
   end
 end
