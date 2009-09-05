@@ -1,9 +1,13 @@
+require 'digest/sha2'
 class RedParse
   class Cache
-    def initialize
-      @homedir=find_home+"/.redparse"
-      saved_digest= File.open(@homedir+"/parserdigest"){|fd| fd.read.chomp } rescue nil
-      actual_digest= redparse_rb_hexdigest
+    def initialize *params
+      @callersfile=Digest::SHA2.hexdigest params.join(',')
+      @homedir=find_home+"/.redparse/"
+      Dir.mkdir @homedir unless File.exist? @homedir
+      Dir.mkdir cachedir unless File.exist? cachedir
+      saved_digest= File.open(@homedir+"/parserdigest"){|fd| fd.read.chomp } if File.exist?(@homedir+"/parserdigest")
+      actual_digest= @@saved_parser_digest ||= redparse_rb_hexdigest
       if saved_digest!=actual_digest
         File.unlink(*all_entry_files)        #flush cache
         File.open(@homedir+"/parserdigest","w"){|fd| fd.puts actual_digest } #update saved digest
