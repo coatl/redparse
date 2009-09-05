@@ -2696,7 +2696,7 @@ end
       when KeywordToken
           case name=result.ident
 
-          when /^(#{BINOP_KEYWORDS.join '|'})$/: #should be like this in rubylexer
+          when /^(#{BINOP_KEYWORDS.join '|'})$/o #should be like this in rubylexer
             result=OperatorToken.new(name,result.offset) unless result.has_end?
           when "|"; result=GoalPostToken.new(result.offset) #is this needed still?
           when "__FILE__"; #I wish rubylexer would handle this
