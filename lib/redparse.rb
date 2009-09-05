@@ -183,7 +183,7 @@ end
     #replace matching elements in @stack with node type found
     case node_type
     when Class
-        node=node_type.new(*matching)
+        node=node_type.create(*matching)
         node.startline||=@stack[matchrange.first].startline
         node.endline=@endline
         @stack[matchrange]=[node]
