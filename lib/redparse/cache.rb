@@ -5,7 +5,7 @@ class RedParse
       saved_digest= File.open(@homedir+"/parserdigest"){|fd| fd.read.chomp } rescue nil
       actual_digest= redparse_rb_hexdigest
       if saved_digest!=actual_digest
-        File.unlink(*entry_files)        #flush cache
+        File.unlink(*all_entry_files)        #flush cache
         File.open(@homedir+"/parserdigest","w"){|fd| fd.puts actual_digest } #update saved digest
       end
       retire_old_entries
