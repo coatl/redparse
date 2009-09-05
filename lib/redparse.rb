@@ -2014,6 +2014,7 @@ end
     "|="=>105,   "&="=>105,   ">>="=>105,  "<<="=>105,   "*="=>105,
     "&&="=>105,  "||="=>105,  "**="=>105,  "^="=>105,
 
+
 #    "and"=>99, "or"=>99,
 
 #   "if"=>98, "unless"=>98, "while"=>98, "until"=>98, "rescue"=>98, 
@@ -2385,10 +2386,10 @@ end
     -[DEFOP, ParenedNode]>>UnOpNode,
     -[Op(/^(?:unary|lhs|rhs)\*$/), ValueNode, lower_op]>>UnaryStarNode,
 
-    -[Op('=',true)|KW(/^(rescue|when|\[)$/)|Op(/,$/,true),
-      Op(/^(?:unary|rhs)\*$/), ValueNode, (MODIFYASSIGNOP|Op('=',true)).la]>>:shift,
-    -[MethNameToken|FUNCLIKE_KEYWORD, KW('('), 
-      Op(/^(?:unary|rhs)\*$/), ValueNode, (MODIFYASSIGNOP|Op('=',true)).la]>>:shift,
+#    -[Op('=',true)|KW(/^(rescue|when|\[)$/)|Op(/,$/,true),
+#      Op(/^(?:unary|rhs)\*$/), ValueNode, (MODIFYASSIGNOP|Op('=',true)).la]>>:shift,
+#    -[MethNameToken|FUNCLIKE_KEYWORD, KW('('), 
+#      Op(/^(?:unary|rhs)\*$/), ValueNode, (MODIFYASSIGNOP|Op('=',true)).la]>>:shift,
     #star should not be used in an lhs if an rhs or param list context is available to eat it.
     #(including param lists for keywords such as return,break,next,rescue,yield,when)
 
@@ -2411,17 +2412,19 @@ end
     # a = b rescue c acts like a ternary,,,
     #provided that both a and b are not multiple and b
     #(if it is a parenless callsite) has just 1 param
-    -[Lvalue&~MULTIASSIGN, Op('=',true), AssignmentRhsNode&-{:is_list=>true}, 
-           Op('rescue3',true), Expr, lower_op]>>AssignNode,
-    -[Lvalue&~MULTIASSIGN, Op('=',true), AssignmentRhsNode&-{:is_list=>true}, 
-        Op('rescue3',true).la]>>:shift,
-    -[Lvalue&~MULTIASSIGN, Op('=',true), AssignmentRhsNode&-{:is_list=>true}, 
-        RESCUE_OP.la] >>
-        stack_monkey("rescue3",1,Op('rescue3',true)){|stack| 
-          resc=stack.last.dup
-          resc.ident += '3'
-          stack[-1]=resc
-        },
+#    -[Lvalue&~MULTIASSIGN, Op('=',true), AssignmentRhsNode&-{:is_list=>true}, 
+#           Op('rescue3',true), Expr, lower_op]>>AssignNode,
+
+#    -[Lvalue&~MULTIASSIGN, Op('=',true), AssignmentRhsNode&-{:is_list=>true}, 
+#        Op('rescue3',true).la]>>:shift,
+
+#    -[Lvalue&~MULTIASSIGN, Op('=',true), AssignmentRhsNode&-{:is_list=>true}, 
+#        RESCUE_OP.la] >>
+#        stack_monkey("rescue3",1,Op('rescue3',true)){|stack| 
+#          resc=stack.last.dup
+#          resc.ident += '3'
+#          stack[-1]=resc
+#        },
     #relative precedence of = and rescue are to be inverted if rescue
     #is to the right and assignment is not multiple.
 
