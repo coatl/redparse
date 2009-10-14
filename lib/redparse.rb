@@ -2622,6 +2622,7 @@ end
     cache_mode=options[:cache_mode]||:read_write
     raise ArgumentError unless /^(?:read_(?:write|only)|write_only|none)$/===cache_mode.to_s    
     read_cache= /read/===cache_mode.to_s
+    input.binmode if input.respond_to? :binmode
     if read_cache and cache and result=cache.get(input)
       @cached_result=result
       @write_cache=nil
