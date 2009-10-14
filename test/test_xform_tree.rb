@@ -42,4 +42,25 @@ class XformTreeTest < Test::Unit::TestCase
                    ]]
                  ]], pt)
   end
+
+    def mktmp
+      item_that{ 
+         #Process.kill "INT",0; 
+         [['foo']]
+      }
+    end
+
+  def test_xform_tree_doesnt_modify_original
+    tree=RedParse.new('def foo.bar; baz end').parse
+    tree2=Marshal.load(Marshal.dump(tree))
+    tree.xform_tree!( -{:receiver => Node>>mktmp%:t} )
+    assert_equal tree, tree2
+  end
+
+  def test_xform_tree_doesnt_modify_original2
+    tree=RedParse.new('def foo.bar; baz end').parse
+    tree2=Marshal.load(Marshal.dump(tree))
+    tree.xform_tree!( -{:receiver => Node>>mktmp%:t}  >> [~:t])
+    assert_equal tree, tree2
+  end
 end
