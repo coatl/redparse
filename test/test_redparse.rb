@@ -149,37 +149,24 @@ class Test::Unit::TestResult
 end
 =end
 
+require 'test/parse_tree_server'
 class ParseTree
-  @@out=@@in=nil
-  def put o
-    o=Marshal.dump o
-    msg= [o.size].pack("N")+o
-    begin
-      @@out.write msg
-    rescue Exception
-      @@out=@@in=nil
-      raise
-    end
-  end
-  def get
-    begin
-      msg=@@in.read(@@in.read(4).unpack("N")[0])
-    rescue Exception
-      @@in=@@out=nil
-      raise
-    end
-    Marshal.load msg
-  end
+  class<<self
+  include ParseTreeComm
   def fork_server?
-    return if @@out
+    @in||=nil; @out||=nil
+    return if @out
+    Process.kill "KILL",@server if @server
+    @server=nil
     si,co=IO::pipe
     ci,so=IO::pipe
-    @@server=fork{
+    @server=fork{
       begin
       co.close; ci.close
-      @@out=so; @@in=si
+      @out=so; @in=si
       warnstash=Tempfile.new "warnstash"
       STDERR.reopen warnstash
+      instance=new
       while 1
         str=get
         exit! if str==:exit!
@@ -188,7 +175,7 @@ class ParseTree
 
         tree=
         begin
-          parse_tree_for_string(str) #tree
+          instance.parse_tree_for_string(str) #tree
         rescue Exception=>e; 
           tree=e
         end
@@ -204,11 +191,11 @@ class ParseTree
       end
     }
     si.close; so.close
-    @@out=co; @@in=ci
+    @out=co; @in=ci
     at_exit { 
       begin 
         put :exit!
-        Process.wait(@@server)
+        Process.wait(@server)
       rescue Exception
       end 
     }
@@ -226,6 +213,7 @@ class ParseTree
     end
     raise tree if Exception===tree
     return tree,warnings
+  end
   end
 
   #this way is bad enough, but there's a fd leak this way,
