@@ -544,7 +544,10 @@ end
           namelist << name
           unless last==?_
             accessors << "def #{name.chomp('_')}; self[#{@namelist.size}] end\n"
-            accessors << "def #{name.chomp('_')}=(newval); self[#{@namelist.size}]=newval end\n"
+            accessors << "def #{name.chomp('_')}=(newval); "+
+                         "newval.extend ::RedParse::ListInNode if ::Array===newval and not RedParse::Node===newval;"+
+                         "self[#{@namelist.size}]=newval "+
+                         "end\n"
             @namelist << name
           end
         }
