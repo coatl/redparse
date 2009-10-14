@@ -19,7 +19,8 @@
 =end
 $VERBOSE=1 #turn on -w
 require "redparse.rb"
-require 'redparse/problemfiles'
+require "redparse/problemfiles"
+require "redparse/pthelper"
 
 class NeverExecThis<RuntimeError; end
 
@@ -95,6 +96,7 @@ while /^-/===ARGV.first
       when "--vsparsetree"; output=:vsparsetree
       when "--vsparsetree2"; output=:vsparsetree2
       when "--update-problemfiles"; problemfiles=ProblemFiles.new
+      when "--ignore-silly-begins"; ignorebegins=true
       when "--tokens"; ENV['PRINT_TOKENS']='1'
       when "--rawtokens"; ENV['RAW_PRINT_TOKENS']='1'
       when "--stack"; ENV['PRINT_STACK']='1'
@@ -225,6 +227,13 @@ inputs.each_index{|i|
           ryans,warns=ParseTree.new.parse_tree_and_warnings_leaks_stderr(input,name); nil
         } and raise NeverExecThis
         delta,is_diff=arraydiff(mine,ryans)
+
+        if is_diff and ignorebegins
+          mine=RedParse.remove_silly_begins(mine)
+          ryans=RedParse.remove_silly_begins(ryans)
+          delta,is_diff=arraydiff(mine,ryans)
+          was_silly_begin_diff=!is_diff
+        end
       rescue NeverExecThis
         puts "ParseTree attempted to execute parse data in #{name}"
         next
@@ -250,7 +259,11 @@ inputs.each_index{|i|
         result=1
         problemfiles.push name if problemfiles
       else
-        puts "no differences in "+name
+        if was_silly_begin_diff
+          puts "differed by a :begin node in "+name
+        else
+          puts "no differences in "+name
+        end
         problemfiles.delete name if problemfiles
       end
     end
