@@ -3718,12 +3718,11 @@ EOS
     }
     safe.gsub! /\\\\/,"__"
     safe[/[^ -~]|\\\\/] and fail
-    cp="check_parsing '#{escaped}',pt"
+    cp="check_parsing '#{escaped}'"
     cp="#{wrap}{#{cp}}" if wrap
     "
       define_method 'test_parsing_of_#{safe}' do
         #puts 'test_parsing_of_#{safe}'
-        pt=ParseTree.new
         #{cp}
       end
     "
@@ -3940,7 +3939,7 @@ EOS
     @problem_exprs=$stdout
   end
 
-  def check_parsing xmpl,pt=ParseTree.new
+  def check_parsing xmpl
     xmpl=xmpl.dup.freeze
     pt_opts=[:quirks]
     pt_opts<<:ruby187 if ::VERSION["1.8.7"]
