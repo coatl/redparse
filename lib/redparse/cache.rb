@@ -109,8 +109,19 @@ class RedParse
       hash=hash_of_input input
       cachefile=cachedir+hash
       if File.exist? cachefile
-        result=File.open(cachefile){|fd| 
-          Marshal.load fd; 
+        result=File.open(cachefile,"rb"){|fd| 
+          line=fd.readline
+          fd.rewind
+          if /#encoded with Ron\n/i===line
+            begin
+              require 'ron'
+              Ron.load fd.read
+            rescue Exception
+              return nil
+            end
+          else
+            Marshal.load fd
+          end
         }
 
         begin
@@ -127,8 +138,23 @@ class RedParse
 
     def put input,result
       hash=hash_of_input input
-      File.open(cachedir+hash, "w"){|fd|
-        Marshal.dump(result,fd)
+      File.open(cachedir+hash, "wb"){|fd|
+        begin
+          Marshal.dump(result,fd)
+        rescue TypeError=>e #dump failed
+          puts "#{e.class}: #{e}"
+          puts "cache write failed for:\n#{result.inspect}"
+          File.unlink cachedir+hash
+          begin
+            require 'ron'
+            File.open(cachedir+hash, "wb"){|fd|
+              fd.write "#encoded with Ron\n"
+              fd.write Ron.dump(result)
+            }
+          rescue Exception
+            return
+          end
+        end
       }
     rescue Exception=>e #dump failed
       puts "#{e.class}: #{e}"
