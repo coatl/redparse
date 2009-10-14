@@ -2200,8 +2200,8 @@ end
 
   UNOP=
   (OperatorToken|KeywordToken)&-{  #sppflt! KeywordToken here is a hack too
-#    :ident=>/^(?:[+-]@|unary[&*]|(?:lhs|rhs)[*])$/,
-    :ident=>/^(?:[+-]@|unary[&])$/,
+    :ident=>/^(?:[+-]@|unary[&*]|(?:lhs|rhs)[*])$/,
+#    :ident=>/^(?:[+-]@|unary[&])$/,
     #:unary =>true,
   }|
   (OperatorToken|KeywordToken)&-{  #sppflt! KeywordToken here is a hack too
