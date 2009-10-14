@@ -241,13 +241,6 @@ class RedParse
                               ]+RubyLexer::OPORBEGINWORDLIST+%w<; lhs, rhs, rescue3>
       #identity_param :unary, true,false,nil
       #identity_param :tag, :lhs,:rhs,:param,:call,:array,:block,:nested,nil
-
-      #this should be in rubylexer
-      def as
-        if tag and ident[/^[,*&]$/]
-          tag.to_s+ident
-        end
-      end
     end
 
     class NumberToken
