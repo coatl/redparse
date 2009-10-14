@@ -3910,7 +3910,7 @@ EOS
 #        catch(:never_exec_parse_data_try1){
 #          catch(:never_exec_parse_data_try2){
 #            catch(:never_exec_parse_data_try3){
-              tree,warnings=pt.parse_tree_and_warnings(xmpl)
+              tree,warnings=ParseTree.parse_tree_and_warnings(xmpl)
 #            }
 #          }
 #        }
