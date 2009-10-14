@@ -2413,7 +2413,8 @@ end
     #provided that both a and b are not multiple and b
     #(if it is a parenless callsite) has just 1 param
 #    -[Lvalue&~MULTIASSIGN, Op('=',true), AssignmentRhsNode&-{:is_list=>true}, 
-#           Op('rescue3',true), Expr, lower_op]>>AssignNode,
+#           Op('rescue3'), Expr, lower_op]>>AssignNode,
+    -[Lvalue, Op('=',true), AssignmentRhsNode, Op('rescue3'), Expr, lower_op]>>AssignNode,
 
 #    -[Lvalue&~MULTIASSIGN, Op('=',true), AssignmentRhsNode&-{:is_list=>true}, 
 #        Op('rescue3',true).la]>>:shift,
