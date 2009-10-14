@@ -334,7 +334,7 @@ end
 #    result=NopNode.new if EoiToken===result
     return result
   ensure
-    @write_cache.put(@input,result) if @write_cache
+    @write_cache.put(@input,result) if @write_cache and result and !result.errors
     @stack=nil
     Thread.current[:$RedParse_parser]=oldparser
   end
