@@ -3760,7 +3760,7 @@ EOS
   eval code
 
   def test_ruby19_equivs
-    RUBY_1_9_TO_1_8_EQUIVALENCES.map{|pair|
+    RUBY_1_9_TO_1_8_EQUIVALENCES.each{|pair|
       new,old=pair.first,pair.last
       pt19=RedParse.new(new,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
       pt18=RedParse.new(old,'(eval)',1,[],:cache_mode=>:none).parse
