@@ -660,6 +660,24 @@ end
         callback[ parent,index,subindex,self ]
       end
 
+      def depthwalk_nodes(parent=nil,index=nil,subindex=nil,&callback)
+        (size-1).downto(0){|i|
+          datum=self[i]
+          case datum
+          when Node
+            datum.depthwalk_nodes(self,i,&callback)
+          when Array
+            (datum.size-1).downto(0){|j|
+              x=datum[j]
+              if Node===x
+                x.depthwalk_nodes(self,i,j,&callback)
+              end
+            }
+          end
+        }
+        callback[ parent,index,subindex,self ]
+      end
+
       def add_parent_links!
         walk{|parent,i,subi,o|
           o.parent=parent if Node===o
