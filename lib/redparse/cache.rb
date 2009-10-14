@@ -130,7 +130,7 @@ class RedParse
       File.open(cachedir+hash, "w"){|fd|
         Marshal.dump(result,fd)
       }
-    rescue TypeError=>e #dump failed
+    rescue Exception=>e #dump failed
       puts "#{e.class}: #{e}"
       puts "cache write failed for:\n#{result.inspect}"
       File.unlink cachedir+hash
