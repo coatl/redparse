@@ -385,16 +385,6 @@ class RedParse
         new(*args)
       end
 
-      def flattened_ivars
-        result=super
-        result.each_with_index{|x,i|
-          if i&1==0 and x!="@data"
-            result[i,2]=[]
-          end
-        }
-        result
-      end
-
       def ==(other)
         super and flattened_ivars_equal?(other)
       end
