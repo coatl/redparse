@@ -2363,7 +2363,7 @@ end
 
   RESCUE_BODY=-[Expr.-, RescueNode.*, ElseNode.-, EnsureNode.-,]
 
-  RESCUE_OP=Op('rescue')|(KW('rescue')&-{:infix=>true})
+  RESCUE_OP=Op('rescue') #|(KW('rescue')&-{:infix=>true})
 
   RESCUE_KW=KW('rescue')&-{:infix=>nil}
 
