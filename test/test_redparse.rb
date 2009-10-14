@@ -21,6 +21,11 @@ require 'test/unit'
 require 'rubygems'
 require 'parse_tree'
 require 'tempfile'
+begin
+  require 'ron'
+rescue LoadError
+  #do nothing
+end
 
 require "redparse"
 require "redparse/pthelper"
@@ -4064,6 +4069,8 @@ EOS
         end unless done_already
 
         assert_equal nodes, Marshal.load(Marshal.dump(nodes))
+        assert_equal nodes, Ron.load(Ron.dump(nodes)) if defined? Ron
+        assert_equal nodes, nodes.deep_copy
 
         unless done_already or Exception===tree or differed_by_begin
           tree3=reparsed.to_parsetree(*pt_opts)
