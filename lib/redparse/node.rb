@@ -41,11 +41,11 @@ class RedParse
 
     module FlattenedIvars
       def flattened_ivars
-        result=[]
-        instance_variables.sort.each{|iv| 
-          if iv!="@data"
-            result.push iv, instance_variable_get(iv)
-          end
+        ivars=instance_variables
+        ivars-=%w[@data @offset @startline @endline]
+        ivars.sort!
+        result=ivars+ivars.map{|iv| 
+          instance_variable_get(iv)
         }
         return result
       end
