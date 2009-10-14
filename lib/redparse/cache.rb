@@ -6,11 +6,11 @@ class RedParse
       @homedir=find_home+"/.redparse/"
       Dir.mkdir @homedir unless File.exist? @homedir
       Dir.mkdir cachedir unless File.exist? cachedir
-      saved_digest= File.open(@homedir+"/parserdigest"){|fd| fd.read.chomp } if File.exist?(@homedir+"/parserdigest")
+      saved_digest= File.open(@homedir+"/parserdigest","rb"){|fd| fd.read.chomp } if File.exist?(@homedir+"/parserdigest")
       actual_digest= @@saved_parser_digest ||= redparse_rb_hexdigest
       if saved_digest!=actual_digest
         File.unlink(*all_entry_files)        #flush cache
-        File.open(@homedir+"/parserdigest","w"){|fd| fd.puts actual_digest } #update saved digest
+        File.open(@homedir+"/parserdigest","wb"){|fd| fd.puts actual_digest } #update saved digest
       end
       retire_old_entries
     end
@@ -48,7 +48,7 @@ class RedParse
     def redparse_rb_hexdigest
       full_name=nil
       $:.find{|dir| File.exist? full_name=dir+"/redparse.rb"}
-      File.open(full_name){|fd| hexdigest_of_file fd }
+      File.open(full_name,"rb"){|fd| hexdigest_of_file fd }
     end
 
     def hexdigest_of_file fd
