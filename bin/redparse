@@ -100,7 +100,7 @@ while /^-/===ARGV.first
       when "--tokens"; ENV['PRINT_TOKENS']='1'
       when "--rawtokens"; ENV['RAW_PRINT_TOKENS']='1'
       when "--stack"; ENV['PRINT_STACK']='1'
-      when "--unparse"; output=:unparse
+      when "--unparse"; unparse=true
       when "--compile", "-c"; compile=true
       when "--macros", "--macro", "-m";
         require 'rubygems'
@@ -198,8 +198,6 @@ inputs.each_index{|i|
       p tree
     when :lisp
       puts tree.to_lisp
-    when :unparse
-      puts tree.unparse
     when :parsetree
       tree=tree.to_parsetree
       hack=tree.dup
@@ -266,6 +264,10 @@ inputs.each_index{|i|
         end
         problemfiles.delete name if problemfiles
       end
+    end
+    if unparse
+      unparsed=tree.unparse
+      puts unparsed unless quiet
     end
 
   rescue NeverExecThis
