@@ -3767,6 +3767,20 @@ EOS
       assert_equal pt18,pt19
     }
   end
+ 
+  def test_ruby19_valid
+    RUBY_1_9_VALID.each{|xmpl|
+      pt19=RedParse.new(xmpl,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
+      assert_nil pt19.errors
+    }
+  end
+
+  def test_ruby19_patterns
+    RUBY_1_9_PATTERNS.each_pair{|code,pattern|
+      pt=RedParse.new(code,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
+      assert_match pattern, pt
+    }
+  end
 
   error_code=RUBYBUG_EXAMPLES.map{|xmpl| 
     #remove comment if present
