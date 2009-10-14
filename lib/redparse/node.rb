@@ -639,12 +639,14 @@ end
       end
 
       def depthwalk(parent=nil,index=nil,subindex=nil,&callback)
-        each_with_index{|datum,i|
+        (size-1).downto(0){|i|
+          datum=self[i]
           case datum
           when Node
             datum.depthwalk(self,i,&callback)
           when Array
-            datum.each_with_index{|x,j| 
+            (datum.size-1).downto(0){|j|
+              x=datum[j]
               if Node===x
                 x.depthwalk(self,i,j,&callback) 
               else 
