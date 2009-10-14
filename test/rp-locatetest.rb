@@ -51,6 +51,9 @@ at the end of the README and/or there's a case in test_redparse.rb for
 that failure).
 =end
 
+$VERBOSE=1
+$Debug=1
+
 #require 'test/code/rubylexervsruby'
 #require 'test/code/strgen'
 require "redparse/problemfiles"
