@@ -284,6 +284,7 @@ class RedParseTest<Test::Unit::TestCase
     'def sum(options = {:weights => weights = Hash}); 1 end',
     'def foo(a = 1)    end; def foo(a=b=c={})  end; def bar(a=b=c=1,d=2)  end',
     'def bar(a=b=1,d=2)  end',
+    'def bar a=b=1,d=2;  end',
     'x if /f/../o/',
     'c while d and a8../2.a?(b)/',
     'c while d and :a8..:b8',
@@ -300,6 +301,40 @@ class RedParseTest<Test::Unit::TestCase
   ]
 
   ONELINERS=[
+    '=begin\r\nfoo\r\n=end\r\n'...'',
+    'a!`b'...'',
+    'fetch_named { {} }'...'',
+    'def subject::Builder.foo; bar end'...'',
+    'class subject::Builder<T; foo end'...'',
+    'module subject::Builder include T; foo end'...'',
+    'class subject::Builder; foo end'...'',
+    'module subject::Builder; foo end'...'',
+    'Hasnew{[]}'...'',
+    'foo::Bar'...'',
+    'x{foo=1; foo::Bar}'...'',
+    '$foo::Bar'...'',
+    '@foo::Bar'...'',
+    '@@foo::Bar'...'',
+    ' (-6000)..476'...'',
+    "case;when 0;ng = 'JIS';else case; when sjis__length; ding = 'EUC-JP' ;end;end"...'',
+    'attribute :invisible do [] end'...'',
+    '"#{queect{|w| w.t{|w| w}}}"'...'',
+    'case z; when a=b=1,d=2; yy end'...'',
+    'begin z; rescue a=b=1,d=2; yy end'...'',
+    '{5=>a=b=1,d=2=>6}'...'',
+    '{a=b=1,d=2}'...'',
+    'a=b=1,d=2'...'',
+    'z=a=b=1,d=2'...'',
+    'p(){|a=b=1,d=2| e}'...'',
+    'p(a=b=1,d=2)'...'',
+    'p a=b=1,d=2'...'',
+    'z[a=b=1,d=2]=5'...'',
+    'z[a=b=1,d=2]'...'',
+    '[a=b=1,d=2]'...'',
+    'UnOpNode===arg and /^$/===arg'...'',
+    'a+b=c rescue d'...'',
+    'a=b=c=d=f rescue g'...'',
+    'z+a=b=c=d=f rescue g'...'',
     'k=z=c,d'...'',
     'd=a=b do end'...'',
     't p = m do 666 end'...'',
@@ -2842,6 +2877,17 @@ class RedParseTest<Test::Unit::TestCase
 END
 
   STANZAS=PASSTHRU_BSLASHES_ENTIRE+%q[
+  @@anon = Module.new
+  class @@anon::I
+    bindtextd 
+    def test2    
+      _()      
+    end
+  end
+  module @@anon::J
+    bindt
+  end
+
 module 
 =begin =end
 =end
@@ -3569,7 +3615,17 @@ EOS
     "a ? b\n :  c"..."a ? b : \n c",
     'not(true)'...'not true',
     'not(+1)'...'not +1',
+    'not (true).to_s'...'not (true).to_s', #equivalent, but parser gets there different ways
   ]
+
+  RUBY_1_9_VALID=[
+    'not (true).to_s',
+  ]
+
+  include RedParse::Nodes
+  RUBY_1_9_PATTERNS={
+    'not(true).to_s'=>+CallNode[+UnOpNode["not", +VarLikeNode["true"]], "to_s"],
+  }
 
   SINGLE_OPEN2CLOSE={
     "'"=>"'",
