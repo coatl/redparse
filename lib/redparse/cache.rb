@@ -62,7 +62,7 @@ class RedParse
     end
 
     def max_size
-       File.open(@homedir+"/size"){|fd| fd.read.chomp } rescue nil
+       File.open(@homedir+"/size"){|fd| fd.read.chomp.to_i } rescue nil
     end
 
     ##
