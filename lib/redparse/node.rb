@@ -1544,27 +1544,26 @@ end
       end
     end
 
-#    class ArrowOpNode<ValueNode
-#      param_names(:left,:arrow_,:right)
-#    end
-     module ArrowOpNode
-       def initialize(*args) 
-         @module=ArrowOpNode
-       end
+    class ArrowOpNode
+      param_names(:left,:op,:right)
 
-       def unparse(o=default_unparse_options)
-         left.unparse(o)+" => "+right.unparse(o)
-       end
-     end
+      def initialize(*args)
+        super
+      end
 
-#    class RangeNode<ValueNode
-    module RangeNode
-#      param_names(:first,:op_,:last)
-      def initialize(left,op_,right)
-        @exclude_end=!!op_[2]
-        @module=RangeNode
+      def unparse(o=default_unparse_options)
+        left.unparse(o)+" => "+right.unparse(o)
+      end
+    end
+
+    class RangeNode
+      param_names(:first,:op,:last)
+      def initialize(left,op,right=nil)
+        op,right="..",op unless right
+        op=op.ident if op.respond_to? :ident
+        @exclude_end=!!op[2]
         @as_flow_control=false
-#        super(left,right)
+        super(left,op,right)
       end
       def begin; left end
       def end; right end
