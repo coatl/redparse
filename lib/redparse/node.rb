@@ -1660,8 +1660,9 @@ end
     end
 
     class UnaryStarNode<UnOpNode
-      def initialize(op,val)
-        op.ident="*@"
+      def initialize(op,val=nil)
+        op,val="*@",op unless val
+        op.ident="*@" if op.respond_to? :ident
         super(op,val)
       end
 
