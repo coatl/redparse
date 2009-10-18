@@ -479,7 +479,7 @@ class RedParse
         namelist=self.class.namelist
         if namelist and !namelist.empty?
           namelist.each{|name|
-            val=send name
+            val=send name rescue "{{ERROR INSPECTING ATTR #{name}}}"
             case val
               when Node; result<< val.inspect(name,indent)
               when ListInNode 
