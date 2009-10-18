@@ -2739,9 +2739,13 @@ end
  
     class LogicalNode
       include KeywordOpNode
-      def self.[] *list
-        result=RawOpNode[*list]
-        result.extend LogicalNode
+
+      def self.[](*list)
+        options=list.pop if Hash===list.last
+        result=allocate.replace list
+        opmap=options[:@opmap] if options and options[:@opmap]
+        opmap||=result.op[0,1]*(list.size-1)
+        result.instance_variable_set(:@opmap, opmap)
         return result
       end
 
