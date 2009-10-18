@@ -4244,7 +4244,10 @@ end
       def initialize(caseword, condition, semi, whens, otherwise, endword)
         @offset=caseword.offset
         if otherwise
-          otherwise=otherwise.val or @empty_else=true
+          otherwise=otherwise.val
+          @empty_else=!otherwise
+        else
+          @empty_else=false
         end
         whens.extend ListInNode
         super(condition,whens,otherwise)
