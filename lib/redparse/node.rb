@@ -1219,33 +1219,54 @@ end
     end
 
     #forward decls
-    module ArrowOpNode; end
-    module RangeNode; end
-    module LogicalNode; end
-    module WhileOpNode; end
-    module UntilOpNode; end
-    module IfOpNode; end
-    module UnlessOpNode; end
-    module OpNode; end
-    module NotEqualNode; end
-    module MatchNode; end
-    module NotMatchNode; end
+    class RawOpNode<ValueNode
+    end
+    class OpNode<RawOpNode
+    end
+    class NotEqualNode<OpNode
+    end
+    class MatchNode<OpNode
+    end
+    class NotMatchNode<OpNode
+    end
+    class ArrowOpNode<RawOpNode
+    end
+    class RescueOpNode<RawOpNode
+    end
+    class LogicalNode<RawOpNode
+    end
+    class AndNode<LogicalNode
+    end
+    class OrNode<LogicalNode
+    end
+    class RangeNode<RawOpNode
+    end
+    class IfOpNode<RawOpNode
+    end
+    class UnlessOpNode<RawOpNode
+    end
+    class WhileOpNode<RawOpNode
+    end
+    class UntilOpNode<RawOpNode
+    end
 
-    OP2MIXIN={
-      "=>"=>ArrowOpNode,
-      ".."=>RangeNode,
-      "..."=>RangeNode,
-      "&&"=>LogicalNode,
-      "||"=>LogicalNode,
-      "and"=>LogicalNode,
-      "or"=>LogicalNode,
-      "while"=>WhileOpNode,
-      "until"=>UntilOpNode,
-      "if"=>IfOpNode,
-      "unless"=>UnlessOpNode,
+    OP2CLASS={
       "!="=>NotEqualNode,
       "!~"=>NotMatchNode,
       "=~"=>MatchNode,
+      "if"=>IfOpNode,
+      "unless"=>UnlessOpNode,
+      "while"=>WhileOpNode,
+      "until"=>UntilOpNode,
+      ".."=>RangeNode,
+      "..."=>RangeNode,
+      "=>"=>ArrowOpNode,
+      "&&"=>AndNode,
+      "||"=>OrNode,
+      "and"=>AndNode,
+      "or"=>OrNode,
+      "rescue"=>RescueOpNode,
+      "rescue3"=>RescueOpNode,
     }
 
     class RawOpNode<ValueNode
