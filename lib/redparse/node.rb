@@ -705,6 +705,20 @@ end
         }
         session["final"]=true
         
+        #apply saved-up actions stored in session, while making a copy of tree
+        result=::Ron::GraphWalk::graphcopy(self,old2new={}){|cntr,o,i,ty,useit|
+          newo=nil
+          replace_value o.__id__,o,session do |val|
+            newo=val
+            useit[0]=true
+          end
+          newo
+        }
+        finallys=session["finally"] #finallys too
+        finallys.each{|(action,arg)| action[old2new[arg.__id__],session] } if finallys
+
+        return result
+=begin was
         finallys=session["finally"]
         finallys.each{|(action,arg)| action[arg] } if finallys
 
@@ -715,10 +729,12 @@ end
           end
         }
         replace_ivars_and_self self,session do |new|
+          fail unless new
           return new
         end
 
         return self
+=end
       end
 
       def replace_ivars_and_self o,session,&replace_self_action
