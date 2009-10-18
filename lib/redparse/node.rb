@@ -2156,6 +2156,12 @@ end
       end
     end
 
+    module KeywordOpNode
+      def unparse o=default_unparse_options
+        [left.unparse(o),' ',op,' ',right.unparse(o)].to_s
+      end
+    end
+
     class RescueOpNode<RawOpNode
       include KeywordOpNode
       param_names :body, :rescues #, :else!, :ensure!
@@ -2709,13 +2715,7 @@ end
       end
     end
  
-    module KeywordOpNode
-      def unparse o=default_unparse_options
-        [left.unparse(o),' ',op,' ',right.unparse(o)].to_s
-      end
-    end
-
-    module LogicalNode
+    class LogicalNode
       include KeywordOpNode
       def self.[] *list
         result=RawOpNode[*list]
