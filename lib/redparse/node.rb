@@ -694,12 +694,12 @@ end
               tempsession={}
               xformer.xform!(o,tempsession)
               merge_replacement_session session, tempsession
-            elsif xformer===o and Reg::Transform===xformer
-              new=xformer.right
-              if Reg::Formula===right
-                new=new.formula_value(o,session)
-              end
-              subi ? parent[i][subi]=new : parent[i]=new
+            #elsif xformer===o and Reg::Transform===xformer
+            #  new=xformer.right
+            #  if Reg::Formula===right
+            #    new=new.formula_value(o,session)
+            #  end
+            #  subi ? parent[i][subi]=new : parent[i]=new
             end
           }
         }
