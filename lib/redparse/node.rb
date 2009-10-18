@@ -1565,10 +1565,10 @@ end
         @as_flow_control=false
         super(left,op,right)
       end
-      def begin; left end
-      def end; right end
-      def first; left end
-      def last; right end
+      def begin; first end
+      def end; last end
+      def left; first end
+      def right; last end
       def exclude_end?; @exclude_end end
 
       def self.[] *list
