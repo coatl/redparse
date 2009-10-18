@@ -2156,8 +2156,8 @@ end
       end
     end
 
-    class RescueOpNode<ValueNode
-    #  include OpNode
+    class RescueOpNode<RawOpNode
+      include KeywordOpNode
       param_names :body, :rescues #, :else!, :ensure!
       def initialize(expr,rescueword,backup)
             replace [expr,[RescueNode[[],nil,backup]].extend(ListInNode)]
