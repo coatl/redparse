@@ -969,6 +969,7 @@ end
           when Node
             node.remove_instance_variable :@offset rescue nil
             node.remove_instance_variable :@loopword_offset rescue nil
+            node.remove_instance_variable :@iftok_offset rescue nil
             node.remove_instance_variable :@endline rescue nil
             node.remove_instance_variable :@lvalue rescue nil
             if node.respond_to? :lvalue 
