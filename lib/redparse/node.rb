@@ -1571,10 +1571,14 @@ end
       def right; last end
       def exclude_end?; @exclude_end end
 
+#      def self.[] *list
+#        result=RawOpNode[*list]
+#        result.extend RangeNode
+#        return result
+#      end
+
       def self.[] *list
-        result=RawOpNode[*list]
-        result.extend RangeNode
-        return result
+        new(*list)
       end
 
       def parsetree(o)
