@@ -1300,7 +1300,8 @@ end
     class OpNode<RawOpNode
       def initialize(left,op,right)
         #@negative_of="="+$1 if /^!([=~])$/===op
-        @module=OpNode
+        op=op.ident if op.respond_to? :ident
+        super left,op,right      
       end
       def to_lisp
         "(#{op} #{left.to_lisp} #{right.to_lisp})"
