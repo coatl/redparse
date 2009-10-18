@@ -1606,8 +1606,8 @@ end
     class UnOpNode<ValueNode
       param_names(:op,:val)
       def initialize(op,val)
-        @offset=op.offset
-        op=op.ident
+        @offset||=op.offset rescue val.offset
+        op=op.ident if op.respond_to? :ident
         /([&*])$/===op and op=$1+"@"
         /^(?:!|not)$/===op and 
           val.respond_to? :special_conditions! and 
