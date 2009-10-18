@@ -1276,10 +1276,15 @@ end
         op=op.ident
         super(left,op,right)
       end
-      def self.[](*args)
-        result=super
-        @module and extend @module
-        return result
+
+#      def initialize_copy other
+#        rebuild(other.left,other.op,other.right)
+#      end
+
+      def self.create(left,op,right)
+        op_s=op.ident
+        k=OP2CLASS[op_s]||OpNode
+        k.new(left,op,right)
       end
       def image; "(#{op})" end
       def raw_unparse o
