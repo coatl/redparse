@@ -2173,7 +2173,7 @@ end
       def ensure; nil end
 
       def left; body end
-      def right; rescues.action end
+      def right; rescues[0].action end
 
       alias ensure_ ensure
       alias else_ else
