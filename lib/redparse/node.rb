@@ -759,14 +759,19 @@ end
       end
 
       def merge_replacement_session session,tempsession
+        ts_has_boundvars= !tempsession.keys.grep(::Symbol).empty?
         tempsession.each_pair{|k,v|
           if Integer===k
+if true
+            v=Reg::WithBoundRefValues.new(v,tempsession) if ts_has_boundvars
+else
             v=Ron::GraphWalk.graphcopy(v){|cntr,o,i,ty,useit|
               if Reg::BoundRef===o
                 useit[0]=true
                 tempsession[o.name]||o
               end
             }
+end
             if session.has_key? k
               v=v.chain_to session[k]
             end
