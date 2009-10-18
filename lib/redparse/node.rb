@@ -1297,13 +1297,7 @@ end
       end
     end
 
-    module OpNode
-      def self.[] *list
-        result=RawOpNode[*list]
-        result.extend OpNode
-        return result
-      end
-
+    class OpNode<RawOpNode
       def initialize(left,op,right)
         #@negative_of="="+$1 if /^!([=~])$/===op
         @module=OpNode
