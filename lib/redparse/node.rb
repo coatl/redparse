@@ -2253,12 +2253,16 @@ end
           if !lhs.after_comma      #look for () around lhs
             if CommaOpNode===lhs.first
               lhs=MultiAssign.new(Array.new(lhs.first))
+              @lhs_parens=true
             elsif UnaryStarNode===lhs.first
               lhs=MultiAssign.new([lhs.first])
+              @lhs_parens=true
+            elsif ParenedNode===lhs.first
+              @lhs_parens=true
+              lhs=lhs.first
             else
               lhs=lhs.first
             end
-            @lhs_parens=true
           end
         when CommaOpNode
           lhs=MultiAssign.new lhs
