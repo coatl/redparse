@@ -1275,10 +1275,6 @@ end
         @offset=op.offset
         op=op.ident
         super(left,op,right)
-        Array((OP2MIXIN[op]||OpNode)).each{|mod|
-          extend(mod)        
-          mod.instance_method(:initialize).bind(self).call(left,op,right)
-        }
       end
       def self.[](*args)
         result=super
