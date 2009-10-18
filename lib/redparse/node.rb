@@ -1099,11 +1099,11 @@ end
     end
 
     class VarNode<ValueNode
+      param_names :ident
       include FlattenedIvars
       attr_accessor :endline,:offset
       attr_reader :lvar_type,:in_def
       attr_writer :lvalue
-
 
       alias == flattened_ivars_equal?
 
@@ -1115,8 +1115,8 @@ end
         @in_def=tok.in_def
       end
 
-      def ident; first end
-      def ident=x; self[0]=x end
+#      def ident; first end
+#      def ident=x; self[0]=x end
       alias image ident
       alias startline endline
       alias name ident
@@ -1187,7 +1187,7 @@ end
 
       def dup
         result=super
-        result.ident=@ident.dup if @ident
+        result.ident=ident.dup if ident
         return result
       end
 
