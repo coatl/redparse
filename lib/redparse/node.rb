@@ -1327,16 +1327,11 @@ end
 #      def unparse o=default_unparse_options; raw_unparse o end
     end
 
-    module MatchNode
-      include OpNode
+    class MatchNode<OpNode
+      param_names :left,:op,:right
 
-      def initialize(left,op,right)
-        @module=MatchNode
-      end
-      def self.[] *list
-        result=RawOpNode[*list]
-        result.extend MatchNode
-        return result
+      def initialize(*args)
+        super
       end
 
       def parsetree(o)
@@ -1351,16 +1346,11 @@ end
       def op; "=~"; end
     end
 
-    module NotEqualNode
-      include OpNode
+    class NotEqualNode<OpNode
+      param_names :left,:op,:right
 
-      def initialize(left,op,right)
-        @module=NotEqualNode
-      end
-      def self.[] *list
-        result=RawOpNode[*list]
-        result.extend NotEqualNode
-        return result
+      def initialize(*args)
+        super
       end
 
       def parsetree(o)
@@ -1372,16 +1362,11 @@ end
       def op; "!="; end
     end
 
-    module NotMatchNode
-      include OpNode
+    class NotMatchNode<OpNode
+      param_names :left,:op,:right
 
-      def initialize(left,op,right)
-        @module=NotMatchNode
-      end
-      def self.[] *list
-        result=RawOpNode[*list]
-        result.extend NotMatchNode
-        return result
+      def initialize(*args)
+        super
       end
 
       def parsetree(o)
