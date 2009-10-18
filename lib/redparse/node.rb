@@ -4260,6 +4260,7 @@ end
                whens.map{|wh| wh.unparse o}.to_s
 
         result += unparse_nl(otherwise,o)+"else "+otherwise.unparse(o) if otherwise
+        result += ";else;" if @empty_else
         result += ";end"
 
         return result
