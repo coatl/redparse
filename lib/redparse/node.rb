@@ -2260,6 +2260,23 @@ end
       param_names :left,:op,:right
       alias lhs left
       alias rhs right
+      def self.create(*args)
+        if args.size==5
+          if args[3].ident=="rescue3"
+            lhs,op,rescuee,op2,rescuer=*args
+            if MULTIASSIGN===lhs or !rescuee.is_list
+              return RescueOpNode.new(AssignNode.new(lhs,op,rescuee),nil,rescuer)
+            else
+              rhs=RescueOpNode.new(rescuee.val,op2,rescuer)
+            end
+          else
+            lhs,op,bogus1,rhs,bogus2=*args
+          end
+          super(lhs,op,rhs)
+        else super
+        end
+      end
+
       def initialize(*args)
 
         if args.size==5
