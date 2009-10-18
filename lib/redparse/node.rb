@@ -4421,6 +4421,7 @@ end
             data=Array[*contents]
           end
           super(*data)
+        else fail
         end
         @no_braces=!open
       end
