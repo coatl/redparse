@@ -1666,6 +1666,10 @@ end
         super(op,val)
       end
 
+      class<<self
+        alias [] new
+      end
+
       def parsetree(o)
         [:splat, val.rescue_parsetree(o)]
       end
