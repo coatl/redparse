@@ -1693,10 +1693,10 @@ end
 
     class DanglingStarNode<UnaryStarNode
       #param_names :op,:val
-      def initialize(star)
-        @offset= star.offset
-        replace ['*@',var=VarNode.new(VarNameToken.new('',offset))]
-        var.startline=var.endline=star.startline
+      def initialize(star,var=nil)
+        @offset= star.offset if star.respond_to? :offset
+        @startline=@endline=star.startline if star.respond_to? :startline
+        super('*@',var||VarNode[''])
       end
       attr :offset
       def lvars_defined_in; [] end
