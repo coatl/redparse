@@ -454,7 +454,6 @@ class RedParse
         return result
       end
 
-if true
       def inspect label=nil,indent=0
         ivarnames=instance_variables-%w[@data @offset @startline @endline]
         ivarnodes=[]
@@ -506,17 +505,31 @@ if true
 
         return result.join
       end
-else
-      def inspect
+
+      def evalable_inspect
         ivarnames=instance_variables-["@data"]
         ivars=ivarnames.map{|ivarname| 
-          ":"+ivarname+"=>"+instance_variable_get(ivarname).inspect 
+          val=instance_variable_get(ivarname)
+          if val.respond_to?(:evalable_inspect)
+            val=val.evalable_inspect
+          else
+            val=val.inspect
+          end
+          ":"+ivarname+"=>"+val 
         }.join(', ')
-        bare=super
+
+        bare="["+map{|val|
+          if val.respond_to?(:evalable_inspect)
+            val=val.evalable_inspect
+          else
+            val=val.inspect
+          end
+        }.join(", ")+"]"
+
         bare.gsub!(/\]\Z/, ", {"+ivars+"}]") unless ivarnames.empty?
         return self.class.name+bare
       end
-end
+
       def pretty_print(q)
         ivarnames=instance_variables-["@data"]
         ivars={}
