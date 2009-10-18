@@ -1271,9 +1271,12 @@ end
 
     class RawOpNode<ValueNode
       param_names(:left,:op,:right)
-      def initialize(left,op,right)
-        @offset=op.offset
-        op=op.ident
+      def initialize(left,op,right=nil)
+        op,right=nil,op if right.nil?
+        if op.respond_to? :ident
+          @offset=op.offset
+          op=op.ident
+        end
         super(left,op,right)
       end
 
