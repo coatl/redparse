@@ -2280,9 +2280,14 @@ end
       def initialize(*args)
 
         if args.size==5
+          #this branch should be dead now
           if args[3].ident=="rescue3"
             lhs,op,rescuee,op2,rescuer=*args
-            rhs=RescueOpNode.new(rescuee.val,op2,rescuer)
+            if MULTIASSIGN===lhs or rescuee.is_list?
+              huh
+            else
+              rhs=RescueOpNode.new(rescuee.val,op2,rescuer)
+            end
           else
             lhs,op,bogus1,rhs,bogus2=*args
           end
