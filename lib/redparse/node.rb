@@ -3825,7 +3825,8 @@ end
       end
 
 
-      def flattened_ivars_equal?(other)
+      #ignore instance vars in here documents when testing equality
+      def flattened_ivars_equal?(other) 
         StringNode===other
       end
 
