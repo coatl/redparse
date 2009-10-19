@@ -2769,13 +2769,6 @@ end
       OP_EXPAND={?o=>"or", ?a=>"and", ?&=>"&&", ?|=>"||", nil=>""}
       OP_EQUIV={?o=>"or", ?a=>"and", ?&=>"and", ?|=>"or"}
 
-      def reverse
-        /\A[o|]/===@opmap      
-      end
-      def op
-        OP_EQUIV[@opmap[0]]
-      end
-
       def unparse o=default_unparse_options
         result=''
       
