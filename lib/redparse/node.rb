@@ -700,6 +700,7 @@ class RedParse
       attr_accessor :parent
 
       def xform_tree!(*xformers)
+        #search tree for patterns and store results of actions in session
         session={}
         depthwalk{|parent,i,subi,o|
           xformers.each{|xformer|
