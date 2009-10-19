@@ -2848,12 +2848,7 @@ end
 
       def while; condition end
       def do; consequent end
-
-      def self.[] *list
-        result=RawOpNode[*list]
-        result.extend WhileOpNode
-        return result
-      end
+      def op; "while" end
 
       def parsetree(o)
         cond=condition.rescue_parsetree(o)
@@ -2890,12 +2885,7 @@ end
 
       def while; negate condition end
       def do; consequent end
-
-      def self.[] *list
-        result=RawOpNode[*list]
-        result.extend UntilOpNode
-        return result
-      end
+      def op; "until" end
 
       def parsetree(o)
         cond=condition.rescue_parsetree(o)
@@ -2935,12 +2925,7 @@ end
       def then; nil end
       def else; consequent end
       def elsifs; [] end
-
-      def self.[] *list
-        result=RawOpNode[*list]
-        result.extend UnlessOpNode
-        return result
-      end
+      def op; "unless" end
 
       def parsetree(o)
         cond=condition.rescue_parsetree(o)
@@ -2970,12 +2955,7 @@ end
       def then; consequent end
       def else; nil end
       def elsifs; [] end
-
-      def self.[] *list
-        result=RawOpNode[*list]
-        result.extend IfOpNode
-        return result
-      end
+      def op; "if" end
 
       def parsetree(o)
         cond=condition.rescue_parsetree(o)
