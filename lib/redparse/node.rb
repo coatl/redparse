@@ -2927,7 +2927,7 @@ end
       end
     end
 
-    module UnlessOpNode
+    class UnlessOpNode
       include KeywordOpNode
       def condition; right end
       def consequent; left end
@@ -2961,7 +2961,8 @@ end
       end
     end
 
-    module IfOpNode
+    class IfOpNode
+      param_names :left,:op,:right
       include KeywordOpNode
       def condition; right end
       def consequent; left end
