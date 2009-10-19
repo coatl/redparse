@@ -2884,7 +2884,7 @@ end
       
     end
 
-    module UntilOpNode
+    class UntilOpNode
       include KeywordOpNode
       def condition; right end
       def consequent; left end
