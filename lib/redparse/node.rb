@@ -2834,6 +2834,7 @@ end
 
     class WhileOpNode
       include KeywordOpNode
+      param_names :left, :op, :right
       def condition; right end
       def consequent; left end
       def initialize(val1,op,val2)
@@ -2875,6 +2876,7 @@ end
 
     class UntilOpNode
       include KeywordOpNode
+      param_names :left,:op,:right
       def condition; right end
       def consequent; left end
       def initialize(val1,op,val2)
@@ -2918,6 +2920,7 @@ end
 
     class UnlessOpNode
       include KeywordOpNode
+      param_names :left, :op, :right
       def condition; right end
       def consequent; left end
       def initialize(val1,op,val2)
