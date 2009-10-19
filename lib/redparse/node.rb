@@ -1286,7 +1286,9 @@ end
         k=OP2CLASS[op_s]||OpNode
         k.new(left,op,right)
       end
+
       def image; "(#{op})" end
+
       def raw_unparse o
         l=left.unparse(o)
         l[/(~| \Z)/] and maybesp=" "
@@ -2780,6 +2782,7 @@ end
         }
         return result
       end
+
       def left
         self[0]
       end
