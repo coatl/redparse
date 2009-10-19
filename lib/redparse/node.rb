@@ -962,17 +962,14 @@ end
 
         newdata=map(&handler)
 
-        result_module=nil
         result=clone
         instance_variables.each{|iv| 
           unless iv=="@data"
             val=instance_variable_get(iv)
             result.instance_variable_set(iv,handler[val])
-            result_module=val if iv=="@module" #hacky
           end
         }
         result.replace newdata
-        result.extend result_module if result_module
         return result
       end
 
@@ -2758,7 +2755,6 @@ end
         end
         #@reverse= op=="or"
         #@op=op
-        @module=LogicalNode
         replace [left,right]
         (size-1).downto(0){|i|
           expr=self[i]
@@ -2850,9 +2846,9 @@ end
       def initialize(val1,op,val2)
         self[1]=op
         @reverse=false
-        @module=WhileOpNode
         @loop=true
         @test_first= !( BeginNode===val1 )
+        super(val1,op,val2)
         condition.special_conditions! if condition.respond_to? :special_conditions!
       end
 
@@ -2893,7 +2889,7 @@ end
         @reverse=true
         @loop=true
         @test_first= !( BeginNode===val1 ) 
-        @module=UntilOpNode
+        super(val1,op,val2)
         condition.special_conditions! if condition.respond_to? :special_conditions!
       end
 
@@ -2935,7 +2931,7 @@ end
         self[1]=op
         @reverse=true
         @loop=false
-        @module=UnlessOpNode
+        super val1,op,val2
         condition.special_conditions! if condition.respond_to? :special_conditions!
       end
 
@@ -2970,7 +2966,7 @@ end
         self[1]=op
         @reverse=false
         @loop=false
-        @module=IfOpNode
+        super(left,op,right)
         condition.special_conditions! if condition.respond_to? :special_conditions!
       end
 
