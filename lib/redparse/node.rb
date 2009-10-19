@@ -2762,7 +2762,7 @@ end
         replace [left,right]
         (size-1).downto(0){|i|
           expr=self[i]
-          if LogicalNode===expr and expr.op==op 
+          if self.class==expr.class
             self[i,1]=Array.new expr
             opmap[i,0]=expr.opmap
           end
