@@ -2823,7 +2823,27 @@ end
       end
     end
 
-    module WhileOpNode
+    class AndNode<LogicalNode
+      def reverse
+        false
+      end
+
+      def op
+        "and"
+      end
+    end
+
+    class OrNode<LogicalNode
+      def reverse
+        true
+      end
+
+      def op
+        "or"
+      end
+    end
+
+    class WhileOpNode
       include KeywordOpNode
       def condition; right end
       def consequent; left end
