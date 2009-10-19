@@ -2750,6 +2750,7 @@ end
       end
 
       def initialize(left,op,right)
+        op=op.ident if op.respond_to? :ident
         @opmap=op[0,1]
         case op
         when "&&"; op="and"
