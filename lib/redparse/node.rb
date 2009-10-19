@@ -2838,7 +2838,7 @@ end
       def condition; right end
       def consequent; left end
       def initialize(val1,op,val2)
-        self[1]=op
+        op=op.ident if op.respond_to? :ident
         @reverse=false
         @loop=true
         @test_first= !( BeginNode===val1 )
@@ -2880,7 +2880,7 @@ end
       def condition; right end
       def consequent; left end
       def initialize(val1,op,val2)
-        self[1]=op
+        op=op.ident if op.respond_to? :ident
         @reverse=true
         @loop=true
         @test_first= !( BeginNode===val1 ) 
@@ -2924,7 +2924,7 @@ end
       def condition; right end
       def consequent; left end
       def initialize(val1,op,val2)
-        self[1]=op
+        op=op.ident if op.respond_to? :ident
         @reverse=true
         @loop=false
         super val1,op,val2
@@ -2959,7 +2959,7 @@ end
       def condition; right end
       def consequent; left end
       def initialize(left,op,right)
-        self[1]=op
+        op=op.ident if op.respond_to? :ident
         @reverse=false
         @loop=false
         super(left,op,right)
