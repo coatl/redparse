@@ -144,8 +144,6 @@ class RedParse
             Marshal.dump_ignoring_sclass(result,fd)  :
             Marshal.dump(result,fd)
         rescue TypeError=>e #dump failed
-          puts "#{e.class}: #{e}"
-          puts "cache write failed for:\n#{result.inspect}"
           File.unlink cachedir+hash
           begin
             require 'ron'
