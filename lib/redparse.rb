@@ -28,6 +28,7 @@ rescue LoadError=>e
 end
 require 'rubylexer'
 require 'reg'
+require 'reglookab'
 
 require "redparse/node"
 #require "redparse/decisiontree"
