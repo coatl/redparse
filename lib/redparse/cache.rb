@@ -140,7 +140,9 @@ class RedParse
       hash=hash_of_input input
       File.open(cachedir+hash, "wb"){|fd|
         begin
-          Marshal.dump(result,fd)
+          Marshal.respond_to?(:dump_ignoring_sclass) ? 
+            Marshal.dump_ignoring_sclass(result,fd)  :
+            Marshal.dump(result,fd)
         rescue TypeError=>e #dump failed
           puts "#{e.class}: #{e}"
           puts "cache write failed for:\n#{result.inspect}"
