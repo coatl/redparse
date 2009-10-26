@@ -269,7 +269,7 @@ inputs.each_index{|i|
     end
     if unparse
       unparsed=tree.unparse
-      puts unparsed unless quiet
+      puts unparsed #unless quiet
     end
 
   rescue NeverExecThis
