@@ -1985,6 +1985,8 @@ end
 
     class ParenedNode<ValueNode
       param_names :body #, :rescues, :else!, :ensure!
+      alias val body
+      alias val= body=
       def initialize(lparen,body,rparen)
         @offset=lparen.offset
         self[0]=body
@@ -4472,6 +4474,7 @@ end
       end
 
       attr :no_arrows
+      attr_accessor :no_braces
       attr_writer :offset
 
       def image; "({})" end
@@ -4947,6 +4950,7 @@ end
       alias object val
       alias obj val
       alias receiver val
+      alias receiver= val=
       alias name val
 
       alias ensure_ ensure
@@ -5049,6 +5053,7 @@ end
 
     class BracketsGetNode<ValueNode
       param_names(:receiver,:lbrack_,:params,:rbrack_)
+      alias args params
       def initialize(receiver,lbrack,params,rbrack)
         params=case params
         when CommaOpNode; Array.new params
@@ -5060,6 +5065,8 @@ end
         super(receiver,params)
       end
 
+      def name; "[]" end
+ 
       def image; "(#{receiver.image}.[])" end
 
       def unparse o=default_unparse_options
