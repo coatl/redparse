@@ -140,9 +140,8 @@ class RedParse
       hash=hash_of_input input
       File.open(cachedir+hash, "wb"){|fd|
         begin
-          Marshal.respond_to?(:dump_ignoring_sclass) ? 
-            Marshal.dump_ignoring_sclass(result,fd)  :
-            Marshal.dump(result,fd)
+          $Marshal_ignore_sclass=true
+          Marshal.dump(result,fd)
         rescue TypeError=>e #dump failed
           File.unlink cachedir+hash
           begin
@@ -154,6 +153,8 @@ class RedParse
           rescue Exception
             return
           end
+        ensure
+          $Marshal_ignore_sclass=nil
         end
       }
     rescue Exception=>e #dump failed
