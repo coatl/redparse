@@ -1517,7 +1517,6 @@ end
         return "" if empty?
         unparse_nl(first,o,'')+first.unparse(o)+
         self[1..-1].map{|expr| 
-#          p expr
           unparse_nl(expr,o)+expr.unparse(o)
         }.to_s
       end
@@ -1571,9 +1570,9 @@ end
         super
       end
 
-      def unparse(o=default_unparse_options)
-        left.unparse(o)+" => "+right.unparse(o)
-      end
+      #def unparse(o=default_unparse_options)
+      #  left.unparse(o)+" => "+right.unparse(o)
+      #end
     end
 
     class RangeNode
