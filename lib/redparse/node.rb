@@ -4055,7 +4055,14 @@ end
         @offset=lbrack.offset
         contents or return super()
         if CommaOpNode===contents
+          h,arrowrange=contents.extract_unbraced_hash
+          contents[arrowrange]=[h] if arrowrange
           super( *contents )
+        elsif ArrowOpNode===contents
+          h=HashLiteralNode.new(nil,contents,nil)
+          h.startline=contents.startline
+          h.endline=contents.endline
+          super HashLiteralNode.new(nil,contents,nil)
         else
           super contents
         end
