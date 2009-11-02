@@ -1411,6 +1411,26 @@ end
       end
       attr_writer :lvalue
       identity_param :lvalue, nil, true
+
+      def extract_unbraced_hash
+          param_list=Array.new(self)
+          first=last=nil
+          param_list.each_with_index{|param,i|
+            break first=i if ArrowOpNode===param
+          }
+          (1..param_list.size).each{|i| param=param_list[-i]
+            break last=-i if ArrowOpNode===param
+          }
+          if first
+            arrowrange=first..last
+            arrows=param_list[arrowrange]
+            h=HashLiteralNode.new(nil,arrows,nil)
+            h.offset=arrows.first.offset
+            h.startline=arrows.first.startline
+            h.endline=arrows.last.endline
+            return h,arrowrange
+          end
+      end
     end
 
     class LiteralNode<ValueNode; end
