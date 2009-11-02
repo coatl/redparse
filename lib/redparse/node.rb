@@ -3298,6 +3298,7 @@ end
       param_names :params,:body
       def initialize(open_brace,formals,stmts,close_brace)
         stmts||=SequenceNode[{:@offset => open_brace.offset, :@startline=>open_brace.startline}]
+        stmts=SequenceNode[stmts,{:@offset => open_brace.offset, :@startline=>open_brace.startline}] unless SequenceNode===stmts
         
         formals&&=BlockParams.new(Array.new(formals))
         @do_end=true unless open_brace.not_real?
