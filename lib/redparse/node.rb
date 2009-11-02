@@ -3008,23 +3008,9 @@ end
           #handle inlined hash pairs in param list (if any)
 #          compr=Object.new
 #          def compr.==(other) ArrowOpNode===other end
+          h,arrowrange=param_list.extract_unbraced_hash
           param_list=Array.new(param_list)
-          first=last=nil
-          param_list.each_with_index{|param,i| 
-            break first=i if ArrowOpNode===param
-          }
-          (1..param_list.size).each{|i| param=param_list[-i]
-            break last=-i if ArrowOpNode===param
-          }
-          if first
-            arrowrange=first..last
-            arrows=param_list[arrowrange]
-            h=HashLiteralNode.new(nil,arrows,nil)
-            h.offset=arrows.first.offset
-            h.startline=arrows.first.startline
-            h.endline=arrows.last.endline
-            param_list[arrowrange]=[h]
-          end
+          param_list[arrowrange]=[h] if arrowrange
         
         when ArrowOpNode
           h=HashLiteralNode.new(nil,param_list,nil)
