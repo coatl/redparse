@@ -308,6 +308,18 @@ class RedParseTest<Test::Unit::TestCase
   ]
 
   ONELINERS=[
+    '[a=>b,c=>d]'...'',
+    '[a=>b,c=>d,*e]'...'',
+    'class __FILE__::A; b end'...'',
+    'module __FILE__::A; b end'...'',
+    'class __LINE__::A; b end'...'',
+    'module __LINE__::A; b end'...'',
+    'class self::A; b end'...'',
+    'module self::A; b end'...'',
+    'class self::A<B; c end'...'',
+    'module self::A include B; c end'...'',
+    'class a.b.c.d.e.f::Quux; YYY=534 end'...'',
+    'class[Array][0]::Foo; Bazz=556 end'...'',
     '=begin\r\nfoo\r\n=end\r\n'...'',
     'a!`b'...'',
     'fetch_named { {} }'...'',
