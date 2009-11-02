@@ -5069,10 +5069,20 @@ end
       param_names(:receiver,:lbrack_,:params,:rbrack_)
       alias args params
       def initialize(receiver,lbrack,params,rbrack)
-        params=case params
-        when CommaOpNode; Array.new params
+        case params
+        when CommaOpNode
+          h,arrowrange=params.extract_unbraced_hash
+          params=Array.new params
+          params[arrowrange]=[h] if arrowrange          
+        when ArrowOpNode 
+          h=HashLiteralNode.new(nil,params,nil)
+          h.startline=params.startline
+          h.endline=params.endline
+          params=[h]
         when nil
-        else [params]
+          params=nil
+        else 
+          params=[params]
         end
         params.extend ListInNode if params
         @offset=receiver.offset
