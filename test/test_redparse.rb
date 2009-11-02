@@ -17,6 +17,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 =end
 
+$VERBOSE=1
+$Debug=1
 require 'test/unit'
 require 'rubygems'
 require 'parse_tree'
