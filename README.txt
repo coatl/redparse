@@ -156,18 +156,18 @@ existing format in the future, but no incompatibility-creating changes.
  ||+ConstantNode   #a constant expression of the form A::B::C or the like
  ||                #first expression can be anything
  ||                 (Array[String|Expr|nil,String+])
- |+RawOpNode       #ancestor of all operators (but not . :: ; , ?..:)
+ |+RawOpNode       #ancestor of all binary operators (except . :: ; , ?..:)
  |||                (left: Expr, op: String, right: Expr)
- ||+OpNode         #ancestor of some operators
- |||+RangeNode     #a range literal node
- |||+KeywordOpNode #abstract, ancestor of keyword operators
- ||||+LogicalNode  #and or && || expressions
- ||||+WhileOpNode  #while as an operator
- ||||+UntilOpNode  #until as an operator
- ||||+IfOpNode     #if as an operator
- ||||+UnlessOpNode #unless as an operator
- ||||+RescueOpNode #rescue as an operator
- ||||               (body: Expr, rescues: Array[RescueNode*])
+ ||+RangeNode      #a range literal node
+ ||+KeywordOpNode  #abstract, ancestor of keyword operators
+ |||+LogicalNode   #and or && || expressions
+ |||+WhileOpNode   #while as an operator
+ |||+UntilOpNode   #until as an operator
+ |||+IfOpNode      #if as an operator
+ |||+UnlessOpNode  #unless as an operator
+ |||+RescueOpNode  #rescue as an operator
+ |||                (body: Expr, rescues: Array[RescueNode*])
+ ||+OpNode         #ancestor of some binary operators (those with methods hidden in them)
  |||+NotEqualNode  #!= expressions
  |||+MatchNode     #=~ expressions
  |||+NotMatchNode  #!~ expressions
