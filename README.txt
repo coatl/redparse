@@ -265,7 +265,7 @@ existing format in the future, but no incompatibility-creating changes.
 * These expressions don't parse the same as in MRI because of bug(s) in MRI:
 * p = p m %(1)
 * p=556;p (e) /a
-* c do p (110).m end
+* c do p (110).m end #1.8 only, fixed in 1.9
 
 == Bugs in ParseTree
 * Unit tests see failures in these cases, but due to bugs in ParseTree:
