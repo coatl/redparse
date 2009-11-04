@@ -262,10 +262,11 @@ inputs.each_index{|i|
       else
         if was_silly_begin_diff
           puts "differed by a :begin node in "+name
+          problemfiles.push name if problemfiles
         else
           puts "no differences in "+name
+          problemfiles.delete name if problemfiles
         end
-        problemfiles.delete name if problemfiles
       end
     end
     if unparse
@@ -280,7 +281,7 @@ inputs.each_index{|i|
   rescue Exception=>e
     puts "#{e}:#{e.class}"
     puts e.backtrace.join("\n")
-    #problemfiles.push name if problemfiles
+    problemfiles.push name if problemfiles
     #raise
   ensure
     STDOUT.flush
