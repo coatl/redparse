@@ -3628,24 +3628,6 @@ EOS
   ###############################################################################################
 
 
-  RUBY_1_9_TO_1_8_EQUIVALENCES=[
-    '{a:  b}'...'{:a=>b}',
-    '{a:  b, c:  d}'...'{:a=>b, :c=>d}',
-    "a ? b\n :  c"..."a ? b : \n c",
-    'not(true)'...'not true',
-    'not(+1)'...'not +1',
-    'not (true).to_s'...'not (true).to_s', #equivalent, but parser gets there different ways
-  ]
-
-  RUBY_1_9_VALID=[
-    'not (true).to_s',
-  ]
-
-  include RedParse::Nodes
-  RUBY_1_9_PATTERNS={
-    'not(true).to_s'=>+CallNode[+UnOpNode["not", +VarLikeNode["true"]], "to_s"],
-  }
-
   SINGLE_OPEN2CLOSE={
     "'"=>"'",
     ":'"=>"'",
@@ -3777,29 +3759,6 @@ EOS
   }.to_s
   #puts code.split("\n")[5880..5890].join("\n")
   eval code
-
-  def test_ruby19_equivs
-    RUBY_1_9_TO_1_8_EQUIVALENCES.each{|pair|
-      new,old=pair.first,pair.last
-      pt19=RedParse.new(new,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
-      pt18=RedParse.new(old,'(eval)',1,[],:cache_mode=>:none).parse
-      assert_equal pt18,pt19
-    }
-  end
- 
-  def test_ruby19_valid
-    RUBY_1_9_VALID.each{|xmpl|
-      pt19=RedParse.new(xmpl,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
-      assert_nil pt19.errors
-    }
-  end
-
-  def test_ruby19_patterns
-    RUBY_1_9_PATTERNS.each_pair{|code,pattern|
-      pt=RedParse.new(code,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
-      assert_match pattern, pt
-    }
-  end
 
   error_code=RUBYBUG_EXAMPLES.map{|xmpl| 
     #remove comment if present
