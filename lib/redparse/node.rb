@@ -4243,7 +4243,7 @@ end
       def image; "(elsif)" end
 
       def unparse o=default_unparse_options
-        "elsif #{condition.unparse o}#{unparse_nl(consequent,o)}#{consequent.unparse o};"
+        "elsif #{condition.unparse o}#{unparse_nl(consequent,o)}#{consequent.unparse o if consequent};"
       end
 
       def to_lisp
