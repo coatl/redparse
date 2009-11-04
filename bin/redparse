@@ -279,6 +279,7 @@ inputs.each_index{|i|
     next
   rescue Interrupt,SystemExit; exit 2
   rescue Exception=>e
+    puts "exception while processing #{name}"
     puts "#{e}:#{e.class}"
     puts e.backtrace.join("\n")
     problemfiles.push name if problemfiles
