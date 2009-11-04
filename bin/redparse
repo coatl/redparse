@@ -87,7 +87,8 @@ end
 
 
 output=:p
-quiet=true
+quiet=false
+verbose=false
 ruby187=ruby19=false
 while /^-/===ARGV.first
     case opt=ARGV.shift
@@ -109,7 +110,7 @@ while /^-/===ARGV.first
         require 'macro'
         parserclass=Macro::RedParseWithMacros
       when "-q"; quiet=true
-      when "-v"; quiet=false
+      when "-v"; verbose=true
       when "-e"; inputs=[ARGV.join(" ")]; names=["-e"]; break
       when "-7"; ruby187=true
       when "-9"; ruby19=true
@@ -245,13 +246,13 @@ inputs.each_index{|i|
         raise
       end
       if output==:vsparsetree2
-        if !quiet or is_diff
+        if verbose or is_diff
           puts "mine:"
           pp mine
           puts "ryans:" if is_diff
           pp ryans if is_diff
         end
-      elsif !quiet or is_diff
+      elsif verbose or is_diff
         puts 'differences in '+name if is_diff
         pp delta
       end
