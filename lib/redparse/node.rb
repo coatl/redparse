@@ -1328,10 +1328,11 @@ end
     end
 
     class MatchNode<OpNode
-      param_names :left,:op,:right
+      param_names :left,:op_,:right
 
-      def initialize(*args)
-        super
+      def initialize(left,op,right=nil)
+        op,right=nil,op unless right
+        replace [left,right]
       end
 
       def parsetree(o)
@@ -1347,10 +1348,11 @@ end
     end
 
     class NotEqualNode<OpNode
-      param_names :left,:op,:right
+      param_names :left,:op_,:right
 
-      def initialize(*args)
-        super
+      def initialize(left,op,right=nil)
+        op,right=nil,op unless right
+        replace [left,right]
       end
 
       def parsetree(o)
@@ -1363,10 +1365,11 @@ end
     end
 
     class NotMatchNode<OpNode
-      param_names :left,:op,:right
+      param_names :left,:op_,:right
 
-      def initialize(*args)
-        super
+      def initialize(left,op,right=nil)
+        op,right=nil,op unless right
+        replace [left,right]
       end
 
       def parsetree(o)
@@ -2859,15 +2862,16 @@ end
 
     class WhileOpNode
       include KeywordOpNode
-      param_names :left, :op, :right
+      param_names :left, :op_, :right
       def condition; right end
       def consequent; left end
-      def initialize(val1,op,val2)
+      def initialize(val1,op,val2=nil)
+        op,val2=nil,op unless val2
         op=op.ident if op.respond_to? :ident
         @reverse=false
         @loop=true
         @test_first= !( BeginNode===val1 )
-        super(val1,op,val2)
+        replace [val1,val2]
         condition.special_conditions! if condition.respond_to? :special_conditions!
       end
 
@@ -2896,15 +2900,16 @@ end
 
     class UntilOpNode
       include KeywordOpNode
-      param_names :left,:op,:right
+      param_names :left,:op_,:right
       def condition; right end
       def consequent; left end
-      def initialize(val1,op,val2)
+      def initialize(val1,op,val2=nil)
+        op,val2=nil,op unless val2
         op=op.ident if op.respond_to? :ident
         @reverse=true
         @loop=true
         @test_first= !( BeginNode===val1 ) 
-        super(val1,op,val2)
+        replace [val1,val2]
         condition.special_conditions! if condition.respond_to? :special_conditions!
       end
 
@@ -2935,14 +2940,15 @@ end
 
     class UnlessOpNode
       include KeywordOpNode
-      param_names :left, :op, :right
+      param_names :left, :op_, :right
       def condition; right end
       def consequent; left end
-      def initialize(val1,op,val2)
+      def initialize(val1,op,val2=nil)
+        op,val2=nil,op unless val2
         op=op.ident if op.respond_to? :ident
         @reverse=true
         @loop=false
-        super val1,op,val2
+        replace [val1,val2]
         condition.special_conditions! if condition.respond_to? :special_conditions!
       end
 
@@ -2964,15 +2970,16 @@ end
     end
 
     class IfOpNode
-      param_names :left,:op,:right
+      param_names :left,:op_,:right
       include KeywordOpNode
       def condition; right end
       def consequent; left end
-      def initialize(left,op,right)
+      def initialize(left,op,right=nil)
+        op,right=nil,op unless right
         op=op.ident if op.respond_to? :ident
         @reverse=false
         @loop=false
-        super(left,op,right)
+        replace [left,right]
         condition.special_conditions! if condition.respond_to? :special_conditions!
       end
 
