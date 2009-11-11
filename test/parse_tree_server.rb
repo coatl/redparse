@@ -58,7 +58,7 @@ class ParseTreeServer
           put f.read.split #warnings
         }
       end
-      rescue Exception=>e; p e; raise
+      rescue Exception=>e; put e; raise
       ensure exit!
       end
   end
