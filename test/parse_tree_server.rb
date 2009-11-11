@@ -38,6 +38,7 @@ class ParseTreeServer
       @out=so; @in=si
       warnstash=Tempfile.new "warnstash"
       STDERR.reopen warnstash
+      instance=ParseTree.new
       while 1
         str=get
         exit! if str==:exit!
@@ -46,7 +47,7 @@ class ParseTreeServer
 
         tree=
         begin
-          parse_tree_for_string(str) #tree
+          instance.parse_tree_for_string(str) #tree
         rescue Exception=>e; 
           tree=e
         end
