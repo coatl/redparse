@@ -1624,7 +1624,8 @@ end
           tag="flip"
         else
           if :lit==first.first and :lit==last.first and
-             Fixnum===first.last and Fixnum===last.last
+             Fixnum===first.last and Fixnum===last.last and
+             LiteralNode===first() and LiteralNode===last()
             return [:lit, Range.new(first.last,last.last,@exclude_end)]
           end
           tag="dot"
