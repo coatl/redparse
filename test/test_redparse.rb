@@ -160,7 +160,7 @@ require 'test/parse_tree_server'
 class ParseTree
   class<<self
   include ParseTreeComm
-  def fork_server?
+  def old_fork_server?
     @in||=nil; @out||=nil
     return if @out
     Process.kill "KILL",@server if @server
@@ -199,6 +199,24 @@ class ParseTree
     }
     si.close; so.close
     @out=co; @in=ci
+    at_exit { 
+      begin 
+        put :exit!
+        Process.wait(@server)
+      rescue Exception
+      end 
+    }
+  end
+
+  def fork_server?
+    @in||=nil; @out||=nil; @server||=nil
+    return if @out
+    Process.kill "KILL",@server if @server
+  
+    p Dir.pwd
+    @out=@in=IO::popen("ruby #{File.expand_path File.dirname(__FILE__)}/parse_tree_server.rb", "r+")
+    @server=@in.pid
+
     at_exit { 
       begin 
         put :exit!
