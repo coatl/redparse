@@ -10,6 +10,7 @@ module ParseTreeComm
     msg= o.size.to_s+"\n"+o+"\n"
     begin
       @out.write msg
+      @out.flush
     rescue Exception
       @out=@in=nil
       raise
