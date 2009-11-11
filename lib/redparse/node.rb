@@ -3978,7 +3978,8 @@ end
           ":"+
             val.unparse(o)
         when Float
-          s= "%#{Float::DIG+1}.#{Float::DIG+1}f"%val
+          s= "%#{Float::DIG+3}.#{Float::DIG+3}f"%val
+          #why must it be +3? I wouldn't think any fudge factor would be necessary
           case s
           when /-inf/i; s="-"+Inf
           when /inf/i;  s=    Inf
