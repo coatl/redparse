@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'parse_tree'
-require 'yaml'
+require 'tempfile'
+#require 'yaml'
 #require 'marshal'
 
 module ParseTreeComm
