@@ -3849,7 +3849,11 @@ end
                end
 
           if vals.size==1
-            vals=[/#{vals[0]}/] if :dregx==type or :dregx_once==type
+            if :dregx==type or :dregx_once==type
+              lang=@modifiers.tr_s("nesuNESU","")
+              opts=@modifiers.tr_s("^nesuNESU","")
+              vals=[Regexp.new( "#{vals[0]}",opts,lang )]
+            end
             type=DOWNSHIFT_STRING_TYPE[type]
           end
           result= vals.unshift(type)
