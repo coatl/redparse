@@ -326,6 +326,7 @@ class RedParseTest<Test::Unit::TestCase
   ]
 
   ONELINERS=[
+    '0.777777'...'',
     'if a; b; elsif c; else d end'...'',
     '[a=>b,c=>d]'...'',
     '[a=>b,c=>d,*e]'...'',
