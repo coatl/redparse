@@ -19,7 +19,8 @@ module ParseTreeComm
   end
   def get
     begin
-      msg=@in.read(@in.gets.to_i)
+      len=@in.gets.to_i
+      msg=@in.read(len)
       @in.getc  #read trailing \n
     rescue Exception
       @in=@out=nil
@@ -56,7 +57,7 @@ class ParseTreeServer
 
         open(STDERR.path){|f| 
           f.pos=pos
-          put f.read.split #warnings
+          put warnings=f.read.split #warnings
         }
       end
       rescue Exception=>e; put e; raise
