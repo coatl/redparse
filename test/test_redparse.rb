@@ -3706,27 +3706,33 @@ EOS
 
   WRAPPERS=[ #enable at most 2 or tests take forever!!!
     '(...)',  #normal mode, should usually be enabled
-#    'a rescue (...)',
-#    "((...))",
-#    'def ((...)).foo; end',
-#    'a0 = (...) rescue b0',
-#    'a0 = ((...)) rescue b0',    
-#    '(...)  #with a comment',
-#    "(...)#with comment and newline\n",
-#    "(...)\n",
-#    "(...);p __LINE__",
-#    "defined? (...)",
-#    "a=a (...)",
-#    "b=1;b (...)",
-#    "return (...)"
+    'a rescue (...)',
+    "((...))",
+    'def ((...)).foo; end',
+    'a0 = (...) rescue b0',
+    'a0 = ((...)) rescue b0',    
+    '(...)  #with a comment',
+    "(...)#with comment and newline\n",
+    "(...)\n",
+    "(...);p __LINE__",
+    "defined? (...)",
+    "a=a (...)",
+    "b=1;b (...)",
+    "return (...)",
+    '"#{(...)}"',
   ]
   INJECTABLES=[  #take it easy with these too
-#    'p (1..10).method(:each)',
-#    'a0 rescue b0',
-#    'begin; r; t end',
-#    'a=b,c=d',
+    'p (1..10).method(:each)',
+    'a0 rescue b0',
+    'begin; r; t end',
+    'a=b,c=d',
   ]
-  puts "warning: most data fuzzing is disabled for now"
+  if ENV['SLOW'] or ENV['MANGLE']
+  else
+    WRAPPERS.slice!(1..-1)
+    INJECTABLES.clear
+    puts "warning: most data fuzzing is disabled; set SLOW or MANGLE to enable"
+  end
 
   RUBYIDENT=/((?:$|@@?)?#{RubyLexer::LETTER}#{RubyLexer::LETTER_DIGIT}*[?!]?)/o
 
