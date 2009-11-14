@@ -3782,7 +3782,7 @@ EOS
       end
     }
     wrapped+injected
-  }.to_s
+  }.join
   #puts code.split("\n")[5880..5890].join("\n")
   eval code
 
@@ -3793,7 +3793,7 @@ EOS
     /\A\s*x\s*\{(.*)\}\Z/===xmpl and xmpl=$1
 
     snippet2testmethod(xmpl, :known_ruby_bug)
-  }.to_s
+  }.join
   eval error_code
 
   error_code=ERROR_EXAMPLES.map{|xmpl| 
@@ -3803,7 +3803,7 @@ EOS
     /\A\s*x\s*\{(.*)\}\Z/===xmpl and xmpl=$1
 
     snippet2testmethod(xmpl, :known_error)
-  }.to_s
+  }.join
   eval error_code
 
   failure_code=FAILURE_EXAMPLES.map{|xmpl| 
@@ -3813,7 +3813,7 @@ EOS
     /\A\s*x\s*\{(.*)\}\Z/===xmpl and xmpl=$1
 
     snippet2testmethod(xmpl, :known_failure)
-  }.to_s
+  }.join
   eval failure_code
 
   def known_ruby_bug

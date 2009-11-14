@@ -574,7 +574,7 @@ class RedParse
           alias init_data initialize
              "
 
-        code= "class ::#{self}\n"+init+accessors.to_s+"\nend\n"
+        code= "class ::#{self}\n"+init+accessors.join+"\nend\n"
         if defined? DEBUGGER__ or defined? Debugger
           Tempfile.open("param_name_defs"){|f|
             f.write code
