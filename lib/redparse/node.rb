@@ -1135,7 +1135,7 @@ end
 
       def parsetree(o)
         type=case ident[0]
-         when ?$: 
+         when ?$
            case ident[1]
            when ?1..?9; return [:nth_ref,ident[1..-1].to_i]
            when ?&,?+,?`,?'; return [:back_ref,ident[1].chr.to_sym] #`
@@ -3469,9 +3469,9 @@ end
         newdata=with_string_data(*tokens)
 
         case token
-        when HereDocNode: 
+        when HereDocNode
           token.list_to_append=newdata
-        when StringNode: #do nothing
+        when StringNode #do nothing
         else fail "non-string token class used to construct string node"
         end
         replace token.data
