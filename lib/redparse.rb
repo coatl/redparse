@@ -2847,11 +2847,11 @@ if __FILE__==$0
 #      require 'pp'
 #      pp e.stack[-[15,e.stack.size].min..-1]
 #      raise
-#    rescue NeverExecThis:
+#    rescue NeverExecThis
         puts "RedParse attempted to execute parse data in #{name}"
         next
       end
-    rescue Interrupt: exit 2
+    rescue Interrupt; exit 2
     rescue Exception=>e
 #      puts e.backtrace.join("\n")
       e.message << " during parse of #{name}"
@@ -2888,10 +2888,10 @@ if __FILE__==$0
           ryans=ParseTree.new.parse_tree_for_string(safe_inputs[i],name); nil
         } and raise NeverExecThis
         delta,is_diff=arraydiff(mine,ryans)
-      rescue NeverExecThis:
+      rescue NeverExecThis
         puts "ParseTree attempted to execute parse data in #{name}"
         next
-      rescue Interrupt: exit 2
+      rescue Interrupt; exit 2
       rescue Exception=>e
         #raise( RuntimeError.new( "#{e} during to_parsetree of #{name}" ) )
         puts "error during to_parsetree of #{name}"
@@ -2918,10 +2918,10 @@ if __FILE__==$0
       end
     end
 
-    rescue NeverExecThis: 
+    rescue NeverExecThis
       puts "mysterious attempt to execute parse data in #{name}"
       next
-    rescue Interrupt,SystemExit: exit 2
+    rescue Interrupt,SystemExit; exit 2
     rescue Exception=>e
       puts "#{e}:#{e.class}"
       puts e.backtrace.join("\n")
