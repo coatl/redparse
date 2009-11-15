@@ -3961,10 +3961,21 @@ EOS
     @problem_exprs=$stdout
   end
 
+  def ParseTree.server_running_187
+    @server_known_pid||=nil
+    @server_running_187||=nil
+    return @server_running_187 unless @server_running_187.nil? or @server_known_pid!=@server
+    put :version
+    version=get
+    @server_known_pid=@server
+    @server_running_187= version=="1.8.7"
+  end
+
   def check_parsing xmpl
+    ParseTree.fork_server?
     xmpl=xmpl.dup.freeze
     pt_opts=[:quirks]
-    pt_opts<<:ruby187 if ::VERSION["1.8.7"]
+    pt_opts<<:ruby187 if ParseTree.server_running_187
     /unparse/===xmpl and warn 'unparse in parser test data!'
     problem_exprs=problem_exprs()
     nodes=warnings=warnings2=nil
