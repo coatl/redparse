@@ -96,14 +96,17 @@ class Test::Unit::TestCase
 end
 
 #print output immediately on failing test (at end too....)
-require 'test/unit/ui/console/testrunner'
-class Test::Unit::UI::Console::TestRunner
-  alias add_fault__no_immed_output add_fault
-  def add_fault fault
-    @fault_count||=0
-    output("\n%3d) %s" % [@fault_count+=1, fault.long_display])
-    add_fault__no_immed_output fault
+begin
+  require 'test/unit/ui/console/testrunner'
+  class Test::Unit::UI::Console::TestRunner
+    alias add_fault__no_immed_output add_fault
+    def add_fault fault
+      @fault_count||=0
+      output("\n%3d) %s" % [@fault_count+=1, fault.long_display])
+      add_fault__no_immed_output fault
+    end
   end
+rescue LoadError; #do nothing; just skip this code if test/unit/ui/console/testrunner not present
 end
 
 =begin nice idea, don't work yet
