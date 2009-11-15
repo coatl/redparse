@@ -52,6 +52,10 @@ class ParseTreeServer
       while 1
         str=get
         exit! if str==:exit!
+        if str==:version
+          put ::RUBY_VERSION
+          next
+        end
 
         pos=STDERR.pos
 
