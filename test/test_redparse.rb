@@ -20,8 +20,7 @@
 $VERBOSE=1
 $Debug=1
 require 'test/unit'
-require 'rubygems'
-require 'parse_tree'
+#require 'parse_tree'
 require 'tempfile'
 begin
   require 'ron'
