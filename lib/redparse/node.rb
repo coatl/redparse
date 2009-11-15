@@ -3719,9 +3719,9 @@ end
 
           if vals.size==1
             if :dregx==type or :dregx_once==type
-              lang=@modifiers.tr_s("nesuNESU","")
-              opts=@modifiers.tr_s("^nesuNESU","")
-              vals=[Regexp.new( "#{vals[0]}",opts,lang )]
+              lang=@modifiers.tr_s("^nesuNESU","")
+              regex_options=nil
+              vals=[Regexp.new( vals.first,numopts,lang )]
             end
             type=DOWNSHIFT_STRING_TYPE[type]
           end
