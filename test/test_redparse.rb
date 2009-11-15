@@ -3741,7 +3741,9 @@ EOS
   def self.snippet2testmethod(snippet,wrap=nil)
     escaped=snippet.gsub(/[\\']/){"\\"+$&}
     safe=escaped.gsub(/([^ -~])/){
-      x=$1[0].to_s(16)
+      x=$1[0]
+      x=x.getbyte(0) if String===x
+      x=x.to_s(16)
       x.size==1 and x="0"+x
       "\\x"+x
     }
