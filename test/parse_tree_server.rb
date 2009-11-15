@@ -1,5 +1,3 @@
-require 'rubygems'
-require 'parse_tree'
 require 'tempfile'
 #require 'yaml'
 #require 'marshal'
@@ -33,7 +31,17 @@ end
 
 class ParseTreeServer
   include ParseTreeComm
+  def ensure_parse_tree_and_1_8
+    if ::RUBY_VERSION[/^\d+\.\d+/].to_f>1.8
+      ruby18=ENV['RUBY1_8']||fail("ruby > 1.8 used and no RUBY1_8 with parse_tree to chain to")
+      exec ruby18, $0
+    else
+      require 'rubygems'
+      require 'parse_tree'
+    end
+  end
   def main
+    ensure_parse_tree_and_1_8
     si=STDIN
     so=STDOUT
       begin
