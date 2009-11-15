@@ -214,9 +214,9 @@ class ParseTree
     @in||=nil; @out||=nil; @server||=nil
     return if @out
     Process.kill "KILL",@server if @server
-  
-    p Dir.pwd
-    @out=@in=IO::popen("ruby #{File.expand_path File.dirname(__FILE__)}/parse_tree_server.rb", "r+")
+
+    ruby=ENV["RUBY1_8"]||"ruby"  
+    @out=@in=IO::popen("#{ruby} #{File.expand_path File.dirname(__FILE__)}/parse_tree_server.rb", "r+")
     @server=@in.pid
 
     at_exit { 
