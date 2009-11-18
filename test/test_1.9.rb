@@ -51,6 +51,23 @@ class TestsFor1_9 < Test::Unit::TestCase
     }
   end
  
+  def test_ruby19_equivs_but_for_stresc
+    RUBY_1_9_TO_1_8_EQUIVALENCES_BUT_FOR_STRESC.each{|pair|
+      new,old=pair.first,pair.last
+      pt19=RedParse.new(new,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
+      pt18=RedParse.new(old,'(eval)',1,[],:cache_mode=>:none).parse
+      if pt18.instance_variable_get(:@bs_handler)==:dquote_esc_seq
+        pt18.instance_variable_set :@bs_handler,:dquote19_esc_seq
+      else
+        pt18.instance_variable_set :@bs_handler,:Wquote19_esc_seq
+        pt18.instance_variable_get(:@parses_like).each{|x|
+          x.instance_variable_set :@bs_handler,:Wquote19_esc_seq if x.instance_variable_get :@bs_handler
+        }
+      end
+      assert_equal pt18,pt19
+    }
+  end
+ 
   def test_ruby19_valid
     RUBY_1_9_VALID.each{|xmpl|
       pt19=RedParse.new(xmpl,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
