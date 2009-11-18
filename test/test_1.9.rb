@@ -12,6 +12,27 @@ class TestsFor1_9 < Test::Unit::TestCase
     'not (true).to_s'...'not (true).to_s', #equivalent, but parser gets there different ways
   ]
 
+  RUBY_1_9_TO_1_8_EQUIVALENCES_BUT_FOR_STRESC=[
+    '"foo"'...'"foo"',
+    '"foo#{bar}"'...'"foo#{bar}"',
+
+    '%W[foo]'...'%W[foo]',
+    '%W[foo#{bar}]'...'%W[foo#{bar}]',
+
+    '`foo`'...'`foo`',
+    '`foo#{bar}`'...'`foo#{bar}`',
+
+    '//'...'//',
+    '/aa/i'...'/aa/i',
+    '/a#{a}/u'...'/a#{a}/u',
+    '/a#{"a"}/e'...'/a#{"a"}/e',
+    '/b#{__FILE__}/s'...'/b#{__FILE__}/s',
+    '/bb/m'...'/bb/m',
+    '/b b/x'...'/b b/x',
+    '/b#{b}/o'...'/b#{b}/o',
+  ]
+
+
   RUBY_1_9_VALID=[
     'not (true).to_s',
   ]
