@@ -147,7 +147,7 @@ class RedParse
       def identity_name
         k=self.class
         list=[k.name]
-        list.concat k.boolean_identity_params.map{|(bip,)| bip if send(bip) }.compact
+        list.concat k.boolean_identity_params.map{|(bip,*)| bip if send(bip) }.compact
         list.concat k.identity_params.map{|(ip,variations)|
           val=send(ip)
           variations.include? val or fail "identity_param #{k}##{ip} unexpected value #{val.inspect}"
