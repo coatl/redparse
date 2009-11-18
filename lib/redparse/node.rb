@@ -1958,7 +1958,11 @@ end
           end
           target.push else_.parsetree(o) if  else_ #and !body
           result.size==0 and result=[[:nil]]
-          result=result.last #if @op_rescue
+          if o[:ruby187] and !rescues.empty?
+            result.unshift :begin
+          else
+            result=result.last
+          end
           result
       end
 
