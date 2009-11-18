@@ -71,6 +71,14 @@ Please see COPYING.LGPL for details.
 * "loosey-goosey" parser happily parses many expressions which normal 
   ruby considers errors.
 
+== Summary of known problems with the parser itself:
+__LINE__ is incorrect if it appears between here header and body.
+
+known problems with ParseTree compatibility:
+:begin not always emitted in the same places as ParseTree does... shouldn't matter much(?).
+string nodes don't always come out the same way as ParseTree makes them... but what I emit is equivalent.
+silly empty case expressions aren't always optimized down to nop like ParseTree does it.
+
 == SYNOPSIS:
 
   #simple example of usage:
