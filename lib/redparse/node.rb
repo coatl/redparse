@@ -2024,7 +2024,11 @@ end
  
       def parsetree(o)
         result=parsetree_and_rescues(o)
-        result=[:begin,result] unless o[:ruby187]||result==[:nil]#||result.first==:begin
+        if o[:ruby187] and result.first==:begin
+          result=result[1]
+        else
+          result=[:begin,result] unless result==[:nil]#||result.first==:begin
+        end
         return result
       end
 
