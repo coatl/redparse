@@ -1,6 +1,6 @@
 require 'test/unit'
 require 'rubylexer/test/oneliners_1.9'
-
+require "redparse"
 
 class TestsFor1_9 < Test::Unit::TestCase
   RUBY_1_9_TO_1_8_EQUIVALENCES=[
