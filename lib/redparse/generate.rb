@@ -356,7 +356,7 @@ end
   }
   STRMAP_REX=/#{STRMAPPINGS.keys.map{|x| Regexp.quote x}.join "|"}/
   def self.str2cname str
-    str.gsub(STRMAP_REX){|str| STRMAPPINGS[str] } \
+    str.gsub(STRMAP_REX){|str2| STRMAPPINGS[str2] } \
        .gsub(/(?!#{LETTER_DIGIT}).|[X]/o){|ch| 
          "X"+  esc=CHARMAPPINGS[ch[0]] ? esc : ch[0].to_s(16)
        } 
