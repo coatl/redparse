@@ -816,7 +816,7 @@ end
           j=nil
           list=Array.new(node)
           assignnode=nil
-          list.each_with_index{|assignnode,jj|
+          list.each_with_index{|assignnode2,jj| assignnode=assignnode2
             AssignNode===assignnode and break(j=jj)
           }
           fail "CommaOpNode without any assignment in final parse tree" unless j
@@ -1538,7 +1538,7 @@ end
         sum=''
         type=:str
         tree=i=nil
-        result.each_with_index{|tree,i| 
+        result.each_with_index{|tree2,i2| tree,i=tree2,i2 
           sum+=tree[1]
           tree.first==:str or break(type=:dstr)
         }
