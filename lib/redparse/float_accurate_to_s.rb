@@ -80,7 +80,7 @@ class Float
       begin
         last=digits.slice!( -1 )
         result=[lead,digits,"e",exp].join.to_f
-      end while result==self or result.zero?
+      end while result==self or result.zero? && digits.size.nonzero?
       roundup=(digits.to_i+1).to_s
       if roundup.size>digits.size
         exp+=1
