@@ -1521,7 +1521,7 @@ end
         unparse_nl(first,o,'')+first.unparse(o)+
         self[1..-1].map{|expr| 
           unparse_nl(expr,o)+expr.unparse(o)
-        }.to_s
+        }.join
       end
     end
 
@@ -2060,7 +2060,7 @@ end
 
     module KeywordOpNode
       def unparse o=default_unparse_options
-        [left.unparse(o),' ',op,' ',right.unparse(o)].to_s
+        [left.unparse(o),' ',op,' ',right.unparse(o)].join
       end
     end
 
@@ -2945,7 +2945,7 @@ end
            @do_end ? " end" : "}"
          ]
         ]
-        return result.to_s
+        return result.join
       end
 
       def image
@@ -3366,7 +3366,7 @@ end
       EVEN_NUM_BSLASHES=/(^|[^\\])((?:\\\\)*)/
       def unparse o=default_unparse_options
         o[:linenum]+=@open.count("\n")
-        result=[@open,unparse_interior(o),@close,@modifiers].to_s  
+        result=[@open,unparse_interior(o),@close,@modifiers].join
         o[:linenum]+=@close.count("\n")
         return result
       end
@@ -3785,7 +3785,7 @@ end
                 else fail
                 end 
         
-        [lead,@char, inner, @char].to_s
+        [lead,@char, inner, @char].join
       end
     end
 
@@ -4032,7 +4032,7 @@ end
         result=@reverse ? "unless " : "if "
         result+="#{condition.unparse o}"
         result+=unparse_nl(consequent,o)+"#{consequent.unparse(o)}" if consequent
-        result+=unparse_nl(elsifs.first,o)+elsifs.map{|n| n.unparse(o)}.to_s if elsifs
+        result+=unparse_nl(elsifs.first,o)+elsifs.map{|n| n.unparse(o)}.join if elsifs
         result+=unparse_nl(else_,o)+"else "+else_.unparse(o) if else_
         result+=";else " if defined? @empty_else
         result+=";end"
@@ -4158,7 +4158,7 @@ end
          condition.unparse(o), unparse_nl(body||self,o),
          body&&body.unparse(o),
          ";end"
-        ].to_s
+        ].join
       end
 
       def while
@@ -4207,7 +4207,7 @@ end
 
       def unparse o=default_unparse_options
         result="case #{condition&&condition.unparse(o)}"+
-               whens.map{|wh| wh.unparse o}.to_s
+               whens.map{|wh| wh.unparse o}.join
 
         result += unparse_nl(otherwise,o)+"else "+otherwise.unparse(o) if otherwise
         result += ";else;" if @empty_else
@@ -4536,7 +4536,7 @@ end
         result+="ensure\n" if @empty_ensure
 =end
         result<<unparse_nl(endline,o)+"end"
-        result.to_s
+        result.join
       end
 
       def to_lisp
@@ -4987,7 +4987,7 @@ end
           '[',
           params&&params.map{|param| param.unparse o}.join(','),
           ']'
-        ].to_s
+        ].join
       end
 
       def parsetree(o)
