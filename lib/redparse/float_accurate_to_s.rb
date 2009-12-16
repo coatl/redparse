@@ -8,19 +8,19 @@ class Float
     return "0.0e0" if zero?
 
     as_str=sprintf("%.#{BASE10_DIGITS+2}e",self)
-    return to_s if as_str.to_f.zero? #hopeless
 
     #decompose self into sign, mantissa, and exponent (in string form)
     all,sign,first,digits,exp=*as_str.match(/^([+-]?)(\d)\.(\d+)e(.*)$/)
     digits=first<<digits
     exp=exp.to_i+1
     lead=sign<<"0."
+    return digits=digits if as_str.to_f.zero? #hopeless
 
     #recompose back to a float
     result=[lead,digits,"e",exp].join
     result_f=result.to_f
     delta=result_f - self
-    return result if delta.zero? #if representation is exact, return here
+    return digits=digits if delta.zero? #if representation is exact, return here
 
     #figure out which direction to go to get toward the right answer
     if delta<0
@@ -44,7 +44,7 @@ class Float
         break unless trying_f.zero?
         digits[-1,1]='' #workaround 1.8 bug
       end
-      return trying if trying_f==self
+      return digits=try_digits if trying_f==self
       break if self.between?(*[trying_f,result_f].sort) #(trying_f-self)*delta<0
       incr*=2
     end
@@ -54,17 +54,18 @@ class Float
 
     #maybe one of the bounds is already the correct answer?
     result=[lead,lower,"e",exp].join
-    return result if result.to_f==self
+    return digits=lower if result.to_f==self
     result=[lead,upper,"e",exp].join
-    return result if result.to_f==self
+    return digits=upper if result.to_f==self
 
     #binary search between lower and upper bounds til we find a correct answer
+    digits=nil
     while true
-      return to_s if upper-lower <= 1 #hopeless
+      return as_str if upper-lower <= 1 #hopeless
       mid=(lower+upper)/2
       mid_s=[lead,mid,"e",exp].join
       mid_f=mid_s.to_f
-      return mid_s if mid_f==self
+      return digits=mid if mid_f==self
       if mid_f<self
         lower=mid
       else #mid_f>self
