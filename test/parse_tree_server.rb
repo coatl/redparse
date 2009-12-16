@@ -49,7 +49,7 @@ class ParseTreeServer
       warnstash=Tempfile.new "warnstash"
       STDERR.reopen warnstash
       instance=ParseTree.new
-      while 1
+      while true
         str=get
         exit! if str==:exit!
         if str==:version
