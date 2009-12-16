@@ -27,7 +27,7 @@ require 'tempfile'
 require 'pp'
 require "rubylexer"
 require "reg"
-
+require "redparse/float_accurate_to_s"
 
 
 
@@ -3855,8 +3855,8 @@ end
           ":"+
             val.unparse(o)
         when Float
-          s= "%#{Float::DIG+3}.#{Float::DIG+3}f"%val
-          #why must it be +3? I wouldn't think any fudge factor would be necessary
+          s= val.accurate_to_s
+          #why must it be *2? I wouldn't think any fudge factor would be necessary
           case s
           when /-inf/i; s="-"+Inf
           when /inf/i;  s=    Inf
