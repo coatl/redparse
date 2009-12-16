@@ -328,6 +328,8 @@ class RedParseTest<Test::Unit::TestCase
   ]
 
   ONELINERS=[
+    'yield [a_i, *p] '...'',
+    '0.113725'...'',
     '0.777777'...'',
     'if a; b; elsif c; else d end'...'',
     '[a=>b,c=>d]'...'',
