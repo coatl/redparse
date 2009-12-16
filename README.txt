@@ -286,4 +286,4 @@ existing format in the future, but no incompatibility-creating changes.
 * proc{|&b| }
 * def sum(options = {:weights => weights = Hash.new(1)}); opt; end
 * def foo(a = 1)    end; def foo(a=b=c={})  end; def bar(a=b=c=1,d=2)  end
-
+* yield [a_i, *p] 
