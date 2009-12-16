@@ -152,9 +152,9 @@ class RedParse
           File.unlink cachedir+hash
           begin
             require 'ron'
-            File.open(cachedir+hash, "wb"){|fd|
-              fd.write "#encoded with Ron\n"
-              fd.write Ron.dump(result)
+            File.open(cachedir+hash, "wb"){|fd2|
+              fd2.write "#encoded with Ron\n"
+              fd2.write Ron.dump(result)
             }
           rescue Exception
             return
