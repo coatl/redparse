@@ -41,6 +41,7 @@ Please see COPYING.LGPL for details.
 * Pretty AST trees (at least, I think so). (To program for, not
   necessarily to look at.)
 * AST trees closely mirror the actual structure of source code.
+* unparser is built in
 * ParseTree format output too, if you want that.
 * Did I mention that there's no YACC at all? YACC grammars are 
   notoriously difficult to modify, (I've never successfully done it) 
@@ -63,7 +64,6 @@ Please see COPYING.LGPL for details.
 * Pathetically, ridiculously slow (ok, compiler-compilers are hard...)
 * Error handling is very minimal right now.
 * No warnings at all.
-* Some expressions aren't parsed correctly. see below.
 * Unit test takes a fairly long time.
 * Lots of warnings printed during unit test.
 * Debugging parse rules is not straightforward.
