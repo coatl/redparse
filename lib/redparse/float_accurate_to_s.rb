@@ -72,8 +72,41 @@ class Float
         upper=mid
       end
     end
+  ensure
+
+    #try to drop unneeded trailing digits
+    if digits
+      digits=digits.to_s
+      begin
+        last=digits.slice!( -1 )
+        result=[lead,digits,"e",exp].join.to_f
+      end while result==self or result.zero?
+      roundup=(digits.to_i+1).to_s
+      if roundup.size>digits.size
+        exp+=1
+        digits="0"+digits
+      end
+      roundup.slice!( /0+\Z/ )
+      roundup=[lead,roundup,"e",exp].join
+      return roundup if roundup.to_f==self
+      return [lead,digits<<last,"e",exp].join
+    end
   end
 end
+
+=begin not quite accurate, tho
+class String
+  def accurate_to_f
+    all,sign,int,frac,exp=*self.match(/\A([+-])?([0-9_]+)(?:\.([0-9_]+))?(?:[eE]([+-]?[0-9_]+))?/)
+    exp=exp.to_i||0
+    exp-=frac.size
+    mantissa=sign<<int<<frac
+    mantissa=mantissa.to_f
+    scale=10.0**exp
+    return mantissa*scale
+  end
+end
+=end
 
 eval DATA.read if __FILE__==$0
 __END__
