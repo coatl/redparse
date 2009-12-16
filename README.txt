@@ -148,105 +148,105 @@ existing format in the future, but no incompatibility-creating changes.
  UnAmpNode means UnOpNode with op == "&"
 
  Node<Array        #abstract ancestor of all nodes
- +RescueNode       #a rescue clause in a def or begin statement
+ +-RescueNode      #a rescue clause in a def or begin statement
  |                  (exceptions: Array[Expr*], varname: VarNode|nil, action: Expr)
- +WhenNode         #a when clause in a case statement
+ +-WhenNode        #a when clause in a case statement
  |                  (when: Expr|Array[Expr+]  then: Expr|nil )
- +ElsifNode        #an elsif clause in an if statement
+ +-ElsifNode       #an elsif clause in an if statement
  |                  (elsif: Expr, then: Expr|nil) 
- +ValueNode        #abstract, a node which has a value (an expression)
- |+VarNode  #represents variables and constants
+ +-ValueNode       #abstract, a node which has a value (an expression)
+ |+-VarNode  #represents variables and constants
  ||                 (ident: String)
- |+ListOpNode      #abstract, ancestor for nodes which are lists of 
+ |+-ListOpNode     #abstract, ancestor for nodes which are lists of 
  |||               #things separated by some op
- ||+SequenceNode   #a sequence of statements
+ ||+-SequenceNode  #a sequence of statements
  |||                 (Array[Expr*])
- ||+ConstantNode   #a constant expression of the form A::B::C or the like
+ ||+-ConstantNode  #a constant expression of the form A::B::C or the like
  ||                #first expression can be anything
  ||                 (Array[String|Expr|nil,String+])
- |+RawOpNode       #ancestor of all binary operators (except . :: ; , ?..:)
+ |+-RawOpNode      #ancestor of all binary operators (except . :: ; , ?..:)
  |||                (left: Expr, op: String, right: Expr)
- ||+RangeNode      #a range literal node
- ||+KeywordOpNode  #abstract, ancestor of keyword operators
- |||+LogicalNode   #and or && || expressions
- |||+WhileOpNode   #while as an operator
- |||+UntilOpNode   #until as an operator
- |||+IfOpNode      #if as an operator
- |||+UnlessOpNode  #unless as an operator
- |||+RescueOpNode  #rescue as an operator
+ ||+-RangeNode     #a range literal node
+ ||+-KeywordOpNode #abstract, ancestor of keyword operators
+ |||+-LogicalNode  #and or && || expressions
+ |||+-WhileOpNode  #while as an operator
+ |||+-UntilOpNode  #until as an operator
+ |||+-IfOpNode     #if as an operator
+ |||+-UnlessOpNode #unless as an operator
+ |||+-RescueOpNode #rescue as an operator
  |||                (body: Expr, rescues: Array[RescueNode*])
- ||+OpNode         #ancestor of some binary operators (those with methods hidden in them)
- |||+NotEqualNode  #!= expressions
- |||+MatchNode     #=~ expressions
- |||+NotMatchNode  #!~ expressions
- |+LiteralNode     #literal symbols, integers
+ ||+-OpNode        #ancestor of some binary operators (those with methods hidden in them)
+ |||+-NotEqualNode #!= expressions
+ |||+-MatchNode    #=~ expressions
+ |||+-NotMatchNode #!~ expressions
+ |+-LiteralNode    #literal symbols, integers
  ||                 (val: Numeric|Symbol|StringNode)
- |+StringNode      #literal strings
+ |+-StringNode     #literal strings
  |||                (Array[(String|Expr)+])
- ||+HereDocNode    #here documents
- |+StringCatNode   #adjacent strings are catenated ("foo" "bar" == "foobar")
+ ||+-HereDocNode   #here documents
+ |+-StringCatNode  #adjacent strings are catenated ("foo" "bar" == "foobar")
  ||                 (Array[StringNode+])
- |+NopNode         #an expression with no tokens at all in it
+ |+-NopNode        #an expression with no tokens at all in it
  ||                 (no attributes)
- |+VarLikeNode     #nil,false,true,__FILE__,__LINE__,self
+ |+-VarLikeNode    #nil,false,true,__FILE__,__LINE__,self
  ||                 (name: String)
- |+UnOpNode        #unary operators
+ |+-UnOpNode       #unary operators
  ||                 (op: String, val: Expr)
- ||+UnaryStarNode  #unary star (splat)
- |||+DanglingStarNode  #unary star with no argument
- |||||                    (no attributes)
- ||||+DanglingCommaNode  #comma with no rhs
- ||                       (no attributes)
- |+BeginNode       #begin..end block
+ ||+-UnaryStarNode #unary star (splat)
+ |||+-DanglingStarNode  #unary star with no argument
+ |||||                     (no attributes)
+ ||||+-DanglingCommaNode  #comma with no rhs
+ ||                        (no attributes)
+ |+-BeginNode      #begin..end block
  ||                 (body: Expr|nil, rescues: Array[RescueNode*], 
  ||                  else: Expr|nil, ensure: Expr|nil) 
- |+ParenedNode     #parenthesized expressions 
+ |+-ParenedNode    #parenthesized expressions 
  ||                 (body: Expr)
- |+AssignNode      #assignment (including eg +=)
+ |+-AssignNode     #assignment (including eg +=)
  ||                 (left:AssigneeList|LValue, op:String ,right:Array[Expr*]|Expr)
- |+AssigneeList    #abstract, comma-delimited list of assignables
+ |+-AssigneeList   #abstract, comma-delimited list of assignables
  |||                (Array[LValue*])
- ||+NestedAssign   #nested lhs, in parentheses
- ||+MultiAssign    #regular top-level lhs
- ||+BlockParams    #block formal parameter list
- |+CallSiteNode    #abstract, method calls
+ ||+-NestedAssign  #nested lhs, in parentheses
+ ||+-MultiAssign   #regular top-level lhs
+ ||+-BlockParams   #block formal parameter list
+ |+-CallSiteNode   #abstract, method calls
  |||                (receiver: Expr|nil, name: String, params: nil|Array[Expr+,UnaryStarNode?,UnAmpNode?], 
  |||                 blockparams: BlockParams|nil, block: Expr|nil)
- ||+CallNode       #normal method calls
- ||+KWCallNode     #keywords that look (more or less) like methods (BEGIN END yield return break continue next)
- |+ArrayLiteralNode #[..] 
- ||                 (Array[Expr*])
- |+IfNode          #if..end and unless..end
+ ||+-CallNode      #normal method calls
+ ||+-KWCallNode    #keywords that look (more or less) like methods (BEGIN END yield return break continue next)
+ |+-ArrayLiteralNode #[..] 
+ ||                   (Array[Expr*])
+ |+-IfNode         #if..end and unless..end
  ||                 (if: Expr, then: Expr|nil, elsifs: Array[ElsifNode+]|nil, else: Expr|nil)
- |+LoopNode        #while..end and until..end
+ |+-LoopNode       #while..end and until..end
  ||                 (while: Expr, do: Expr:nil)
- |+CaseNode        #case..end
+ |+-CaseNode       #case..end
  ||                 (case: Expr|nil, whens: Array[WhenNode*], else: Expr|nil)
- |+ForNode         #for..end
+ |+-ForNode        #for..end
  ||                 (for: LValue, in: Expr, do: Expr|nil)
- |+HashLiteralNode #{..}
- ||                 (Array[Expr*]) (size must be even)
- |+TernaryNode     # ? .. :
+ |+-HashLiteralNode #{..}
+ ||                  (Array[Expr*]) (size must be even)
+ |+-TernaryNode    # ? .. :
  ||                 (if: Expr, then: Expr, else: Expr)
- |+MethodNode      #def..end
+ |+-MethodNode     #def..end
  ||                 (receiver:Expr|nil, name:String, 
  ||                  params:Array[VarNode*,AssignNode*,UnaryStarNode?,UnAmpNode?]|nil, 
  ||                  body: Expr|nil, rescues: Array[RescueNode+]|nil, else: Expr|nil, ensure: Expr|nil)
- |+AliasNode       #alias foo bar
+ |+-AliasNode      #alias foo bar
  ||                 (to: String|VarNode|StringNode, from: String|VarNode|StringNode)
- |+UndefNode       #undef foo
+ |+-UndefNode      #undef foo
  ||                 (Array[String|StringNode+])
- |+NamespaceNode #abstract
- ||+ModuleNode     #module..end
+ |+-NamespaceNode  #abstract
+ ||+-ModuleNode    #module..end
  |||                (name: VarNode|ConstantNode, body: Expr|nil
  |||                 rescues: Array[RescueNode+]|nil, else: Expr|nil, ensure: Expr|nil)
- ||+ClassNode      #class..end
+ ||+-ClassNode     #class..end
  |||                (name: VarNode|ConstantNode, parent: Expr|nil, body: Expr|nil,
  |||                 rescues: Array[RescueNode+]|nil, else: Expr|nil, ensure: Expr|nil)
- ||+MetaClassNode  #class<<x..end
+ ||+-MetaClassNode #class<<x..end
  ||                 (val: Expr, body: Expr|nil,
  ||                  rescues: Array[RescueNode+]|nil, else: Expr|nil, ensure: Expr|nil)
- |+BracketsGetNode #a[b]
+ |+-BracketsGetNode #a[b]
  |                  (receiver: Expr, params: Array[Expr+,UnaryStarNode?]|nil)
  |
  ErrorNode         #mixed in to nodes with a syntax error
