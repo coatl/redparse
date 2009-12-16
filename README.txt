@@ -273,10 +273,12 @@ existing format in the future, but no incompatibility-creating changes.
 * These expressions don't parse the same as in MRI because of bug(s) in MRI:
 * p = p m %(1)
 * p=556;p (e) /a
-* c do p (110).m end #1.8 only, fixed in 1.9
+* c do p (110).m end #buggy in 1.8 only, fixed in 1.9
+* module Array ([Array]).first::E; end #buggy in 1.8 only, fixed in 1.9
 
 == Bugs in ParseTree
 * Unit tests see failures in these cases, but due to bugs in ParseTree:
+* doc_status, err_args = Documeh_status{fcgi_state = 3; docespond do doc_response =fcgi_state =  1; end }
 * case F;when G; else;case; when j; end;end
 * def foo(a=b=c={}) end
 * $11111111111111111111111111111111111111111111111111111111111111111111
