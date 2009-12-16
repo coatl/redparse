@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 require "#{File.dirname(__FILE__)}/lib/redparse/version"
-RubyLexer::Description=open("README.txt"){|f| f.read[/^==+ ?description[^\n]*?\n *\n?(.*?\n *\n.*?)\n *\n/im,1] }
-RubyLexer::Latest_changes="###"+open("History.txt"){|f| f.read[/\A===(.*?)(?====)/m,1] }
+RedParse::Description=open("README.txt"){|f| f.read[/^==+ ?description[^\n]*?\n *\n?(.*?\n *\n.*?)\n *\n/im,1] }
+RedParse::Latest_changes="###"+open("History.txt"){|f| f.read[/\A===(.*?)(?====)/m,1] }
 
 Gem::Specification.new do |s|
   s.name = "redparse"
