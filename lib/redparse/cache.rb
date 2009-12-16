@@ -164,8 +164,8 @@ class RedParse
         end
       }
     rescue Exception=>e #dump failed
-      puts "#{e.class}: #{e}"
-      puts "cache write failed for:\n#{result.inspect}"
+      warn "#{e.class}: #{e}"
+      warn "cache write failed for:\n#{result.inspect}"
       File.unlink cachedir+hash
     end
   end
