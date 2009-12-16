@@ -71,13 +71,7 @@ Please see COPYING.LGPL for details.
 * "loosey-goosey" parser happily parses many expressions which normal 
   ruby considers errors.
 
-== Summary of known problems with the parser itself:
-__LINE__ is incorrect if it appears between here header and body.
 
-known problems with ParseTree compatibility:
-:begin not always emitted in the same places as ParseTree does... shouldn't matter much(?).
-string nodes don't always come out the same way as ParseTree makes them... but what I emit is equivalent.
-silly empty case expressions aren't always optimized down to nop like ParseTree does it.
 
 == SYNOPSIS:
 
@@ -250,24 +244,31 @@ existing format in the future, but no incompatibility-creating changes.
  |                  (receiver: Expr, params: Array[Expr+,UnaryStarNode?]|nil)
  |
  ErrorNode         #mixed in to nodes with a syntax error
- +MisparsedNode    #mismatched braces or begin..end or the like
+ +-MisparsedNode   #mismatched braces or begin..end or the like
 
+== Known problems with the parser:
+* Encoding of the input is not stored anywhere in resulting parse tree.
+* Ascii, binary, utf-8, and euc encodings are supported, but sjis is not.
 
+== Known problems with the unparser:
+* On unparse, here documents are converted into regular strings. For the most 
+  part, these are exactly equivalent to the original. However, whatever tokens
+  appeared between the here document header and body will now show up on a 
+  different line. If one of those tokens was __LINE__, it will have a 
+  different value in the unparsed code than it had originally.
+* some floating-point literals don't survive parse/unparse roundtrip intact, 
+  due to bugs in MRI 1.8's Float#to_s/String#to_f.
 
-== Known failing expressions
-* The following expressions are known to parse incorrectly currently:
-* <<-EOS<<__LINE__
-    EOS
-* doc_status, err_args = Documeh_status{fcgi_state = 3; docespond do doc_response =fcgi_state =  1; end }
-
-== Not exactly right, but semantically equivalent
-* These don't return exactly the same s-exp as MRI/ParseTree, but close enough:  
-* for i in (begin
-    [44,55,66,77,88] end) do p i**Math.sqrt(i) end
-* %W"is #{"Slim #{2?"W":"S"}"}#{xx}."
-* def d; return (block_given? ? begin; yield f; ensure; f.close; end : f); end
-* "#{publi}#{}>"
-* /__A#{__FILE__}tcase/n =~ i
+== Known problems with ParseTree compatibility 
+* Major:
+  * converting non-ascii encoded parsetrees to ParseTree format doesn't work
+* Minor:
+  * :begin is not always emitted in the same places as ParseTree does:
+    * return begin;  f; end
+  * string nodes don't always come out the same way as in ParseTree... 
+    but what I emit is equivalent.
+    * %W"is #{"Slim #{2?"W":"S"}"}#{xx}."
+  * silly empty case nodes aren't always optimized to nop like in ParseTree.
 
 == Bugs in ruby
 * These expressions don't parse the same as in MRI because of bug(s) in MRI:
