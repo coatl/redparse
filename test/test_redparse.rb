@@ -109,6 +109,16 @@ begin
 rescue LoadError; #do nothing; just skip this code if test/unit/ui/console/testrunner not present
 end
 
+class MiniTest::Unit
+  alias puke__without_immediate_output puke
+  def puke klass, meth, e
+    result=puke__without_immediate_output klass, meth, e
+    puts @report.last
+    return result
+  end
+end if defined? MiniTest::Unit
+
+
 =begin nice idea, don't work yet
 class Test::Unit::TestResult
   @@FAILING_CASES=[]
