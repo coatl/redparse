@@ -180,7 +180,7 @@ inputs.each_index{|i|
         puts "RedParse attempted to execute parse data in #{name}"
         next
       end
-    rescue Interrupt: exit 2
+    rescue Interrupt; exit 2
     rescue Exception=>e
       puts "during parse of #{name}:"
       problemfiles.push name if problemfiles
