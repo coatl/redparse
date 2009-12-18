@@ -2996,6 +2996,7 @@ end
           lasti=args.size-1
         end
         methodname= name
+        methodname= methodname.chop if /^[~!]@$/===methodname
         methodsym=methodname.to_sym
         is_kw= RubyLexer::FUNCLIKE_KEYWORDS&~/^(BEGIN|END|raise)$/===methodname
 
@@ -3831,11 +3832,13 @@ end
               val=old_val.raw.translate_escapes(old_val.raw.elems.first).to_sym
             end
           else #val=val[1..-1].to_sym
-            if StringToken===old_val.raw
-              val=old_val.raw.translate_escapes(old_val.raw.elems.first).to_sym
-            else
-              val=old_val.raw.to_sym
+            val=old_val.raw
+            if StringToken===val
+              val=val.translate_escapes(val.elems.first)
+            elsif /^[!~]@$/===val
+              val=val.chop
             end
+            val=val.to_sym
           end
         when NumberToken 
           case val
@@ -4568,7 +4571,9 @@ end
       end
 
       def parsetree(o)
-        name=name().to_sym
+        name=name()
+        name=name.chop if /^[!~]@$/===name
+        name=name.to_sym
 
         result=[name, target=[:scope, [:block, ]] ]
         if receiver
@@ -4694,7 +4699,9 @@ end
       end
 
       def str2parsetree(str,o)
-       if String===str then [:lit, str.to_sym] 
+       if String===str 
+         str=str.chop if /^[!~]@$/===str
+         [:lit, str.to_sym] 
        else 
          result=str.parsetree(o)
          result[0]=:dsym
