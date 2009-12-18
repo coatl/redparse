@@ -3832,6 +3832,8 @@ EOS
   }.join
   eval failure_code
 
+  Test::Unit::AssertionFailedError=MiniTest::Assertion unless defined? Test::Unit::AssertionFailedError
+
   def known_ruby_bug
     from=caller.first
     from=from[/ in `.*'\Z/] || from[/\A[^:]*:[^:]*/]
