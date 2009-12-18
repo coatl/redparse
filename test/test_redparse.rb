@@ -3741,11 +3741,11 @@ EOS
     'begin; r; t end',
     'a=b,c=d',
   ]
-  if ENV['SLOW'] or ENV['MANGLE']
+  if ENV['MANGLE']
   else
     WRAPPERS.slice!(1..-1)
     INJECTABLES.clear
-    puts "warning: most data fuzzing is disabled; set SLOW or MANGLE to enable"
+    puts "warning: most data fuzzing is disabled; set MANGLE to enable"
   end
 
   RUBYIDENT=/((?:$|@@?)?#{RubyLexer::LETTER}#{RubyLexer::LETTER_DIGIT}*[?!]?)/o
