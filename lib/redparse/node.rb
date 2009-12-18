@@ -40,9 +40,11 @@ class RedParse
     }
 
     module FlattenedIvars
+      EXCLUDED_IVARS=%w[@data @offset @startline @endline]
+      EXCLUDED_IVARS.push(*EXCLUDED_IVARS.map{|iv| iv.to_sym })
       def flattened_ivars
         ivars=instance_variables
-        ivars-=%w[@data @offset @startline @endline]
+        ivars-=EXCLUDED_IVARS
         ivars.sort!
         result=ivars+ivars.map{|iv| 
           instance_variable_get(iv)
@@ -455,7 +457,7 @@ class RedParse
       end
 
       def inspect label=nil,indent=0
-        ivarnames=instance_variables-%w[@data @offset @startline @endline]
+        ivarnames=instance_variables-FlattenedIvars::EXCLUDED_IVARS
         ivarnodes=[]
         ivars=ivarnames.map{|ivarname|
           ivar=instance_variable_get(ivarname)
@@ -507,7 +509,7 @@ class RedParse
       end
 
       def evalable_inspect
-        ivarnames=instance_variables-["@data"]
+        ivarnames=instance_variables-["@data", :@data]
         ivars=ivarnames.map{|ivarname| 
           val=instance_variable_get(ivarname)
           if val.respond_to?(:evalable_inspect)
@@ -531,7 +533,7 @@ class RedParse
       end
 
       def pretty_print(q)
-        ivarnames=instance_variables-["@data"]
+        ivarnames=instance_variables-["@data", :@data]
         ivars={}
         ivarnames.each{|ivarname| 
           ivars[ivarname.to_sym]=instance_variable_get(ivarname)
@@ -965,7 +967,7 @@ end
 
         result=clone
         instance_variables.each{|iv| 
-          unless iv=="@data"
+          unless iv=="@data" or iv==:@data
             val=instance_variable_get(iv)
             result.instance_variable_set(iv,handler[val])
           end
