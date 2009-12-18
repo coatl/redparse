@@ -3730,6 +3730,8 @@ end
           if vals.size==1
             if :dregx==type or :dregx_once==type
               lang=@modifiers.tr_s("^nesuNESU","")
+              lang=lang[-1,1] unless lang.empty?
+              lang.downcase!
               regex_options=nil
               vals=[Regexp.new( vals.first,numopts,lang )]
             end
