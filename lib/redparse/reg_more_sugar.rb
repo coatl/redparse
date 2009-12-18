@@ -20,7 +20,7 @@
   unless Array===(Class*5).subregs
     module ::Reg
       class Repeat
-        undef subregs if instance_methods.include? "subregs"
+        undef subregs if allocate.respond_to? :subregs
         def subregs
           [@reg]
         end
@@ -46,7 +46,7 @@
     end    
   end
 
-  unless ::Reg::Reg.instance_methods.include? "lb"
+  unless Object.allocate.extend(::Reg::Reg).respond_to? :lb
     module ::Reg
       module Reg
         def lb
@@ -73,7 +73,7 @@
     end 
   end
  
-  unless ::Reg::Reg.instance_methods.include? "la"
+  unless Object.allocate.extend(::Reg::Reg).respond_to? :la
     module ::Reg
       module Reg
         def la
@@ -100,7 +100,7 @@
     end 
   end
 
-  unless ::Reg::Reg.instance_methods.include? "watch"
+  unless Object.allocate.extend(::Reg::Reg).respond_to? :watch
     module ::Reg
       module Reg
         def watch

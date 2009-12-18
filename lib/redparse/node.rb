@@ -229,7 +229,7 @@ class RedParse
 
       def infix
         @infix if defined? @infix
-      end unless instance_methods.include? "infix"
+      end unless allocate.respond_to? :infix
     end
 
     class OperatorToken
@@ -245,14 +245,14 @@ class RedParse
 
     class NumberToken
       alias to_lisp to_s
-      def negative; /\A-/ === ident end unless instance_methods.include? "negative"
+      def negative; /\A-/ === ident end unless allocate.respond_to? :negative
 
       identity_param :negative, true,false
     end
 
     class MethNameToken
       alias to_lisp to_s
-      def has_equals; /#{LETTER_DIGIT}=$/o===ident end unless instance_methods.include? "has_equals"
+      def has_equals; /#{LETTER_DIGIT}=$/o===ident end unless allocate.respond_to? :has_equals
 
       identity_param :has_equals, true,false
     end
