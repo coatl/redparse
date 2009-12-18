@@ -3733,7 +3733,7 @@ end
               lang=lang[-1,1] unless lang.empty?
               lang.downcase!
               regex_options=nil
-              vals=[Regexp.new( vals.first,numopts,lang )]
+              vals=[Regexp_new( vals.first,numopts,lang )]
             end
             type=DOWNSHIFT_STRING_TYPE[type]
           end
@@ -3743,6 +3743,25 @@ end
         result=[:match, result] if defined? @implicit_match and @implicit_match
         return result
       end
+
+      if //.respond_to? :encoding
+        LETTER2ENCODING={
+          ?n => Encoding::ASCII,
+          ?u => Encoding::UTF_8,
+          ?e => Encoding::EUC_JP,
+          ?s => Encoding::SJIS,
+          "" => Encoding::ASCII
+        }
+        def Regexp_new(src,opts,lang)
+          src.encode!(LETTER2ENCODING[lang])
+          Regexp.new(src,opts)
+        end
+      else
+        def Regexp_new(src,opts,lang)
+          Regexp.new(src,opts,lang)
+        end
+      end
+
     end
 
     class HereDocNode<StringNode
