@@ -1894,8 +1894,8 @@ end
 
   class ::Proc #hack hack hack
     #only define hacky _dump if one isn't defined already
-    unless instance_methods.include?("_dump") or 
-           instance_methods.include?("marshal_dump") or 
+    unless Proc.new{}.respond_to? :_dump or 
+           Proc.new{}.respond_to? :marshal_dump or 
            (Marshal.dump(proc{}) rescue false)
       def _dump depth
         undump_key.to_s
