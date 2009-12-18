@@ -3604,7 +3604,7 @@ end
                when '/'
                  numopts=0
                  charset=0
-                 @modifiers.each_byte{|ch| 
+                 RubyLexer::CharHandler.each_char(@modifiers){|ch| 
                    if ch==?o
                      type=:dregx_once
                    elsif numopt=CHAROPT2NUM[ch].nonzero?
@@ -3675,7 +3675,7 @@ end
                when '/'
                  type=:dregx
                  numopts=charset=0
-                 @modifiers.each_byte{|ch| 
+                 RubyLexer::CharHandler.each_char(@modifiers){|ch| 
                    if ch==?o
                      type=:dregx_once
                    elsif numopt=CHAROPT2NUM[ch].nonzero?
