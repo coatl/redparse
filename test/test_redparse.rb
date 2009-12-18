@@ -216,7 +216,7 @@ class ParseTree
     Process.kill "KILL",@server if @server
 
     ruby=ENV["RUBY1_8"]||"ruby"  
-    @out=@in=IO::popen("#{ruby} #{File.expand_path File.dirname(__FILE__)}/parse_tree_server.rb", "r+")
+    @out=@in=IO::popen("#{ruby} #{ParseTreeServer.path_to_server_command}", "r+")
     @server=@in.pid
 
     at_exit { 

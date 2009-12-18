@@ -31,6 +31,11 @@ end
 
 class ParseTreeServer
   include ParseTreeComm
+
+  def self.path_to_server_command
+    File.expand_path __FILE__
+  end
+
   def ensure_parse_tree_and_1_8
     if ::RUBY_VERSION[/^\d+\.\d+/].to_f>1.8
       ruby18=ENV['RUBY1_8']||fail("ruby > 1.8 used and no RUBY1_8 with parse_tree to chain to")
