@@ -158,7 +158,7 @@ class Test::Unit::TestResult
 end
 =end
 
-require 'test/parse_tree_server'
+require 'redparse/parse_tree_server'
 class ParseTree
   class<<self
   include ParseTreeComm
