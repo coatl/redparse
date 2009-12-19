@@ -4032,7 +4032,7 @@ EOS
           nodes=RedParse.new(xmpl,"-",1,[],:cache_mode=>:write_only).parse
           h=nodes.hash
           tree2,warnings2=nodes.to_parsetree_and_warnings(*pt_opts)
-          assert_equal h,nodes.hash
+          assert_equal h,nodes.hash #Node tree shouldn't be modified by to_parsetree
           if tree==tree2
             assert true
           else
