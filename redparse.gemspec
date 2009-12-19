@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.date = Time.now.strftime("%Y-%m-%d")
   s.authors = ["Caleb Clausen"]
   s.email = %q{caleb (at) inforadical (dot) net}
-  s.summary = huh
+  s.summary = "RedParse is a ruby parser written in pure ruby."
   s.description = RedParse::Description
   s.homepage = %{http://github.com/coatl/redparse}
   s.rubyforge_project = %q{redparse}
@@ -30,14 +30,14 @@ Gem::Specification.new do |s|
     s.specification_version = 2
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency("rubylexer", huh)
-      s.add_runtime_dependency("reg", huh)
+      s.add_runtime_dependency("rubylexer", '0.7.7')
+      s.add_runtime_dependency("reg", '0.4.7')
     else
-      s.add_dependency("rubylexer", huh)
-      s.add_dependency("reg", huh)
+      s.add_dependency("rubylexer", '0.7.7')
+      s.add_dependency("reg", '0.4.7')
     end
   else
-    s.add_dependency("rubylexer", huh)
-    s.add_dependency("reg", huh)
+    s.add_dependency("rubylexer", '0.7.7')
+    s.add_dependency("reg", '0.4.7')
   end
 end
