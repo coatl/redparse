@@ -12,7 +12,7 @@
   * more faithful ParseTree emulation in a couple of cases
   * minor fixes in node processing for some rare conditions 
 
-=== 0.8.2 / 2009-04-21
+=== 0.8.2 / 21apr2009
 * 14 Minor Enhancements:
   * should be no tokens left in Node tree now
   * lots of code trying to make things faster (no luck so far)
@@ -43,14 +43,14 @@
   * (so escape translation has to be done later, when Nodes are used)
   * #to_parsetree of an empty source text should be happier now
 
-=== 0.8.1 / 2009-04-21
+=== 0.8.1 / 21apr2009
 * 4 Minor Enhancements:
   * fixed embarassing permissions problems
   * version.rb and History.txt were missing from the release
   * I left off the dependancy on reg, oops!
   * hacked up tests to ignore sudden problem with extra nils
 
-=== 0.8.0 / 2008-10-10
+=== 0.8.0 / 10oct2008
 * 1 Major Enhancement:
   * Birthday!
 
