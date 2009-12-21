@@ -1,6 +1,6 @@
 =begin
     redparse - a ruby parser written in ruby
-    Copyright (C) 2008  Caleb Clausen
+    Copyright (C) 2008,2009  Caleb Clausen
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -357,9 +357,9 @@ end
   def expanded_RULES
     result=RULES()
     return result if (-[:foo, -[:bar]]).subregs.grep(Reg::Subseq).empty?
-    result.map!{|rule| 
-      unless rule.left.subregs.grep(Reg::Subseq) 
-      then rule 
+    result.map!{|rule|
+      unless rule.left.subregs.grep(Reg::Subseq)
+      then rule
       else
         right=rule.right
         rule=rule.left.subregs.dup
