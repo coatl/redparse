@@ -10,9 +10,11 @@ tool is LALR(1)-equivalent and the 'parse language' is pretty nice,
 even in it's current crude form.)
 
 My intent is to have a completely correct parser for ruby, in 100% 
-ruby. It's not all there yet, but I'm getting pretty close. Currently, 
-RedParse can parse slightly in excess of 99% of ruby files found in 
-the wild. For known problems, see below. 
+ruby. Currently, RedParse can parse all known ruby 1.8 constructions
+correctly. There might be some problems with unparsing or otherwise 
+working with texts in a character set other than ascii. Some of the
+new ruby 1.9 constructions are supported in 1.9 mode. For more
+details on known problems, see below. 
 
 == REQUIREMENTS:
 * RedParse requires RubyLexer, my hand-coded lexer for ruby. It also 
