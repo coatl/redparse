@@ -258,6 +258,8 @@ existing format in the future, but no incompatibility-creating changes.
   different value in the unparsed code than it had originally.
 * some floating-point literals don't survive parse/unparse roundtrip intact, 
   due to bugs in MRI 1.8's Float#to_s/String#to_f.
+* unparsing of trees whose input was in a character set other than ascii may
+  not work.
 
 == Known problems with ParseTree compatibility 
 * Major:
