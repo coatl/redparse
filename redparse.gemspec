@@ -34,10 +34,10 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency("reg", '0.4.7')
     else
       s.add_dependency("rubylexer", '0.7.7')
-      s.add_dependency("reg", '0.4.7')
+      s.add_dependency("reg", '0.4.8')
     end
   else
     s.add_dependency("rubylexer", '0.7.7')
-    s.add_dependency("reg", '0.4.7')
+    s.add_dependency("reg", '0.4.8')
   end
 end
