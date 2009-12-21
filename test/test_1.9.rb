@@ -7,6 +7,7 @@ class TestsFor1_9 < Test::Unit::TestCase
     '{a:  b}'...'{:a=>b}',
     '{a:  b, c:  d}'...'{:a=>b, :c=>d}',
     "a ? b\n :  c"..."a ? b : \n c",
+
     'not(true)'...'not true',
     'not(+1)'...'not +1',
     'not (true).to_s'...'not (true).to_s', #equivalent, but parser gets there different ways
