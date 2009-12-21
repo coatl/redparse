@@ -1,4 +1,64 @@
-=== 0.8.3 / 2009-07-01
+=== 0.8.4 / 21dec2009
+* 5 Major Enhancements:
+  * OpNode and related modules are now classes
+  * parse results are now cached -> substantial speedup on reparse
+  * moderate performance improvements for regular parser too
+  * inspect now dumps node trees in more readable tree-like output
+  * tests now ignore (with a warning) differences in just a :begin node
+
+* 18 Minor Enhancements:
+  * single code path utility now converts bare => in calls and between [ and ]
+  * reworked the way ternary rescue is parsed
+  * new build script & gemspec
+  * better way to deal with default of :rubyversion parser option
+  * various fixes to xform_tree! rewriter utility (still doesn't work, tho)
+  * improvements to constructors to make creating nodes by hand more pleasant
+  * parser now creates nodes via Node.create
+  * use AssignmentRhsListStart/EndToken to delimit right hand sides
+  * lhs* and rhs* should be considered unary ops again
+  * when parens in assign lhs, treat unary* and single arg like no parens
+  * VarNode#ident is now kept in a slot, not an ivar
+  * force body of a block to always be a SequenceNode
+  * added RedParse::Nodes; include it to get all the redparse node classes
+  * have each node class remember a list of its slot names
+  * added aliases and accessors in various nodes to make the api nicer
+  * moved some utilities into the support libraries where they belong
+  * slight improvements to parser compiler
+  * added a version of depthwalk which just visits the Nodes of the tree
+
+* 18 Bugfixes:
+  * parser now runs under MRI 1.9
+  * (more?) accurate version of Float#to_s, for 1.8
+  * minor tweaks to #unparse
+  * value of () is nil, not false
+  * get redparse/version.rb relative to current directory from gemspec
+  * when comparing trees, more insignificant differences are ignored
+  * Node#deep_copy makes more faithful copies now
+  * node marshalling should be more reliable
+  * tweaks to parse_tree support to improve conformance
+  * support automagicness of integer&regexp in flipflop (in parse_tree output)
+  * parse_tree's placement of :begin nodes is somewhat better emulated
+  * always put parse inputs into binary mode
+  * changed some operators (lhs, rescue3 unary* rhs*) to proper precedence
+  * numeric literals inserted directly in parsetrees should be autoquoted
+  * ensure @lhs_parens set in AssignNode when it should be
+  * make sure ListInNode is extended into arrays added to Nodes via writers
+  * permit empty symbol LiteralNode to be made
+  * fixed bad permissions in gem file
+
+* 10 Changes To Tests:
+  * test Node trees surviving Marshal/Ron round-trip and deep_copy unscathed
+  * tests for many of the new 1.9 syntax constructions
+  * parse_tree server process now started in a more portable way
+  * lots of new test cases
+  * rp-locatetest now has docs on how to use it
+  * keep track of problematic files if even the slightest problem occurs
+  * enable/disable WRAPPERS and INJECTABLES with ENV var rather than comments
+  * test Marshaling of node data
+  * make sure xmpl doesn't change during check_parsing
+  * better organized some of the known failing testcases
+
+=== 0.8.3 / 1jul2009
 * 7 Minor Enhancements:
   * most nodes now have startline, endline, and offset
   * Node.[] is more fun to use now (most attributes can be left off)
