@@ -22,7 +22,9 @@ gem:
 	gem build $(lname).gemspec
 
 tar:
-	tar czf $(gemname)-$(version).tar.gz $(filelist)
+	tar cf - $(filelist) | ( mkdir $(gemname)-$(version); cd $(gemname)-$(version); tar xf - )
+	tar czf $(gemname)-$(version).tar.gz $(gemname)-$(version)
+	rm -rf $(gemname)-$(version)
 
 email: README.txt History.txt
 	ruby -e ' \
