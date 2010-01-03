@@ -228,6 +228,8 @@ class ParseTree
     ruby=ENV["RUBY1_8"]||"ruby"  
     @out=@in=IO::popen("#{ruby} #{ParseTreeServer.path_to_server_command}", "r+")
     @server=@in.pid
+    @server_running_187=nil
+    server_running_187?
 
     at_exit { 
       begin 
@@ -3975,21 +3977,25 @@ EOS
     @problem_exprs=$stdout
   end
 
-  def ParseTree.server_running_187
-    @server_known_pid||=nil
-    @server_running_187||=nil
-    return @server_running_187 unless @server_running_187.nil? or @server_known_pid!=@server
+  def ParseTree.server_running_187?
+    #@server_running_187||=nil
+    return @server_running_187 unless @server_running_187.nil?
     put :version
     version=get
-    @server_known_pid=@server
-    @server_running_187= version=="1.8.7"
+    if Exception===version
+      puts "cannot find a ruby 1.8 interpreter with parse_tree available to it. set RUBY1_8 to the path of such an interpreter"
+      Process.waitpid @server
+      @server=@in=@out=nil
+      raise version
+    end
+    return @server_running_187= version=="1.8.7"
   end
 
   def check_parsing xmpl
     ParseTree.fork_server?
     xmpl=xmpl.dup.freeze
     pt_opts=[:quirks]
-    pt_opts<<:ruby187 if ParseTree.server_running_187
+    pt_opts<<:ruby187 if ParseTree.server_running_187?
     /unparse/===xmpl and warn 'unparse in parser test data!'
     problem_exprs=problem_exprs()
     nodes=warnings=warnings2=nil
