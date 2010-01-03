@@ -38,7 +38,7 @@ class ParseTreeServer
 
   def ensure_parse_tree_and_1_8
     if ::RUBY_VERSION[/^\d+\.\d+/].to_f>1.8
-      ruby18=ENV['RUBY1_8']||fail("ruby > 1.8 used and no RUBY1_8 with parse_tree to chain to")
+      ruby18=ENV['RUBY1_8']||fail("you must use ruby <= 1.8 (with parse_tree) or set RUBY1_8 env to a 1.8 interpreter")
       exec ruby18, $0
     else
       require 'rubygems'
