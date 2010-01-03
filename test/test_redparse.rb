@@ -4049,6 +4049,7 @@ EOS
               at_exit{warn "mismatched warnings: #@@mismatched_warnings (set WARN_PICKINESS for details)"}
             end
           end
+        rescue Interrupt; raise
         rescue Exception=>e
           if problem_exprs
             problem_exprs.write xmpl+"\n"
