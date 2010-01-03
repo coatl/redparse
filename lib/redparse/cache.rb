@@ -124,7 +124,7 @@ class RedParse
               Marshal.load fd
             rescue Exception=>e              
               warn "#{e.class}: #{e}"
-              warn "cache write failed for:\n#{input}"
+              warn "cache read failed for:\n#{input}"
               return nil
             end
           end
