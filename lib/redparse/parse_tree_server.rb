@@ -44,6 +44,11 @@ class ParseTreeServer
       require 'rubygems'
       require 'parse_tree'
     end
+  rescue Exception=>e
+    put e
+    put nil
+    put nil
+    raise
   end
   def main
     ensure_parse_tree_and_1_8
