@@ -38,6 +38,6 @@ PARSETREE_AND_DEPENDANCIES=
 
 pt_needs_dirs=$:.grep PARSETREE_AND_DEPENDANCIES
 
-open find_home+"/.redparse/parse_tree_server.rc","wb" do |rcfile|
+open find_home+"/.redparse/parse_tree_server.rc","w" do |rcfile|
   rcfile.write pt_needs_dirs.join("\n")+"\n"  
 end
