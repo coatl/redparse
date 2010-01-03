@@ -50,12 +50,13 @@ class ParseTreeServer
     put nil
     raise
   end
+
   def main
-    ensure_parse_tree_and_1_8
     si=STDIN
     so=STDOUT
+    @out=so; @in=si
+    ensure_parse_tree_and_1_8
       begin
-      @out=so; @in=si
       warnstash=Tempfile.new "warnstash"
       STDERR.reopen warnstash
       instance=ParseTree.new
