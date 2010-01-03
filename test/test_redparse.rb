@@ -3984,6 +3984,7 @@ EOS
     version=get
     if Exception===version
       puts "cannot find a ruby 1.8 interpreter with parse_tree available to it. set RUBY1_8 to the path of such an interpreter"
+      puts "you might want to try running #{File.dirname(__FILE__)}/generate_parse_tree_server_rc.rb from your ruby 1.8 interpreter"
       Process.waitpid @server
       @server=@in=@out=nil
       raise version
