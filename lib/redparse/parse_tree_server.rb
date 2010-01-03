@@ -41,7 +41,12 @@ class ParseTreeServer
       ruby18=ENV['RUBY1_8']||fail("you must use ruby <= 1.8 (with parse_tree) or set RUBY1_8 env to a 1.8 interpreter")
       exec ruby18, $0
     else
-      require 'rubygems'
+      begin require 'rubygems'; rescue LoadError; end
+
+      if File.exist? find_home+"/.redparse/parse_tree_server.rc"
+        $:.concat File.readlines(find_home+"/.redparse/parse_tree_server.rc").map{|l| l.chop }
+      end
+
       require 'parse_tree'
     end
   rescue Exception=>e
