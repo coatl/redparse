@@ -87,6 +87,38 @@ class ParseTreeServer
       ensure exit!
       end
   end
+
+    ##
+    # Finds the user's home directory.
+    #--
+    # Some comments from the ruby-talk list regarding finding the home
+    # directory:
+    #
+    #   I have HOME, USERPROFILE and HOMEDRIVE + HOMEPATH. Ruby seems
+    #   to be depending on HOME in those code samples. I propose that
+    #   it should fallback to USERPROFILE and HOMEDRIVE + HOMEPATH (at
+    #   least on Win32).
+    #(originally stolen from rubygems)
+    def find_home
+      ['HOME', 'USERPROFILE'].each do |homekey|
+        return ENV[homekey] if ENV[homekey]
+      end
+
+      if ENV['HOMEDRIVE'] && ENV['HOMEPATH'] then
+        return "#{ENV['HOMEDRIVE']}#{ENV['HOMEPATH']}"
+      end
+
+      begin
+        File.expand_path("~")
+      rescue
+        if File::ALT_SEPARATOR then
+            "C:/"
+        else
+            "/"
+        end
+      end
+    end
+
 end
 
 ParseTreeServer.new.main if $0==__FILE__
