@@ -19,12 +19,10 @@ details on known problems, see below.
 == REQUIREMENTS:
 * RedParse requires RubyLexer, my hand-coded lexer for ruby. It also 
   uses Reg, (a pattern-matcher). RubyLexer depends on Sequence, 
-  (external iterators). Reg depends on Sequence's predecessor, Cursor, 
-  altho Cursor isn't used at all in RedParse. The (long-delayed) next 
-  version of Reg will use Sequence. To summarize:
-  *  RedParse 0.8.2 requires RubyLexer>=0.7.4 and Reg>=0.4.7
-  *  RubyLexer 0.7.4 requires Sequence>=0.2.0
-  *  Reg 0.4.7 requires Cursor (not really needed here)
+  (external iterators). Reg depends on Sequence as well. To summarize:
+  *  RedParse 0.8.4 requires RubyLexer 0.7.7 and Reg>=0.4.8
+  *  RubyLexer 0.7.7 requires Sequence>=0.2.3
+  *  Reg 0.4.8 requires Sequence>=0.2.3
 * All are available as gems. (Or tarballs on rubyforge, if you must.)
 
 == INSTALL:
@@ -40,8 +38,7 @@ Please see COPYING.LGPL for details.
 * Pure ruby, through and through. No part is written in C, YACC, 
   ANTLR, lisp, assembly, intercal, befunge or any other language
   except ruby.
-* Pretty AST trees (at least, I think so). (To program for, not
-  necessarily to look at.)
+* Pretty AST trees (at least, I think so). 
 * AST trees closely mirror the actual structure of source code.
 * unparser is built in
 * ParseTree format output too, if you want that.
@@ -56,7 +53,8 @@ Please see COPYING.LGPL for details.
   actions (which occupy somewhere under 3100 lines in RedParse). 
   Also, what is a rule? I counted most things which required a 
   separate action in MRI's parser, I'm not sure if that's fair.
-  But in the end, I still think RedParse is still much easier to 
+  On the other hand, RedParse rules require no separate actions 
+  anywhere.In the end, I still think RedParse is still much easier to 
   understand than MRI's parse.y.) 
 * "loosey-goosey" parser happily parses many expressions which normal 
   ruby considers errors.
@@ -263,7 +261,7 @@ existing format in the future, but no incompatibility-creating changes.
 * unparsing of trees whose input was in a character set other than ascii may
   not work.
 
-== Known problems with ParseTree compatibility 
+== Known problems with ParseTree creator
 * Major:
   * converting non-ascii encoded parsetrees to ParseTree format doesn't work
 * Minor:

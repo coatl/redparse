@@ -46,16 +46,15 @@
   * permit empty symbol LiteralNode to be made
   * fixed bad permissions in gem file
 
-* 10 Changes To Tests:
+* 9 Changes To Tests:
   * test Node trees surviving Marshal/Ron round-trip and deep_copy unscathed
   * tests for many of the new 1.9 syntax constructions
   * parse_tree server process now started in a more portable way
   * lots of new test cases
   * rp-locatetest now has docs on how to use it
   * keep track of problematic files if even the slightest problem occurs
-  * enable/disable WRAPPERS and INJECTABLES with ENV var rather than comments
-  * test Marshaling of node data
-  * make sure xmpl doesn't change during check_parsing
+  * enable/disable fuzzing with ENV var rather than comments
+  * make sure inputs are unchanged by parse
   * better organized some of the known failing testcases
 
 === 0.8.3 / 1jul2009
