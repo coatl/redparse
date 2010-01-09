@@ -38,9 +38,19 @@ require "redparse/cache"
 #require "redparse/compile"
 
 class RedParse
+
+
+# irb friendly #inspect/#to_s
+
+  alias :dump :inspect # preserve old inspect functionality
+  
+  def to_s
+    "#<RedParse: [#{@input}]>"
+  end
+  
+  alias :inspect :to_s
   
 ####### generic stuff for parsing any(?) language
-
 #  include Nodes
   class StackMonkey
     def initialize(name,first_changed_index,and_expect_node,options={},&monkey_code)
