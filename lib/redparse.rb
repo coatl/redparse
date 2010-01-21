@@ -48,7 +48,7 @@ class RedParse
     mods=class<<self;self end.ancestors-self.class.ancestors
     mods=mods.map{|mod| mod.name }.join('+')
     mods="+"<<mods unless mods.empty?
-    "#<#{self.class.name}#{mods}: [#{@input}]>"
+    "#<#{self.class.name}#{mods}: [#{@input.inspect}]>"
   end
   
   alias :inspect :to_s
