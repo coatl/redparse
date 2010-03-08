@@ -340,6 +340,10 @@ class RedParseTest<Test::Unit::TestCase
   ]
 
   ONELINERS=[
+    'TRUE'...'',
+    'FALSE'...'',
+    'NIL'...'',
+    'n||u n'...'',
     'yield [a_i, *p] '...'',
     '0.113725'...'',
     '0.777777'...'',
@@ -3935,7 +3939,6 @@ EOS
         \\\\\\\\\\\\'
         foo
       "=>[[:str, "        \\\\\\\\\\\\'\n"]],
-
 
     }.each_pair{|code,tree| 
       assert_equal tree,RedParse.new(code,'-',1,[],:cache_mode=>:none).parse.to_parsetree(:quirks)
