@@ -346,12 +346,12 @@ class RedParse
     end   
 
     class StringToken
-      attr :char
+      attr :char unless allocate.respond_to? :char
     end
 
     class HerePlaceholderToken
       attr_accessor :node
-      attr :string
+      attr :string unless allocate.respond_to? :string
     end
 
     module ListInNode
