@@ -1093,7 +1093,10 @@ end
           result=result.dup
           result.ident=as
         else
-          result=make_kw(as,result.offset)
+          result2=make_kw(as,result.offset)
+          result2.startline=result.startline
+          result2.endline=result.endline
+          result=result2
         end
         result.not_real! if result.respond_to? :not_real!
       else
@@ -1115,8 +1118,15 @@ end
           case name=result.ident
 
           when /^(#{BINOP_KEYWORDS.join '|'})$/o #should be like this in rubylexer
-            result=OperatorToken.new(name,result.offset) unless result.has_end?
-          when "|"; result=GoalPostToken.new(result.offset) #is this needed still?
+            unless result.has_end?
+              orig=result 
+              result=OperatorToken.new(name,result.offset)
+              result.endline=orig.endline
+            end
+          when "|";
+            orig=result 
+            result=GoalPostToken.new(result.offset) #is this needed still? (yes)
+            result.endline=orig.endline
           when "__FILE__"; #I wish rubylexer would handle this
             class<<result; attr_accessor :value; end
             result.value=@file.dup
