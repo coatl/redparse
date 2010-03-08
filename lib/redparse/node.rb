@@ -314,7 +314,7 @@ class RedParse
         [varname2assigntype, ident.to_sym]
       end
 
-      def lvalue
+      def old_unused_lvalue #i think this is the correct way, but its overridded below
         return @lvalue if defined? @lvalue
         @lvalue=true
       end
