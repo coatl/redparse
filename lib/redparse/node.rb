@@ -3821,8 +3821,8 @@ end
     class LiteralNode<ValueNode
       param_names :val
       attr_accessor :offset
-      def initialize(old_val)
-        @offset=old_val.offset
+      def self.create(old_val)
+        offset=old_val.offset
         val=old_val.ident
         case old_val
         when SymbolToken
@@ -3852,7 +3852,9 @@ end
           else val=val.to_i
           end
         end
-        super(val)
+        result=LiteralNode.new(val)
+        result.offset=offset
+        result
       end
 
       def self.inline_symbols data
