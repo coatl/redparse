@@ -1840,7 +1840,13 @@ end
         result=' '*indent
         result+="#{label}: " if label 
         result+='Constant '
-        result+=map{|name| name.inspect}.join(', ')+"\n"
+        unless String===first or nil==first
+          head=first
+          rest=self[1..-1]
+        end
+        result+=(rest||self).map{|name| name.inspect}.join(', ')+"\n"
+        result+=head.inspect("head",indent+2,verbose) if head
+        return result
       end
     end
     LookupNode=ConstantNode
