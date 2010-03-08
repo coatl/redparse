@@ -753,6 +753,26 @@ class RedParse
 =end
       end
 
+      def rgrep pattern
+        result=grep(pattern)
+        each{|subnode| result.concat subnode.rgrep(pattern) if subnode.respond_to? :rgrep}
+        return result
+      end
+
+      def rfind ifnone=nil, &block
+        result=find(proc{
+          find{|subnode| subnode.rfind(&block) if subnode.respond_to? :rfind}
+        },&block)
+        return result if result
+        return ifnone[] if ifnone
+      end
+
+      def rfind_all &block
+        result=find_all(&block)
+        each{|subnode| result.concat subnode.find_all(&block) if subnode.respond_to? :rfind_all}
+        return result
+      end
+
       def replace_ivars_and_self o,session,&replace_self_action
           o.instance_variables.each{|ovname|
             ov=o.instance_variable_get(ovname)
