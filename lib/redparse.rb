@@ -1084,7 +1084,7 @@ end
 
       #set token's line
       result.startline= @endline||=1
-      result.endline||=@endline if result.respond_to? :endline=
+      #result.endline||=@endline if result.respond_to? :endline=
 
       if result.respond_to?(:as) and as=result.as
         #result=make_kw(as,result.offset)

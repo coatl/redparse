@@ -184,13 +184,13 @@ class RedParse
       def rescue_parsetree(o); parsetree(o) end
       def begin_parsetree(o); parsetree(o) end
 
-      attr :line
-      alias endline line
+      #attr :line
+      #alias endline line
 
-      attr_writer :startline
-      def startline
-        @startline||=endline
-      end
+      #attr_writer :startline
+      #def startline
+      #  @startline||=endline
+      #end
     end
 
     class KeywordToken
