@@ -325,7 +325,6 @@ end
     #should be handled in the same way, but currently are not
 #    puts msgs.join("\n")
 
-=begin
   rescue Exception=>e
       input=@lexer
       if Array===input
@@ -335,12 +334,10 @@ end
       else
         input=input.original_file
         inputname=@lexer.filename
-        input.to_s.size>1000 and input=inputname
-        puts "error while parsing: <<<  #{input}  >>>"
+        puts "error while parsing #@filename:#@endline: <<<  #{input if input.to_s.size<=1000}  >>>"
       end
     raise
   else
-=end
     unless msgs.empty?
       pp @stack[-[15,@stack.size].min..-1] if ENV['PRINT_STACK']
       raise RedParse::ParseError.new(msgs.join("\n"),@stack)
