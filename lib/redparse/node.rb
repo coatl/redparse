@@ -489,7 +489,7 @@ class RedParse
             case val
               when Node; result<< val.inspect(name,indent,verbose)
               when ListInNode 
-                result.push ' '*indent,"#{name}:\n",*val.map{|v| 
+                result.push ' '*indent,"+#{name}:\n",*val.map{|v| 
                   v.inspect(nil,indent+2,verbose) rescue ' '*(indent+2)+"-#{v.inspect}\n"
                 }
               when nil;
