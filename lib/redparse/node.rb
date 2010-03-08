@@ -2757,7 +2757,10 @@ end
 
       def while; condition end
       def do; consequent end
+      alias body do
       def op; "while" end
+      def reversed; false end
+      attr :test_first
 
       def parsetree(o)
         cond=condition.rescue_parsetree(o)
@@ -2795,7 +2798,9 @@ end
 
       def while; negate condition end
       def do; consequent end
+      alias body do
       def op; "until" end
+      def reversed; true end
 
       def parsetree(o)
         cond=condition.rescue_parsetree(o)
@@ -4193,6 +4198,14 @@ end
 
       def until
         @reverse ? condition : negate(condition, @loopword_offset)
+      end
+
+      def reversed
+        @reverse
+      end
+
+      def test_first
+        false
       end
 
       def to_lisp
