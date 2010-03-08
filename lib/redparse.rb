@@ -1138,8 +1138,13 @@ end
             #warning, this may discard information stored in instance vars of result
           end
 
+      when StringToken,HerePlaceholderToken
+        @endline=result.endline
+
       when EoiToken; break
-      when HereBodyToken; break
+      when HereBodyToken;
+        @endline=result.endline
+        break
       when AssignmentRhsListStartToken; break
       when AssignmentRhsListEndToken; break
       when IgnoreToken; redo
