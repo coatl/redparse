@@ -1128,11 +1128,11 @@ end
             result=GoalPostToken.new(result.offset) #is this needed still? (yes)
             result.endline=orig.endline
           when "__FILE__"; #I wish rubylexer would handle this
-            class<<result; attr_accessor :value; end
-            result.value=@file.dup
+            #class<<result; attr_accessor :value; end
+            assert result.value==@file.dup
           when "__LINE__"; #I wish rubylexer would handle this
-            class<<result; attr_accessor :value; end
-            result.value=@endline
+            #class<<result; attr_accessor :value; end
+            assert result.value==@endline
           else 
             result=make_kw name,result.offset if defined? SPECIALIZED_KEYWORDS
             #warning, this may discard information stored in instance vars of result
