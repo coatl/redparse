@@ -456,7 +456,7 @@ class RedParse
         return result
       end
 
-      def inspect label=nil,indent=0
+      def inspect label=nil,indent=0,verbose=false
         ivarnames=instance_variables-FlattenedIvars::EXCLUDED_IVARS
         ivarnodes=[]
         ivars=ivarnames.map{|ivarname|
@@ -465,17 +465,21 @@ class RedParse
             ivarnodes.push [ivarname,ivar]
             nil
           else
-            ivarname[1..-1]+"="+ivar.inspect if ivar
+            ivarname[1..-1]+"="+ivar.inspect if ivar and verbose
           end
         }.compact.join(' ')
 
 
-        pos=@startline.to_s
-        pos<<"..#@endline" if @endline!=@startline
-        pos<<"@#@offset"
+        if verbose
+          pos=@startline.to_s
+          pos<<"..#@endline" if @endline!=@startline
+          pos<<"@#@offset"
+        end
         classname=self.class.name
         classname.sub!(/^(?:RedParse::)?(.*?)(?:Node)?$/){$1}
-        result= [' '*indent,"+",(label+': ' if label),classname," pos=",pos," ",ivars,"\n"]
+        result= [' '*indent,"+",(label+': ' if label),classname,]
+        result+=[" pos=",pos,] if pos
+        result+=[" ",ivars,"\n"]
         indent+=2
 
         namelist=self.class.namelist
@@ -483,10 +487,10 @@ class RedParse
           namelist.each{|name|
             val=send name rescue "{{ERROR INSPECTING ATTR #{name}}}"
             case val
-              when Node; result<< val.inspect(name,indent)
+              when Node; result<< val.inspect(name,indent,verbose)
               when ListInNode 
                 result.push ' '*indent,"#{name}:\n",*val.map{|v| 
-                  v.inspect(nil,indent+2) rescue ' '*(indent+2)+"-#{v.inspect}\n"
+                  v.inspect(nil,indent+2,verbose) rescue ' '*(indent+2)+"-#{v.inspect}\n"
                 }
               when nil;
               else ivars<< " #{name}=#{val.inspect}"
@@ -495,7 +499,7 @@ class RedParse
         else
           each{|val|
             case val
-            when Node; result<< val.inspect(nil,indent) 
+            when Node; result<< val.inspect(nil,indent,verbose) 
             else result<< ' '*indent+"-#{val.inspect}\n"
             end
           }
@@ -1832,7 +1836,7 @@ end
       attr_writer :lvalue
       identity_param :lvalue, nil, true
 
-      def inspect label=nil,indent=0
+      def inspect label=nil,indent=0,verbose=false
         result=' '*indent
         result+="#{label}: " if label 
         result+='Constant '
