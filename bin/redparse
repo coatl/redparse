@@ -198,7 +198,7 @@ inputs.each_index{|i|
       require 'pp'
       pp tree
     when :p
-      p tree
+      puts tree.inspect(nil,0,verbose)
     when :lisp
       puts tree.to_lisp
     when :parsetree
