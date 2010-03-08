@@ -1152,6 +1152,10 @@ end
       end
     end while false
     p result if ENV['PRINT_TOKENS'] unless recursing
+
+    #ugly weak assertion
+    assert result.endline==@endline unless result.ident==';' && result.endline-1==@endline or EoiToken===result
+
     return @last_token=result
   end
 
