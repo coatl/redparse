@@ -2011,8 +2011,8 @@ end
       def unparse_and_rescues(o)
           result=" "
           result+= body.unparse(o) if body
-          result+=unparse_nl(rescues.first,o)
-          rescues.each{|resc| result+=resc.unparse(o) }
+          result+=unparse_nl(rescues.first,o) if rescues
+          rescues.each{|resc| result+=resc.unparse(o) } if rescues
           result+=unparse_nl(else_,o)+"else "+else_.unparse(o) if else_
           result+=";else" if @empty_else
           result+=unparse_nl(ensure_,o)+"ensure "+ensure_.unparse(o) if ensure_
