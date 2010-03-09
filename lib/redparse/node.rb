@@ -1675,6 +1675,12 @@ end
 
     class UnOpNode<ValueNode
       param_names(:op,:val)
+      def self.create(op,val)
+        return UnaryStarNode.new(op,val) if /\*$/===op.ident
+        return UnaryAmpNode.new(op,val) if /&$/===op.ident
+        return new(op,val)
+      end
+
       def initialize(op,val)
         @offset||=op.offset rescue val.offset
         op=op.ident if op.respond_to? :ident
@@ -1727,6 +1733,10 @@ end
         result+=" " if /#{LETTER}/o===op or /^[+-]/===op && LiteralNode===val
         result+=val.unparse(o)
       end
+    end
+
+    class UnaryAmpNode<UnOpNode
+
     end
 
     class UnaryStarNode<UnOpNode
