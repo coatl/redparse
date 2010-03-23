@@ -4838,6 +4838,7 @@ end
 
       alias else_ else
       alias ensure_ ensure
+      alias receiver name
 
       def image; "(module #{name})" end
 
@@ -4887,6 +4888,7 @@ end
 
       alias else_ else
       alias ensure_ ensure
+      alias receiver name
 
       def image; "(class #{name})" end
 
