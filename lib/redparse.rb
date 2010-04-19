@@ -35,7 +35,7 @@ require "redparse/node"
 require "redparse/reg_more_sugar"
 require "redparse/generate"
 require "redparse/cache"
-#require "redparse/compile"
+require "redparse/compile"
 
 class RedParse
 
