@@ -4454,7 +4454,7 @@ end
           super(*data)
         else fail
         end
-        @no_braces=!open
+        @no_braces=true unless open
       end
 
       attr :no_arrows
@@ -4465,7 +4465,7 @@ end
 
       def unparse o=default_unparse_options
         result=''
-        result << "{" unless @no_braces
+        result << "{" unless defined? @no_braces
         arrow= defined?(@no_arrows) ? " , " : " => "
         (0...size).step(2){|i| 
           result<< unparse_nl(self[i],o,'')+
@@ -4473,7 +4473,7 @@ end
             self[i+1].unparse(o)+', '
         }
         result.chomp! ', '
-        result << "}" unless @no_braces
+        result << "}" unless defined? @no_braces
         return result
       end
 
