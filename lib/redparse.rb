@@ -1179,6 +1179,7 @@ end
 
 
 if __FILE__==$0
+  #this code has moved to bin/redparse; really, all this should just go away
   require 'problemfiles'
   class NeverExecThis<RuntimeError; end
 
