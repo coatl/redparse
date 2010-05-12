@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.files = `git ls-files`.split
   s.test_files = %w[test/test_all.rb]
   s.require_paths = ["lib"]
+  s.bindir = "bin"
   s.extra_rdoc_files = ["README.txt", "COPYING.LGPL"]
   s.has_rdoc = true
   s.rdoc_options = %w[--main README.txt]
