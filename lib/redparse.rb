@@ -780,6 +780,8 @@ end
   def RULES
     lower_op= lower_op()
 
+
+    result=
     [-[StartToken.lb, Expr.-, EoiToken.la]>>:accept,
      -[EoiToken]>>:error,
     ]+
@@ -1017,6 +1019,18 @@ end
 
 
   ]
+
+  if @rubyversion >= 1.9
+    result.push \
+      -['->', '(', Expr.-, ')', 'do', Expr.-, 'end']>>ProcLiteralNode
+    result.push \
+      -[Expr, DotOp, ParenedNode, lower_op]>>
+        stack_monkey("parens_as_call",3,MethNameToken){|stack|
+          stack[-2,0]=MethNameToken.new("call",stack[-2].offset)
+        }
+  end
+
+  return result
   end
 
 if defined? END_ATTACK

@@ -3270,6 +3270,21 @@ end
       end
     end
 
+    class ProcLiteralNode<ValueNode
+      def initialize(params, other_locals, body)
+        @params, @other_locals, @body= params, other_locals, body
+      end
+
+      def self.create(arrow, lparen, params, rparen, do_word, body, endword)
+        params,other_locals=*params if SequenceNode===params
+        new(params,other_locals,body)
+      end
+
+      def unparse o=default_parse_options
+        huh
+      end
+    end
+
     class NopNode<ValueNode
       def initialize(*args)
         @startline=@endline=1
