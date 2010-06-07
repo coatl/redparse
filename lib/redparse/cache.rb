@@ -13,6 +13,8 @@ class RedParse
         File.open(@homedir+"/parserdigest","wb"){|fd| fd.puts actual_digest } #update saved digest
       end
       retire_old_entries
+    rescue Errno::EACCES
+      #do nothing
     end
 
     def cachedir
@@ -148,7 +150,7 @@ class RedParse
         end
         return result
       end
-    rescue EOFError
+    rescue EOFError,Errno::EACCES
       return nil
     end
 
