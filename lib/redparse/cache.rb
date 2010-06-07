@@ -76,6 +76,8 @@ class RedParse
     #   it should fallback to USERPROFILE and HOMEDRIVE + HOMEPATH (at
     #   least on Win32).
     #(originally stolen from rubygems)
+    #after trying env variables, try getpwuid, since the environment
+    #might have been cleansed (eg by a cgi server).
     def find_home
       ['HOME', 'USERPROFILE'].each do |homekey|
         return ENV[homekey] if ENV[homekey]
@@ -88,6 +90,14 @@ class RedParse
       begin
         File.expand_path("~")
       rescue
+        begin
+          require 'etc'
+          result=Etc.getpwuid.dir
+        rescue Exception
+          #do nothing
+        end
+        return result if result
+
         if File::ALT_SEPARATOR then
             "C:/"
         else
