@@ -1,4 +1,8 @@
 require 'digest/sha2'
+begin
+  require 'etc'
+rescue LoadError #ignore it
+end
 class RedParse
   class Cache
     def initialize *params
@@ -78,9 +82,16 @@ class RedParse
     #   it should fallback to USERPROFILE and HOMEDRIVE + HOMEPATH (at
     #   least on Win32).
     #(originally stolen from rubygems)
-    #after trying env variables, try getpwuid, since the environment
-    #might have been cleansed (eg by a cgi server).
+    #before trying env variables, try getpwuid, since the environment
+    #might have been cleansed (eg by a cgi server) or altered (eg by 
+    #rubygems tests).
     def find_home
+      begin
+        return Etc.getpwuid.dir
+      rescue Exception
+        #do nothing
+      end
+
       ['HOME', 'USERPROFILE'].each do |homekey|
         return ENV[homekey] if ENV[homekey]
       end
@@ -92,14 +103,6 @@ class RedParse
       begin
         File.expand_path("~")
       rescue
-        begin
-          require 'etc'
-          result=Etc.getpwuid.dir
-        rescue Exception
-          #do nothing
-        end
-        return result if result
-
         if File::ALT_SEPARATOR then
             "C:/"
         else
