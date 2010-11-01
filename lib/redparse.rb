@@ -1073,7 +1073,7 @@ end
       def input.get1token; shift end
       @lexer=input
     else
-      @lexer=RubyLexer.new(name,input,line,0,:rubyversion=>@rubyversion)
+      @lexer=RubyLexer.new(name,input,line,0,:rubyversion=>@rubyversion,:encoding=>encoding)
       lvars.each{|lvar| @lexer.localvars[lvar]=true }
     end
     @filename=name
