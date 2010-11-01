@@ -20,6 +20,8 @@
 
 require 'forwardable'
 
+require 'digest/sha2'
+
 begin
   require 'rubygems'
 rescue LoadError=>e
@@ -1037,6 +1039,16 @@ if defined? END_ATTACK
   module Reducer; end
   include Reducer
 end
+
+  def signature
+    RedParse.signature(class<<self; ancestors end)
+  end
+  def RedParse.signature(ancs=ancestors)
+    [ancs.map{|m| m.name},
+     Digest::SHA256.file(__FILE__),
+     Digest::SHA256.file(__FILE__.sub(/\.rb\z/,"/node.rb")),
+    ]
+  end
 
   def initialize(input,name="(eval)",line=1,lvars=[],options={})
     @rubyversion=options[:rubyversion]||1.8
