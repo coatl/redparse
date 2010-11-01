@@ -1787,6 +1787,10 @@ end
         @startline=@endline=star.startline if star.respond_to? :startline
         super('*@',var||VarNode[''])
       end
+      def self.create(star,var=nil)
+        DanglingStarNode.new(star,var)
+      end
+
       attr :offset
       def lvars_defined_in; [] end
       def parsetree(o); [:splat] end
