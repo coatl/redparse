@@ -328,13 +328,13 @@ end
   rescue Exception=>e
       input=@lexer
       if Array===input
-        puts "error while parsing:"
-        pp input
+        STDERR.puts "error while parsing:"
+        STDERR.write input.pretty_inspect
         input=nil
       else
         input=input.original_file
         inputname=@lexer.filename
-        puts "error while parsing #@filename:#@endline: <<<  #{input if input.to_s.size<=1000}  >>>"
+        STDERR.puts "error while parsing #@filename:#@endline: <<<  #{input if input.to_s.size<=1000}  >>>"
       end
     raise
   else
