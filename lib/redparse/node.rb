@@ -1696,6 +1696,9 @@ end
             val.special_conditions!
         super(op,val)
       end
+
+      def arg; val end
+      def arg= x; self.val=x end
    
       alias ident op
 
