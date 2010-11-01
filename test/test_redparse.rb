@@ -334,6 +334,7 @@ class RedParseTest<Test::Unit::TestCase
     'c while d and /8/..2.a?(b)',
     'c while d and /8/../2.a?(b)/',
     'a if 1..2',
+    'status, err_args = Documeh_status{fcgi_state = 3; docespond do doc_response =fcgi_state =  1; end }',
 
     #not sure which, doesn't really matter anyway
     "$11111111111111111111111111111111111111111111111111111111111111111111",
