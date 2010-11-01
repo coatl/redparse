@@ -3565,17 +3565,17 @@ end
       DQ_ESC=/(?>\\(?>[CM]-|c)?)/
       DQ_EVEN=%r[
                   (?:
-                   \A |
+                   \G |
                    [^\\c-] |
-                   (?>\A|[^\\])c |
-                   (?> [^CM] | (?>\A|[^\\])[CM] )-
+                   (?>\G|[^\\])c |
+                   (?> [^CM] | (?>\G|[^\\])[CM] )-
                   )              #not esc
                   #{DQ_ESC}{2}*  #an even number of esc
              ]omx
       DQ_ODD=/#{DQ_EVEN}#{DQ_ESC}/omx
       SQ_ESC=/\\/
       SQ_EVEN=%r[
-                  (?:  \A | [^\\]  )  #not esc
+                  (?:  \G | [^\\]  )  #not esc
                   #{SQ_ESC}{2}*       #an even number of esc
              ]omx
       SQ_ODD=/#{SQ_EVEN}#{SQ_ESC}/omx
