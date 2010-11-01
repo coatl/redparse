@@ -3846,22 +3846,22 @@ EOS
     from=from[/ in `.*'\Z/] || from[/\A[^:]*:[^:]*/]
     yield
   rescue Test::Unit::AssertionFailedError=>e
-    warn "a known bug in MRI reared its head in #{from}: #{e.message}"
+    warn "a known bug in ParseTree/MRI reared its head in #{from}: #{e.message}"
     if defined? @@known_ruby_bugs
       @@known_ruby_bugs+=1
     else
       @@known_ruby_bugs=1
-      at_exit {warn "unfixed bugs in MRI/ParseTree: #@@known_ruby_bugs"}
+      at_exit {warn "unfixed bugs in ParseTree/MRI: #@@known_ruby_bugs"}
     end
   rescue Exception=>e
     raise
   else
-    warn "expected bug in MRI in #{from}, but was fixed(?!)"
+    warn "expected bug in ParseTree/MRI in #{from}, but was fixed(?!)"
     if defined? @@known_ruby_bugs_fixed
       @@known_ruby_bugs_fixed+=1
     else
       @@known_ruby_bugs_fixed=1
-      at_exit {warn "unexpectedly fixed known MRI/ParseTree bugs: #@@known_ruby_bugs_fixed"}
+      at_exit {warn "unexpectedly fixed known ParseTree/MRI bugs: #@@known_ruby_bugs_fixed"}
     end
   end
 
