@@ -1053,7 +1053,13 @@ end
   def initialize(input,name="(eval)",line=1,lvars=[],options={})
     @rubyversion=options[:rubyversion]||1.8
 
-    cache=Cache.new(name,line,lvars.sort.join(" "),@rubyversion,class<<self; ancestors end.map{|m| m.name})
+    encoding=options[:encoding]||'ascii'
+    warn 'encodings other than ascii dont really work right now' unless encoding=='ascii'
+    cache=Cache.new(
+      File===input,name, 
+        :line,line,:encoding,encoding,:locals,lvars.sort.join(","), 
+      @rubyversion, :/, *signature
+    )
     cache_mode=options[:cache_mode]||:read_write
     raise ArgumentError unless /^(?:read_(?:write|only)|write_only|none)$/===cache_mode.to_s    
     read_cache= /read/===cache_mode.to_s
