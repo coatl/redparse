@@ -1972,7 +1972,7 @@ end
       identity_param :lvalue, nil, true
 
       def unparse(o=default_unparse_options)
-          "("+(body&&body.unparse(o))+")"
+          "(#{body&&body.unparse(o)})"
       end
     end
 
