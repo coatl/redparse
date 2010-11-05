@@ -218,6 +218,20 @@ class TestsFor1_9 < Test::Unit::TestCase
       pt19=RedParse.new(new,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
       pt18=RedParse.new(old,'(eval)',1,[],:cache_mode=>:none).parse
       assert_equal pt18,pt19
+      assert_unparses_to pt19,new
+    }
+  end
+ 
+  def test_ruby19_19_equivs_but_for_open_close
+    RUBY_1_9_TO_1_9_EQUIVALENCES.each{|pair|
+      new,old=pair.first,pair.last
+      pt1=parser(new,'(eval)').parse
+      pt2=parser(old,'(eval)').parse
+      assert_unparses_to pt1,new
+      assert_unparses_to pt2,old
+      pt1.instance_eval{@open=@close=nil if @open}
+      pt2.instance_eval{@open=@close=nil if @open}
+      assert_equal pt1,pt2
     }
   end
  
