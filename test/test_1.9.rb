@@ -7,10 +7,8 @@ class TestsFor1_9 < Test::Unit::TestCase
     '{a:  b}'...'{:a=>b}',
     '{a:  b, c:  d}'...'{:a=>b, :c=>d}',
     "a ? b\n :  c"..."a ? b : \n c",
+    '{a:  1,b:  2,c=>3}'...'{:a=>1,:b=>2,c=>3}'
 
-    'not(true)'...'not true',
-    'not(+1)'...'not +1',
-    'not (true).to_s'...'not (true).to_s', #equivalent, but parser gets there different ways
   ]
 
   RUBY_1_9_TO_1_8_EQUIVALENCES_BUT_FOR_STRESC=[
@@ -173,7 +171,8 @@ class TestsFor1_9 < Test::Unit::TestCase
 
   include RedParse::Nodes
   RUBY_1_9_PATTERNS={
-    'not(true).to_s'=>+CallNode[+UnOpNode["not", +VarLikeNode["true"]], "to_s"],
+    'not(true).to_s'=>+CallNode[+KWCallNode[nil, "not", +[+VarLikeNode["true"]], nil,nil], "to_s" ,nil,nil,nil],
+    'f.(a=1,2,3)'=>+CallNode[_,"()",-{:size=>3},nil,nil]
   }
 
   def test_ruby19_equivs
