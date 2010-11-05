@@ -5206,6 +5206,7 @@ end
       end
  
       def error? x=nil
+        @endline||=nil
         inner=middle.grep(MisparsedNode).first and return inner.error?( x )
         "#@endline: misparsed #{what}: #{middle.map{|node| node&&node.image}.join(' ')}" 
       end
