@@ -340,7 +340,7 @@ class RedParse
   end
 
   def Cache.attempt_write(cache_fn,inputdigest,options,output_identity,result)
-    STDERR.write "...writing to cache file #{cache_fn}... "
+    #STDERR.write "...writing to cache file #{cache_fn}... "
 
     if result.respond_to? :sysread
       path=result.path
@@ -350,7 +350,7 @@ class RedParse
         FileUtils.copy(path,cache_fn)
       end
       encoder= "ascii"
-      STDERR.puts 'file'
+      #STDERR.puts 'file'
       cache_f=File.open(cache_fn,"a")
     else
       cache_f=File.open(cache_fn,"wb")
@@ -358,23 +358,23 @@ class RedParse
       if String===result
         cache_f.write result
         encoder= "ascii"
-        STDERR.puts 'ascii'
+        #STDERR.puts 'ascii'
       else begin
         Thread.current["Marshal.ignore_sclass"]=true
         Marshal.dump(result,cache_f)
         encoder= "Marshal"
-        STDERR.puts 'Marshal'
+        #STDERR.puts 'Marshal'
       rescue TypeError=>e #dump failed
-        STDERR.write "Marshal failed => "
+        #STDERR.write "Marshal failed => "
         cache_f.close
         cache_f=File.open(cache_fn,"wb")
         begin
           require 'ron'
           cache_f.write Ron.dump(result)
           encoder='Ron'
-          STDERR.puts "Ron"
+          #STDERR.puts "Ron"
         rescue Exception
-          STDERR.puts "Ron failed"
+          #STDERR.puts "Ron failed"
           File.unlink(cache_fn)
           return
         end
@@ -396,7 +396,7 @@ class RedParse
     return result
   ensure 
     cache_f.close if cache_f
-    STDERR.puts("...options=#{options.inspect}")
+    #STDERR.puts("...options=#{options.inspect}")
   end
 
   def Cache.read_for_file(input,name,options,output_type,output_identity,&if_missing)
