@@ -325,4 +325,17 @@ class TestsFor1_9 < Test::Unit::TestCase
       assert_equal 1,count,snippet
     end
   }
+
+  EXPECT_2_METHODS.each{|snippet|
+    define_method "test_1_9_two_methods_in_#{snippet}" do
+      tree=parser(snippet,"-e")
+      begin
+        tree=tree.parse
+      rescue Exception=>e
+        raise e,e.message+"during parsing of #{snippet}\n",e.backtrace
+      end
+      count=count_methods(tree)
+      assert_equal 2,count,snippet
+    end
+  }
 end
