@@ -222,7 +222,7 @@ class TestsFor1_9 < Test::Unit::TestCase
   def test_ruby19_equivs
     RUBY_1_9_TO_1_8_EQUIVALENCES.each{|pair|
       new,old=pair.first,pair.last
-      pt19=RedParse.new(new,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
+      pt19=parser(new,'(eval)').parse
       pt18=RedParse.new(old,'(eval)',1,[],:cache_mode=>:none).parse
       assert_equal pt18,pt19
       assert_unparses_to pt19,new
@@ -245,7 +245,7 @@ class TestsFor1_9 < Test::Unit::TestCase
   def test_ruby19_equivs_but_for_stresc
     RUBY_1_9_TO_1_8_EQUIVALENCES_BUT_FOR_STRESC.each{|pair|
       new,old=pair.first,pair.last
-      pt19=RedParse.new(new,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
+      pt19=parser(new,'(eval)').parse
       pt18=RedParse.new(old,'(eval)',1,[],:cache_mode=>:none).parse
       [pt18,*pt18].each{|node|
         case node.instance_variable_get(:@bs_handler)
@@ -261,6 +261,7 @@ class TestsFor1_9 < Test::Unit::TestCase
         end
       }
       assert_equal pt18,pt19
+      assert_unparses_to pt19,new
     }
   end
  
@@ -286,8 +287,9 @@ class TestsFor1_9 < Test::Unit::TestCase
 
   def test_ruby19_patterns
     RUBY_1_9_PATTERNS.each_pair{|code,pattern|
-      pt=RedParse.new(code,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
-      assert_match pattern, pt
+      pt=parser(code,'(eval)').parse
+      assert pattern === pt, code
+      assert_unparses_to pt,code
     }
   end
 
