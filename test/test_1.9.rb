@@ -31,12 +31,145 @@ class TestsFor1_9 < Test::Unit::TestCase
     '/bb/m'...'/bb/m',
     '/b b/x'...'/b b/x',
     '/b#{b}/o'...'/b#{b}/o',
+    '
+     a
+      .b'...
+    '
+     a\
+      .b',
+  ]
+  RUBY_1_9_TO_1_9_EQUIVALENCES=[
+    '"♥"'...'?♥',
+    '"\u2666"'...'?\u2666',
   ]
 
 
   RUBY_1_9_VALID=[
+    "__ENCODING__",
     'not (true).to_s',
+    '"\u2665"',
+    '"♥"',
+    '"\u{2665 2666}"',
+    '"♥♦"',
+    '"\u{10fffd}"',
+    '"􏿽"'    ,
+    '?\u2665','?♥',
+    '?\u{10fffd}','?􏿽'    ,
+
+
+    'def !=(x); end',
+    'def !~(x); end',
+    'alias x !=',
+    'alias != x',
+    'alias x !~',
+    'alias !~ x',
+    'alias !~ !=',
+    'alias != !~',
+    'alias != `',
+    'undef !=',
+    'undef !~',
+    ':!=',
+    ':!~',
+
+    'def !@; end',
+    'alias x !@',
+    'alias !@ x',
+    'alias !@ `',
+    'undef !@',
+    ':!@',
+
+    'z=*a,b,c',
+    'z=a,*b,c',
+    'z=a,*b,*c',
+    'z=a,*b,c,*d',
+    'z=*a,*b,*c,*d',
+    'z=*a,*b,*c,*d,e',
+
+
+    'proc{|a,*b,c|d}',
+    'proc{|a,*b,(c1,*c2,c3)|d}',
+    'proc{|*a,b,c|d}',
+    'proc{|&a| x}',
+    'proc{|a,&b| x}',
+    'proc{|a,b=10| x}',
+    'proc{|a=10,b| x}',
+
+    'z(*a,b,c)',
+    'z(a,*b,c)',
+    'z(a,*b,*c)',
+    'z(a,*b,c,*d)',
+    'z(*a,*b,*c,*d)',
+    'z(*a,*b,*c,*d,e)',
+    'z[*a,b,c]',
+    'z[a,*b,c]',
+    'z[a,*b,*c]',
+    'z[a,*b,c,*d]',
+    'z[*a,*b,*c,*d]',
+    'z[*a,*b,*c,*d,e]',
+ 
+    'z[*a,b,c]=1',
+    'z[a,*b,c]=1',
+    'z[a,*b,*c]=1',
+    'z[a,*b,c,*d]=1',
+    'z[*a,*b,*c,*d]=1',
+    'z[*a,*b,*c,*d,e]=1',
+ 
+    '[*a,b,c]',
+    '[a,*b,c]',
+    '[a,*b,*c]',
+    '[a,*b,c,*d]',
+    '[*a,*b,*c,*d]',
+    '[*a,*b,*c,*d,e]',
+ 
+    'not(true)','not true',
+    'not(+1)','not +1',
+    'not (true).to_s','not (true).to_s',
+
+    
   ]
+
+  RUBY_1_9_INVALID=[
+    '{1,2,3,4}',
+    'if a: b; end',
+    'unless a: b; end',
+    'while a: b; end',
+    'until a: b; end',
+    'case z; when a: b; end',
+    'proc{|a,b;c| d e f }',
+  ]
+
+  EXPECT_1_METHOD.concat [
+    '1.!=2',
+    '1.!~2',
+    'a,*b,c=d',
+    'a,*b,(c1,*c2,c3)=d',
+    '*a,b,c=d',
+    'proc{|a=1,*b,(c1,*c2,c3),d=2,&e;f,g,h| [ b,c3,d,e,f,g,h ]}',
+    'def z(a=1,*b,(c1,*c2,c3),d=2,&e;f,g,h) [ b,f,g,h ] end',
+    '$f.($x,$y)',
+    '$f::($x,$y)',
+    '$f.($x,$y){}',
+    '$f.($x,$y) do |stuff| $yada-$yada end',
+    'proc{|a=1,*b,d| b}',
+    'proc{|&e;f| e }',
+    'proc{|aa,a=1,az,*b,(c1,*c2,c3),da,d=2,dz,(e1=1,*e2,e3=3),&m;f,g,h| [ b,c3,d,e1,e2,e3,f,g,h,m ]}',
+    'def z(aa,a=1,az,*b,(c1,*c2,c3),da,d=2,dz,(e1=1,*e2,e3=3),&m) [ b,c3,d,e1,e2,e3,m ] end',
+    'aa,a=1,az,*b,(c1,*c2,c3),da,d=2,dz,(e1=1,*e2,e3=3)=k;  b,c3,d,e1,e2,e3 ',
+    '->(aa,a=1,az,*b,(c1,*c2,c3),da,d=2,dz,(e1=1,*e2,e3=3),&m;f,g,h){[ b,c3,d,e1,e2,e3,f,g,h,m ]}',
+    '->(a=1,*b,(c1,*c2,c3),d=2,&e;f,g,h){ [ b,c3,d,e,f,g,h ]}',
+    '->(a=1,*b,(c1,*c2,c3),d=2,&e;f,g,h) do [ b,c3,d,e,f,g,h ] end',
+    '->a=1,*b,(c1,*c2,c3),d=2,&e;f,g,h{ [ b,c3,d,e,f,g,h ]}',
+  ]
+  EXPECT_2_METHODS=EXPECT_1_METHOD.grep /->/
+  EXPECT_1_METHOD.replace(EXPECT_1_METHOD-EXPECT_2_METHODS)
+  EXPECT_1_METHOD.concat EXPECT_NO_METHODS.grep /->/
+  EXPECT_NO_METHODS.concat [
+  ]
+  EXPECT_NO_METHODS.replace(EXPECT_NO_METHODS-EXPECT_1_METHOD)
+
+  WEAK=RUBY_1_9_VALID+EXPECT_NO_METHODS+EXPECT_1_METHOD+RUBY_1_9_TO_1_9_EQUIVALENCES.map{|r| [r.first,r.last]}.flatten
+
+  warn "do something more with WEAK cases"
 
   include RedParse::Nodes
   RUBY_1_9_PATTERNS={
