@@ -290,10 +290,11 @@ class TestsFor1_9 < Test::Unit::TestCase
 
   def count_methods(tree)
     count=0
-    tree.walk{|node|
+    tree.walk{|parent,i,subi,node|
       case node
       when CallSiteNode, MethodNode; count+=1
       end
+      true
     }
     return count
   end
