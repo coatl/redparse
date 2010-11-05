@@ -246,14 +246,19 @@ class TestsFor1_9 < Test::Unit::TestCase
       new,old=pair.first,pair.last
       pt19=RedParse.new(new,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
       pt18=RedParse.new(old,'(eval)',1,[],:cache_mode=>:none).parse
-      if pt18.instance_variable_get(:@bs_handler)==:dquote_esc_seq
-        pt18.instance_variable_set :@bs_handler,:dquote19_esc_seq
-      else
-        pt18.instance_variable_set :@bs_handler,:Wquote19_esc_seq
-        pt18.instance_variable_get(:@parses_like).each{|x|
-          x.instance_variable_set :@bs_handler,:Wquote19_esc_seq if x.instance_variable_get :@bs_handler
-        }
-      end
+      [pt18,*pt18].each{|node|
+        case node.instance_variable_get(:@bs_handler)
+        when :dquote_esc_seq
+          node.instance_variable_set :@bs_handler,:dquote19_esc_seq
+        when :regex_esc_seq,nil #do nothing
+        else
+          node.instance_variable_set :@bs_handler,:Wquote19_esc_seq
+          pl=node.instance_variable_get(:@parses_like)
+          pl.each{|x|
+            x.instance_variable_set :@bs_handler,:Wquote19_esc_seq if x.instance_variable_get :@bs_handler
+          } if pl
+        end
+      }
       assert_equal pt18,pt19
     }
   end
