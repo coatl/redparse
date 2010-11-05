@@ -175,6 +175,10 @@ class TestsFor1_9 < Test::Unit::TestCase
     'f.(a=1,2,3)'=>+CallNode[_,"()",-{:size=>3},nil,nil]
   }
 
+  def parser src,name
+    RedParse.new(src,name,1,[],:rubyversion=>1.9,:cache_mode=>:none,:encoding=>:utf8)
+  end
+
   EXCEPTIONS={}
   File.open("test/unparse_1.9_exceptions.txt"){|f|
     until f.eof?
