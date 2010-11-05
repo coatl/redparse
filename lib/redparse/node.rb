@@ -603,6 +603,8 @@ class RedParse
 
       def lhs_unparse o; unparse(o) end
 
+      def to_ruby o={}; unparse(o) end
+
       def to_parsetree(*options)
         o={}
         [:newlines,:quirks,:ruby187].each{|opt| 
