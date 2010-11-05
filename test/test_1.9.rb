@@ -175,6 +175,43 @@ class TestsFor1_9 < Test::Unit::TestCase
     'f.(a=1,2,3)'=>+CallNode[_,"()",-{:size=>3},nil,nil]
   }
 
+  EXCEPTIONS={}
+  File.open("test/unparse_1.9_exceptions.txt"){|f|
+    until f.eof?
+      l=f.readline
+      l<<f.readline until l.chomp!"\\\\\\///\n"
+      EXCEPTIONS.[]= *l.split(' ====> ',2)
+    end
+  } if File.exist?("test/unparse_1.9_exceptions.txt")
+
+  def confirm_error?(code,code2)
+    puts 'unparse didn`t match. original:'
+    puts code
+    puts 'unparsed:'
+    puts code2
+    answer=nil
+    until answer==true or answer==false
+      puts 'is this difference an error? (y/n)'
+      answer=gets
+      answer=true if /\Ay/i===answer
+      answer=false if /\An/i===answer
+    end
+    return answer
+  end
+
+  def assert_unparses_to pt,code
+    code2=pt.unparse
+    if code==code2 or EXCEPTIONS[code]==code2
+      assert true
+    elsif confirm_error?(code,code2)
+      assert_equal code,code2 
+    else
+      assert true
+      fail if %r{ ====> |\\\\\\///\n}===code2+code
+      File.open("test/unparse_1.9_exceptions.txt","a"){|fd| fd.print code,' ====> ', code2,"\\\\\\///\n" }
+    end
+  end
+
   def test_ruby19_equivs
     RUBY_1_9_TO_1_8_EQUIVALENCES.each{|pair|
       new,old=pair.first,pair.last
