@@ -300,27 +300,29 @@ class TestsFor1_9 < Test::Unit::TestCase
     return count
   end
 
-  def test_1_9
-    EXPECT_NO_METHODS.each{|snippet|
-      tree=RedParse.new(snippet,"-e",1,[],:rubyversion=>1.9,:cache_mode=>:none)
+  EXPECT_NO_METHODS.each{|snippet|
+    define_method "test_1_9_no_methods_in_#{snippet}" do
+      tree=parser(snippet,"-e")
       begin
         tree=tree.parse
       rescue Exception=>e
         raise e,e.message+"during parsing of #{snippet}\n",e.backtrace
       end
       count=count_methods(tree)
-      assert_equal count,0
-    }
+      assert_equal 0,count,snippet
+    end
+  }
 
-    EXPECT_1_METHOD.each{|snippet|
-      tree=RedParse.new(snippet,"-e",1,[],:rubyversion=>1.9,:cache_mode=>:none)
+  EXPECT_1_METHOD.each{|snippet|
+    define_method "test_1_9_one_method_in_#{snippet}" do
+      tree=parser(snippet,"-e")
       begin
         tree=tree.parse
       rescue Exception=>e
         raise e,e.message+"during parsing of #{snippet}\n",e.backtrace
       end
       count=count_methods(tree)
-      assert_equal count,1
-    }
-  end
+      assert_equal 1,count,snippet
+    end
+  }
 end
