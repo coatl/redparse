@@ -3215,12 +3215,12 @@ end
     end
 
     class CallNode<CallSiteNode #normal method calls
-      def initialize(method,open_paren,param_list,close_paren,block)
+      def initialize(*args)
         super
       end
     end
     class KWCallNode<CallSiteNode #keywords that look (more or less) like methods
-      def initialize(method,open_paren,param_list,close_paren,block)
+      def initialize(method,*args)
         KeywordToken===method or fail
         super
       end
