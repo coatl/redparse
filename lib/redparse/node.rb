@@ -4539,6 +4539,9 @@ end
         return true if defined?(@no_arrows) and rubyversion>=1.9
         return super
       end
+ 
+      def blame; self end
+      def msg; "comma not allowed within pairs in hashes anymore" end
     end
 
     class TernaryNode<ValueNode
@@ -5183,8 +5186,8 @@ end
     module ErrorNode
       def error?(x=nil) @error end
       alias msg error?
+      def blame; fail end
     end
-
 
     class MisparsedNode<ValueNode
       include ErrorNode
