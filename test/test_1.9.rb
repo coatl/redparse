@@ -256,10 +256,23 @@ class TestsFor1_9 < Test::Unit::TestCase
     }
   end
  
-  def test_ruby19_valid
-    RUBY_1_9_VALID.each{|xmpl|
-      pt19=RedParse.new(xmpl,'(eval)',1,[],:rubyversion=>1.9,:cache_mode=>:none).parse
+  RUBY_1_9_VALID.each{|xmpl|
+    define_method("test_valid_#{xmpl}") do
+      pt19=parser(xmpl,'(eval)').parse
       assert_nil pt19.errors
+      assert_unparses_to pt19,xmpl
+    end
+  }
+
+  def test_ruby19_invalid
+    RUBY_1_9_INVALID.each{|xmpl|
+      begin
+        pt19=parser(xmpl,'(eval)').parse
+      rescue Exception
+        assert true
+        next
+      end
+      warn "1.9error expected, but not seen in '#{xmpl}'" unless pt19.errors
     }
   end
 
