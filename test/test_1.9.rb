@@ -3,6 +3,8 @@ require 'rubylexer/test/oneliners_1.9'
 require "redparse"
 
 class TestsFor1_9 < Test::Unit::TestCase
+  include Ruby1_9OneLiners
+
   RUBY_1_9_TO_1_8_EQUIVALENCES=[
     '{a:  b}'...'{:a=>b}',
     '{a:  b, c:  d}'...'{:a=>b, :c=>d}',
@@ -286,7 +288,6 @@ class TestsFor1_9 < Test::Unit::TestCase
 
 
 
-  include Ruby1_9OneLiners
 
   def count_methods(tree)
     count=0
