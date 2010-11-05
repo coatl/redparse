@@ -1,3 +1,4 @@
+#encoding: utf-8
 require 'test/unit'
 require 'rubylexer/test/oneliners_1.9'
 require "redparse"
