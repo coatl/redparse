@@ -1094,22 +1094,23 @@ if defined? END_ATTACK
     compile
 end
     @saw_item_that=nil
+    @print_filter=proc{true}
   end
 
-  attr_accessor :lexer
+  attr_accessor :lexer, :print_filter
   attr :rubyversion
 
   def get_token(recursing=false)
     unless @moretokens.empty? 
       @last_token=@moretokens.shift
-      p @last_token if ENV['PRINT_TOKENS'] unless recursing
+      p @last_token if ENV['PRINT_TOKENS'] && @print_filter[@last_token] and not recursing
       return @last_token
     end
 
     rpt=ENV['RAW_PRINT_TOKENS']
     begin
       result=@lexer.get1token or break
-      p result if rpt
+      p result if rpt and @print_filter[result]
 
       #set token's line
       result.startline= @endline||=1
@@ -1180,7 +1181,7 @@ end
       end
       end
     end while false
-    p result if ENV['PRINT_TOKENS'] unless recursing
+    p result if ENV['PRINT_TOKENS'] && @print_filter[@last_token] unless recursing
 
     #ugly weak assertion
     assert result.endline==@endline unless result.ident==';' && result.endline-1==@endline or EoiToken===result
