@@ -104,8 +104,8 @@ while /^-/===ARGV.first
       when "--rawtokens"; ENV['RAW_PRINT_TOKENS']='1'
       when "--stack"; ENV['PRINT_STACK']='1'
       when "--unparse"; unparse=true
-      when "--compile", "-c"; compile=true
-      when "--macros", "--macro", "-m";
+      when "--compile", "-c"; require 'redparse/compile'; compile=true
+      when "--macros", "--macro", "-m"
         require 'rubygems'
         require 'macro'
         parserclass=Macro::RedParseWithMacros
