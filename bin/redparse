@@ -109,6 +109,15 @@ while /^-/===ARGV.first
         require 'rubygems'
         require 'macro'
         parserclass=Macro::RedParseWithMacros
+      when /^--cache(?:=(.*))?$/
+        cache_mode=
+        case mode=$1||ARGV.shift
+        when 'r','ro'; :read_only
+        when 'w','wo'; :write_only
+        when 'rw'; :read_write #default
+        when 'n','no'; :none
+        else mode.to_sym
+        end 
       when "-q"; quiet=true
       when "-v"; verbose=true
       when "-e"; inputs=[ARGV.join(" ")]; names=["-e"]; break
