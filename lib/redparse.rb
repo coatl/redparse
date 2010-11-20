@@ -494,8 +494,8 @@ end
       #the 'precedence' of comma is somewhat controversial. it actually has
       #several different precedences depending on which kind of comma it is.
       #the precedence of , is higher than :, => and the assignment operators 
-      #in certain (lhs) contexts. therefore, the precedence of lhs, should 
-      #really be above =.
+      #in certain (lhs) contexts. therefore, the precedence of lhs-comma should 
+      #really be above "=".
 
     #"unary" prefix function names seen has operators have this precedence
     #but, rubylexer handles precedence of these and outputs fake parens 
@@ -805,7 +805,6 @@ end
     #star should not be used in an lhs if an rhs or param list context is available to eat it.
     #(including param lists for keywords such as return,break,next,rescue,yield,when)
 
-    #hmmm.... | in char classes below looks useless (predates GoalPostToken)
     -[Op(/^(?:unary|lhs)\*$/), (GoalPostToken|Op(/,$/,true)|KW(/^(in|[=)|;])$/)).la]>>DanglingStarNode, #dangling *
     -[Op(/,$/,true), (GoalPostToken|KW(/^(in|[=)|;])$/)).la]>> #dangling ,
       stack_monkey("DanglingComma",1,DanglingCommaNode){|stack| 
@@ -813,6 +812,7 @@ end
         dcomma.offset=stack.last.offset
         stack.push dcomma, stack.pop
       },
+    #hmmm.... | in char classes above looks useless (predates GoalPostToken)
 
     -[Expr, Op|KW_Op, Expr, lower_op]>>RawOpNode,  #most operators
     
@@ -1014,8 +1014,7 @@ end
 
    #here docs
    -[HerePlaceholderToken]>>HereDocNode,
-   -[HereBodyToken.la]>>delete_monkey(1,"delete_here_body"),
-   ##this is rediculous. this should be a lexer hack?
+   -[HereBodyToken.la]>>delete_monkey(1,"delete_here_body"),   ##this is rediculous. this should be a lexer hack?
 
    -[VarNameToken]>>VarNode,
 
