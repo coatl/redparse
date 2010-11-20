@@ -173,11 +173,22 @@ inputs.each_index{|i|
         else
           options={:rubyversion=>1.8}
         end
+        options[:cache_mode]=cache_mode if cache_mode
+        parser=(parserclass||RedParse).new(input,name,1,[],options)
+        seen_ends=0
+        parser.print_filter=proc{|t| 
+          if RedParse::KeywordToken===t and /^(\}|end)$/===t.ident
+            seen_ends+=1
+            seen_ends>=3
+          else
+            seen_ends>=2
+          end
+        }
         tree=if compile
-          huh (parserclass||RedParse).new(input,name,1,[],options).compile
+          huh parser.compile
           huh parse
         else
-          (parserclass||RedParse).new(input,name,1,[],options).parse
+          parser.parse
         end
         nil
       } #raise NeverExecThis
