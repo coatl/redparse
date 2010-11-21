@@ -753,7 +753,9 @@ end
   LHS_COMMA=Op('lhs,',true)#&-{:tag => :lhs}
   RHS_COMMA=Op('rhs,',true)#&-{:tag => :rhs}
   #PARAM_COMMA=Op('param,',true)#&-{:tag => :param}
-  FUNCLIKE_KEYWORD=KeywordToken&-{:ident=>RubyLexer::FUNCLIKE_KEYWORDS}
+  def FUNCLIKE_KEYWORD
+    KeywordToken&-{:ident=>@funclikes} 
+  end
   IGN_SEMI_BEFORE=KW(/^(#{RubyLexer::INNERBOUNDINGWORDS.gsub(/(rescue|then)\|/,'')[1...-1]}|end|[)}\]])$/)|EoiToken
   IGN_SEMI_AFTER=KW(/^(begin|[;:({|]|then|do|else|ensure)$/)|BlockFormalsNode
 
@@ -800,7 +802,7 @@ end
 
 #    -[Op('=',true)|KW(/^(rescue|when|\[)$/)|Op(/,$/,true),
 #      Op(/^(?:unary|rhs)\*$/), ValueNode, (MODIFYASSIGNOP|Op('=',true)).la]>>:shift,
-#    -[MethNameToken|FUNCLIKE_KEYWORD, KW('('), 
+#    -[MethNameToken|FUNCLIKE_KEYWORD(), KW('('), 
 #      Op(/^(?:unary|rhs)\*$/), ValueNode, (MODIFYASSIGNOP|Op('=',true)).la]>>:shift,
     #star should not be used in an lhs if an rhs or param list context is available to eat it.
     #(including param lists for keywords such as return,break,next,rescue,yield,when)
@@ -854,11 +856,6 @@ end
         stack[-3].after_comma=true}, 
                #mebbe this should be a lexer hack?
 
-    -[#(OPERATORLIKE_LB&~(MethNameToken|FUNCLIKE_KEYWORD)).lb, 
-      '(', Expr, KW(')')&~(-{:callsite? =>true}|-{:not_real? =>true})]>>ParenedNode,
-    -[#(OPERATORLIKE_LB&~(MethNameToken|FUNCLIKE_KEYWORD)).lb, 
-      '(', KW(')')&~(-{:callsite? =>true}|-{:not_real? =>true})]>>VarLikeNode, #(), alias for nil
-
     -[#(OPERATORLIKE_LB&~Op('=',true)).lb, 
       Expr, RESCUE_OP, Expr, lower_op]>>RescueOpNode,
 
@@ -867,12 +864,22 @@ end
     -[Expr, DotOp, CallNode, lower_op]>>DotCall,      #binary .
     -[Expr, DoubleColonOp, CallNode, lower_op]>>DotCall,    #binary ::
     -[Expr, DoubleColonOp, VarNode, lower_op]>>ConstantNode,#binary ::
+    #lower_op constaints on lookahead are unnecessary in above 4 (unless I give openparen a precedence)
 
     -[Expr, "?", Expr, ":", Expr, lower_op]>>TernaryNode,
 
 
     -[MethNameToken, '(', Expr.-, ')', BlockNode.-, KW('do').~.la]>>CallNode,
-    -[FUNCLIKE_KEYWORD, '(', Expr.-, ')', BlockNode.-, KW('do').~.la]>>KWCallNode,
+    -[FUNCLIKE_KEYWORD(), '(', Expr.-, ')', BlockNode.-, KW('do').~.la]>>KWCallNode,
+
+    -[#(OPERATORLIKE_LB&
+      (MethNameToken|FUNCLIKE_KEYWORD()).~.lb, 
+      '(', Expr, KW(')')&~(-{:callsite? =>true}|-{:not_real? =>true}), KW('do').~.la]>>ParenedNode,
+
+    -[#(OPERATORLIKE_LB&
+      (MethNameToken|FUNCLIKE_KEYWORD()).~.lb, 
+      '(', KW(')')&~(-{:callsite? =>true}|-{:not_real? =>true}), KW('do').~.la]>>VarLikeNode, #(), alias for nil
+    #constraint on do in above 2 rules is probably overkill
 
     -[ValueNode, Op(/,$/,true), ValueNode, lower_op]>>CommaOpNode,
 
@@ -1077,10 +1084,20 @@ end
     if Array===input
       def input.get1token; shift end
       @lexer=input
+      if @rubyversion>=1.9
+        @funclikes=RubyLexer::RubyLexer1_9::FUNCLIKE_KEYWORDS
+        @varlikes=RubyLexer::RubyLexer1_9::VARLIKE_KEYWORDS
+      else
+        @funclikes=RubyLexer::FUNCLIKE_KEYWORDS
+        @varlikes=RubyLexer::VARLIKE_KEYWORDS
+      end
     else
       @lexer=RubyLexer.new(name,input,line,0,:rubyversion=>@rubyversion,:encoding=>encoding)
+      @funclikes=@lexer::FUNCLIKE_KEYWORDS()
+      @varlikes=@lexer::VARLIKE_KEYWORDS()
       lvars.each{|lvar| @lexer.localvars[lvar]=true }
     end
+    @funclikes=/#@funclikes|^->$/ if @rubyversion>=1.9
     @filename=name
     @min_sizes={}
     @compiled_rules={}
