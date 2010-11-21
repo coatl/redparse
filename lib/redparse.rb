@@ -679,7 +679,7 @@ end
   def lower_op
     return @lower_op if defined? @lower_op
     lower_op=item_that{|op| left_op_higher(@stack[-3],op) }
-    lower_op=(LOWEST_OP|(~VALUELIKE_LA & lower_op)).la
+    lower_op=(LOWEST_OP|(~VALUELIKE_LA() & lower_op)).la
     lower_op.extend LowerOp_inspect
     @lower_op=lower_op
   end
@@ -767,9 +767,15 @@ end
                  GoalPostToken|BlockFormalsNode|AssignmentRhsListStartToken
 
   #for use in lookahead patterns
-  VALUELIKE_LA=KW(RubyLexer::VARLIKE_KEYWORDS)|NumberToken|SymbolToken|StringToken|UNOP|DEFOP|
-               KW(/^[({]$/x)|VarNameToken|MethNameToken|HerePlaceholderToken|
-               KW(BEGINWORDS)|FUNCLIKE_KEYWORD|AssignmentRhsListStartToken
+  def VALUELIKE_LA
+    KW(@varlikes)|NumberToken|SymbolToken|StringToken|UNOP|DEFOP|
+    KW(/^[({]$/x)|VarNameToken|MethNameToken|HerePlaceholderToken|
+    KW(BEGINWORDS)|FUNCLIKE_KEYWORD()|AssignmentRhsListStartToken
+
+    #why isn't this a sufficient implementation of this method:
+         # KW('(')
+    #in which case, '(' can be made the highest precedence operator instead
+  end
   LOWEST_OP=KW(/^(#{ENDWORDS})$/)|KW(/^#{INNERBOUNDINGWORDS.sub('rescue|','')}$/)|
             EoiToken|GoalPostToken|AssignmentRhsListEndToken
 
@@ -1017,7 +1023,7 @@ end
       },
  
    #treat these keywords like (rvalue) variables.
-   -[RubyLexer::VARLIKE_KEYWORDS]>>VarLikeNode,
+   -[@varlikes]>>VarLikeNode,
 
    #here docs
    -[HerePlaceholderToken]>>HereDocNode,
