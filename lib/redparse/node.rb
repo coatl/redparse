@@ -2946,8 +2946,14 @@ end
       alias block_args blockargs
       alias block_params blockparams
 
-      def initialize(method,open_paren,param_list,close_paren,block)
-        @not_real_parens=!open_paren || open_paren.not_real?
+      def initialize(*args)
+        if KeywordToken===args.first and args.first.ident=='('
+          method,open_paren,param_list,close_paren,block="()",*args
+          parened=open_paren
+        else 
+          method,open_paren,param_list,close_paren,block=*args
+          @not_real_parens=!open_paren || open_paren.not_real?
+        end
 
         case param_list
         when CommaOpNode
@@ -2977,10 +2983,12 @@ end
           blockparams=block.params
           block=block.body #||[]
         end
-        @offset=method.offset
         if Token===method 
+          @offset=method.offset
           method=method.ident
           fail unless String===method
+        else
+          @offset=parened&&parened.offset
         end
 
         super(nil,method,param_list,blockparams,block)
@@ -2993,7 +3001,8 @@ end
       def unparse o=default_unparse_options
         fail if block==false
         result=[
-         receiver&&receiver.unparse(o)+'.',name,      
+         receiver&&receiver.unparse(o)+'.',
+         name=='()' ? '' : name,
          real_parens ? '(' : (' ' if params),
          params&&params.map{|param|  unparse_nl(param,o,'',"\\\n")+param.unparse(o)  }.join(', '),
          real_parens ? ')' : nil,
