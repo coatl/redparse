@@ -290,8 +290,8 @@ class RedParse
   def Cache.attempt_read(cache_fn,inputdigest,options,output_identity,want_file=false)
     return if !File.exist? cache_fn
     
-    warn "...reading from cache file #{cache_fn}"
-    warn "...options=#{options.inspect}"
+    #warn "...reading from cache file #{cache_fn}"
+    #warn "...options=#{options.inspect}"
 
       outid=Digest::SHA2.hexdigest output_identity.join(',')
 
@@ -307,7 +307,7 @@ class RedParse
       when saved_options!=options; "options changed from #{saved_options.inspect} to #{options.inspect}"
       end
       if error
-        warn "...cache read failed because #{error}"
+        #warn "...cache read failed because #{error}"
         cache_f.close
         cache_f=nil
         return
