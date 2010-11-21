@@ -1473,12 +1473,14 @@ end
     class LiteralNode<ValueNode; end
     class StringNode<ValueNode; end
     class StringCatNode < ValueNode; end
-    class NopNode<ValueNode; end
     class VarLikeNode<ValueNode; end  #nil,false,true,__FILE__,__LINE__,self
+    class SequenceNode<ListOpNode; end
+    class NopNode<SequenceNode; end
 
     class SequenceNode<ListOpNode
       def initialize(*args)
-        super
+        return if args.empty?
+        super 
         @offset=self.first.offset
       end
       def +(other)
@@ -3309,7 +3311,7 @@ end
       end
     end
 
-    class NopNode<ValueNode
+    class NopNode<SequenceNode        
       def initialize(*args)
         @startline=@endline=1
         super()
