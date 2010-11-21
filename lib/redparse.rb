@@ -1035,13 +1035,11 @@ end
   ]
 
   if @rubyversion >= 1.9
-    result.push \
-      -['->', '(', Expr.-, ')', 'do', Expr.-, 'end']>>ProcLiteralNode
-    result.push \
-      -[Expr, DotOp, ParenedNode, lower_op]>>
-        stack_monkey("parens_as_call",3,MethNameToken){|stack|
-          stack[-2,0]=MethNameToken.new("call",stack[-2].offset)
-        }
+    result.concat [
+#      -['->', ParenedNode.-, 'do', Expr.-, 'end']>>ProcLiteralNode,
+#      -['->', VarLikeNode["nil",{:@value=>nil}].reg, 'do', Expr.-, 'end']>>ProcLiteralNode,
+      -[(DotOp|DoubleColonOp).lb, '(',Expr.-,')', BlockNode.-, KW('do').~.la]>>CallNode,
+     ]
   end
 
   return result
