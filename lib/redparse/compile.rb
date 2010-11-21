@@ -1386,9 +1386,10 @@ end
 
       states=all_states
 #      @rules=expanded_RULES 
-      @inputs=nil #Marshal no like it
 
+      false && \
       begin
+        @inputs=nil #Marshal no like it
         p :dumping
         Marshal.dump(self,f=open("cached_parse_tables.drb","wb"))
         p :dump_done!
@@ -1399,7 +1400,7 @@ end
         @inputs=enumerate_exemplars
       end
     end
-    f.close
+    f.close if f
    
     #look for unused dotted rules and actions 
     #also states with drs past the end
