@@ -4014,16 +4014,17 @@ end
 
     class VarLikeNode<ValueNode #nil,false,true,__FILE__,__LINE__,self
       param_names :name
+      def self.new(name,*more)
+        if name.ident=='('
+          SequenceNode.new
+        else
+          super
+        end
+      end
       def initialize(name,*more)
         @offset=name.offset
-        if name.ident=='(' 
-          #simulate nil
-          replace ['nil']
-          @value=nil
-        else
-          replace [name.ident]
-          @value=name.respond_to?(:value) && name.value
-        end
+        replace [name.ident]
+        @value=name.respond_to?(:value) && name.value
       end
 
       alias ident name
