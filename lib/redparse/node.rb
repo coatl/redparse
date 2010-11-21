@@ -3317,6 +3317,7 @@ end
         super()
       end
 
+=begin
       def unparse o=default_unparse_options
         ''      
       end
@@ -3330,6 +3331,7 @@ end
       def to_parsetree(*options)
         []
       end
+=end
     end
 
 =begin
