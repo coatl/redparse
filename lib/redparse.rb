@@ -1063,8 +1063,8 @@ end
   def initialize(input,name="(eval)",line=1,lvars=[],options={})
     @rubyversion=options[:rubyversion]||1.8
 
-    encoding=options[:encoding]||'ascii'
-    warn 'encodings other than ascii dont really work right now' unless encoding=='ascii'
+    encoding=options[:encoding]||:ascii
+    encoding=:binary if @rubyversion<=1.8
     cache=Cache.new(
       File===input,name, 
         :line,line,:encoding,encoding,:locals,lvars.sort.join(","), 
@@ -1100,6 +1100,8 @@ end
       @funclikes=@lexer::FUNCLIKE_KEYWORDS()
       @varlikes=@lexer::VARLIKE_KEYWORDS()
       lvars.each{|lvar| @lexer.localvars[lvar]=true }
+      encoding=@lexer.encoding_name_normalize(encoding.to_s).to_sym
+      warn "#{encoding} encoding won't really work right now" if RubyLexer::NONWORKING_ENCODINGS.include? encoding
     end
     @funclikes=/#@funclikes|^->$/ if @rubyversion>=1.9
     @filename=name
