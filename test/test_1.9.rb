@@ -162,11 +162,11 @@ class TestsFor1_9 < Test::Unit::TestCase
     '->(a=1,*b,(c1,*c2,c3),d=2,&e;f,g,h) do [ b,c3,d,e,f,g,h ] end',
     '->a=1,*b,(c1,*c2,c3),d=2,&e;f,g,h{ [ b,c3,d,e,f,g,h ]}',
   ]
-  EXPECT_2_METHODS=EXPECT_1_METHOD.grep /->/
-  EXPECT_1_METHOD.replace(EXPECT_1_METHOD-EXPECT_2_METHODS)
+#  EXPECT_2_METHODS=EXPECT_1_METHOD.grep /->/
+#  EXPECT_1_METHOD.replace(EXPECT_1_METHOD-EXPECT_2_METHODS)
   EXPECT_1_METHOD.concat EXPECT_NO_METHODS.grep /->/
-  EXPECT_NO_METHODS.concat [
-  ]
+#  EXPECT_NO_METHODS.concat [
+#  ]
   EXPECT_NO_METHODS.replace(EXPECT_NO_METHODS-EXPECT_1_METHOD)
 
   WEAK=RUBY_1_9_VALID+EXPECT_NO_METHODS+EXPECT_1_METHOD+RUBY_1_9_TO_1_9_EQUIVALENCES.map{|r| [r.first,r.last]}.flatten
@@ -335,6 +335,7 @@ class TestsFor1_9 < Test::Unit::TestCase
     end
   }
 
+=begin
   EXPECT_2_METHODS.each{|snippet|
     define_method "test_1_9_two_methods_in_#{snippet}" do
       tree=parser(snippet,"-e")
@@ -347,4 +348,6 @@ class TestsFor1_9 < Test::Unit::TestCase
       assert_equal 2,count,snippet
     end
   }
+=end
+
 end
