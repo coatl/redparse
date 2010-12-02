@@ -169,6 +169,9 @@ class TestsFor1_9 < Test::Unit::TestCase
 #  ]
   EXPECT_NO_METHODS.replace(EXPECT_NO_METHODS-EXPECT_1_METHOD)
 
+  EXPECT_NO_MULTIASSIGNS= EXPECT_NO_METHODS+EXPECT_1_METHOD
+  EXPECT_NO_SEQUENCES= EXPECT_NO_MULTIASSIGNS.dup#.reject{|x| /; foo \+1/===x } 
+
   WEAK=RUBY_1_9_VALID+EXPECT_NO_METHODS+EXPECT_1_METHOD+RUBY_1_9_TO_1_9_EQUIVALENCES.map{|r| [r.first,r.last]}.flatten
 
   warn "do something more with WEAK cases"
@@ -309,6 +312,28 @@ class TestsFor1_9 < Test::Unit::TestCase
     return count
   end
 
+  def count_sequences(tree)
+    count=0
+    tree.walk{|parent,i,subi,node|
+      case node
+      when SequenceNode; count+=1 
+      end unless CallSiteNode===parent and 5===i and nil===subi #skip block slot in Call and KWCall
+      true
+    }
+    return count
+  end
+
+  def count_multiassigns(tree)
+    count=0
+    tree.walk{|parent,i,subi,node|
+      case node
+      when MultiAssign; count+=1
+      end
+      true
+    }
+    return count
+  end
+
   EXPECT_NO_METHODS.each{|snippet|
     define_method "test_1_9_no_methods_in_#{snippet}" do
       tree=parser(snippet,"-e")
@@ -350,4 +375,29 @@ class TestsFor1_9 < Test::Unit::TestCase
   }
 =end
 
+  EXPECT_NO_SEQUENCES.each{|snippet|
+    define_method "test_1_9_no_sequence_in_#{snippet}" do
+      tree=parser(snippet,"-e")
+      begin
+        tree=tree.parse
+      rescue Exception=>e
+        raise e,e.message+"during parsing of #{snippet}\n",e.backtrace
+      end
+      count=count_sequences(tree)
+      assert_equal 0,count,snippet
+    end
+  }
+  EXPECT_NO_MULTIASSIGNS.each{|snippet|
+    define_method "test_1_9_no_multiassign_in_#{snippet}" do
+      tree=parser(snippet,"-e")
+      begin
+        tree=tree.parse
+      rescue Exception=>e
+        raise e,e.message+"during parsing of #{snippet}\n",e.backtrace
+      end
+      return if AssignNode===tree
+      count=count_multiassigns(tree)
+      assert_equal 0,count,snippet
+    end
+  }
 end
