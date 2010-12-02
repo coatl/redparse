@@ -2943,10 +2943,15 @@ end
     end
 
     class CallSiteNode<ValueNode
-      param_names :receiver, :name, :params, :blockparams, :block
+      param_names :receiver, :name, :params, :blockparams, :locals, :block
+
       alias blockargs blockparams
       alias block_args blockargs
       alias block_params blockparams
+
+      alias block_locals locals
+      alias blocklocals locals
+      alias locals_in_block locals
 
       def initialize(*args)
         if KeywordToken===args.first and args.first.ident=='('
@@ -2955,6 +2960,17 @@ end
         else 
           method,open_paren,param_list,close_paren,block=*args
           @not_real_parens=!open_paren || open_paren.not_real?
+        end
+
+        if SequenceNode===param_list
+          param_list,blocklocals,* = param_list
+          if CommaOpNode===blocklocals
+            blocklocals=Array(blocklocals)
+          else
+            blocklocals=[blocklocals]
+          end
+          blocklocals.map!{|bl| bl.ident}
+          blocklocals.extend ListInNode
         end
 
         case param_list
@@ -2993,7 +3009,7 @@ end
           @offset=parened&&parened.offset
         end
 
-        super(nil,method,param_list,blockparams,block)
+        super(nil,method,param_list,blockparams,blocklocals,block)
         #receiver, if any, is tacked on later
       end
 
