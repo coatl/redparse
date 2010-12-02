@@ -156,7 +156,7 @@ class TestsFor1_9 < Test::Unit::TestCase
     'proc{|&e;f| e }',
     'proc{|aa,a=1,az,*b,(c1,*c2,c3),da,d=2,dz,(e1=1,*e2,e3=3),&m;f,g,h| [ b,c3,d,e1,e2,e3,f,g,h,m ]}',
     'def z(aa,a=1,az,*b,(c1,*c2,c3),da,d=2,dz,(e1=1,*e2,e3=3),&m) [ b,c3,d,e1,e2,e3,m ] end',
-    'aa,a=1,az,*b,(c1,*c2,c3),da,d=2,dz,(e1=1,*e2,e3=3)=k;  b,c3,d,e1,e2,e3 ',
+    'aa,a=1,az,*b,(c1,*c2,c3),da,d=2,dz,(e1=1,*e2,e3=3)=k + [b,c3,d,e1,e2,e3] ',
     '->(aa,a=1,az,*b,(c1,*c2,c3),da,d=2,dz,(e1=1,*e2,e3=3),&m;f,g,h){[ b,c3,d,e1,e2,e3,f,g,h,m ]}',
     '->(a=1,*b,(c1,*c2,c3),d=2,&e;f,g,h){ [ b,c3,d,e,f,g,h ]}',
     '->(a=1,*b,(c1,*c2,c3),d=2,&e;f,g,h) do [ b,c3,d,e,f,g,h ] end',
