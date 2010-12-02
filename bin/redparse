@@ -115,7 +115,7 @@ while /^-/===ARGV.first
         when 'r','ro'; :read_only
         when 'w','wo'; :write_only
         when 'rw'; :read_write #default
-        when 'n','no'; :none
+        when 'n','no','none'; :none
         else mode.to_sym
         end 
       when "-q"; quiet=true
