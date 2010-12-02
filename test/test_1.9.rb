@@ -151,6 +151,7 @@ class TestsFor1_9 < Test::Unit::TestCase
     '$f::($x,$y)',
     '$f.($x,$y){}',
     '$f.($x,$y) do |stuff| $yada-$yada end',
+    '$f.($x,$y) do |stuff;nonsense| $yada-$yada end',
     'proc{|a=1,*b,d| b}',
     'proc{|&e;f| e }',
     'proc{|aa,a=1,az,*b,(c1,*c2,c3),da,d=2,dz,(e1=1,*e2,e3=3),&m;f,g,h| [ b,c3,d,e1,e2,e3,f,g,h,m ]}',
