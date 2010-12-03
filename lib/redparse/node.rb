@@ -3275,14 +3275,26 @@ end
     end
 
     class BlockNode<ValueNode #not to appear in final parse tree
-      param_names :params,:body
+      param_names :params,:locals,:body
       def initialize(open_brace,formals,stmts,close_brace)
         stmts||=SequenceNode[{:@offset => open_brace.offset, :@startline=>open_brace.startline}]
         stmts=SequenceNode[stmts,{:@offset => open_brace.offset, :@startline=>open_brace.startline}] unless SequenceNode===stmts
         
+        if formals and formals.size==1 and SequenceNode===formals[0]
+          formals,blocklocals,* = formals[0]
+          formals&&=BlockParams[formals]
+          if CommaOpNode===blocklocals
+            blocklocals=Array(blocklocals)
+          else
+            blocklocals=[blocklocals]
+          end
+          blocklocals.map!{|bl| bl.ident}
+          blocklocals.extend ListInNode
+        end
+
         formals&&=BlockParams.new(Array.new(formals))
         @do_end=true unless open_brace.not_real?
-        super(formals,stmts)
+        super(formals,blocklocals,stmts)
       end
 
       attr_reader :do_end
