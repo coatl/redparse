@@ -2963,15 +2963,28 @@ end
           @not_real_parens=!open_paren || open_paren.not_real?
         end
 
-        if SequenceNode===param_list
-          param_list,blocklocals,* = param_list
-          if CommaOpNode===blocklocals
-            blocklocals=Array(blocklocals)
+        if KeywordToken===method and method.ident=='->'
+          if SequenceNode===param_list
+            blockparams,blocklocals,* = param_list
+            if CommaOpNode===blocklocals
+              blocklocals=Array(blocklocals)
+            else
+              blocklocals=[blocklocals]
+            end
+            blocklocals.map!{|bl| bl.ident}
+            blocklocals.extend ListInNode
           else
-            blocklocals=[blocklocals]
+            blockparams= param_list
           end
-          blocklocals.map!{|bl| bl.ident}
-          blocklocals.extend ListInNode
+
+          if CommaOpNode===blockparams
+            blockparams=Array(blockparams)
+          elsif blockparams
+            blockparams=[blockparams]
+          end
+
+          blockparams=BlockParams.new blockparams if blockparams
+          param_list=nil
         end
 
         case param_list
@@ -2999,7 +3012,8 @@ end
 
         if block
           @do_end=block.do_end
-          blockparams=block.params
+          blockparams||=block.params
+          blocklocals||=block.locals
           block=block.body #||[]
         end
         if Token===method 
