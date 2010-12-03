@@ -2651,6 +2651,7 @@ end
           data=CommaOpNode===item ? Array.new(item) : [item]
           @had_parens=true
         end
+        data= Array.new(data) if CommaOpNode===data
 
         super(data) unless data.empty?
       end
