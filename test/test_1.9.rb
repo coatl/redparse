@@ -178,8 +178,8 @@ class TestsFor1_9 < Test::Unit::TestCase
 
   include RedParse::Nodes
   RUBY_1_9_PATTERNS={
-    'not(true).to_s'=>+CallNode[+KWCallNode[nil, "not", +[+VarLikeNode["true"]], nil,nil], "to_s" ,nil,nil,nil],
-    'f.(a=1,2,3)'=>+CallNode[_,"()",-{:size=>3},nil,nil]
+    'not(true).to_s'=>+CallNode[+KWCallNode[nil, "not", +[+VarLikeNode["true"]], nil,nil,nil], "to_s" ,nil,nil,nil,nil],
+    'f.(a=1,2,3)'=>+CallNode[_,"()",-{:size=>3},nil,nil,nil]
   }
 
   def parser src,name
