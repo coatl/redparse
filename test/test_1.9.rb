@@ -162,8 +162,9 @@ class TestsFor1_9 < Test::Unit::TestCase
     '->(a=1,*b,(c1,*c2,c3),d=2,&e;f,g,h) do [ b,c3,d,e,f,g,h ] end',
     '->a=1,*b,(c1,*c2,c3),d=2,&e;f,g,h{ [ b,c3,d,e,f,g,h ]}',
   ]
-#  EXPECT_2_METHODS=EXPECT_1_METHOD.grep /->/
-#  EXPECT_1_METHOD.replace(EXPECT_1_METHOD-EXPECT_2_METHODS)
+  EXPECT_2_METHODS=EXPECT_1_METHOD.grep /foo=1/
+  EXPECT_1_METHOD.replace(EXPECT_1_METHOD-EXPECT_2_METHODS)
+
   EXPECT_1_METHOD.concat EXPECT_NO_METHODS.grep /->/
 #  EXPECT_NO_METHODS.concat [
 #  ]
@@ -299,10 +300,6 @@ class TestsFor1_9 < Test::Unit::TestCase
     }
   end
 
-
-
-
-
   def count_methods(tree)
     count=0
     tree.walk{|parent,i,subi,node|
@@ -362,7 +359,6 @@ class TestsFor1_9 < Test::Unit::TestCase
     end
   }
 
-=begin
   EXPECT_2_METHODS.each{|snippet|
     define_method "test_1_9_two_methods_in_#{snippet}" do
       tree=parser(snippet,"-e")
@@ -375,7 +371,6 @@ class TestsFor1_9 < Test::Unit::TestCase
       assert_equal 2,count,snippet
     end
   }
-=end
 
   EXPECT_NO_SEQUENCES.each{|snippet|
     define_method "test_1_9_no_sequence_in_#{snippet}" do
