@@ -191,7 +191,9 @@ class TestsFor1_9 < Test::Unit::TestCase
     until f.eof?
       l=f.readline
       l<<f.readline until l.chomp!"\\\\\\///\n"
-      EXCEPTIONS.[]= *l.split(' ====> ',2)
+      input,output=*l.split(' ====> ',2)
+      EXCEPTIONS[input]||=[]
+      EXCEPTIONS[input]<<output
     end
   } if File.exist?("test/unparse_1.9_exceptions.txt")
 
@@ -212,7 +214,7 @@ class TestsFor1_9 < Test::Unit::TestCase
 
   def assert_unparses_to pt,code
     code2=pt.unparse
-    if code==code2 or EXCEPTIONS[code]==code2
+    if code==code2 or EXCEPTIONS[code].include? code2
       assert true
     elsif confirm_error?(code,code2)
       assert_equal code,code2 
