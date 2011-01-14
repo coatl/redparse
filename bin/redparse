@@ -224,9 +224,12 @@ inputs.each_index{|i|
     when :parsetree
       tree=tree.to_parsetree
       hack=tree.dup
-      p hack
-      hack.first[1..2]=[]  #get rid of BEGIN blocks inserted into beginning of input
-      hack=if hack.first.size<=2; hack.first[1] else hack end
+      #p hack
+=begin
+        hack.first[1..2]=[]  #get rid of BEGIN blocks inserted into beginning of input
+        hack=if hack.first.size<=2; hack.first[1] else hack end
+      rescue Exception
+=end
       pp(hack||[])
     when :vsparsetree,:vsparsetree2
       begin
