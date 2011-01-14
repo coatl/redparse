@@ -477,7 +477,7 @@ class RedParse
         end
         classname=self.class.name
         classname.sub!(/^(?:RedParse::)?(.*?)(?:Node)?$/){$1}
-        result= [' '*indent,"+",(label+': ' if label),classname,]
+        result= [' '*indent,"+",(label.to_s+': ' if label),classname,]
         result+=[" pos=",pos,] if pos
         result+=[" ",ivars,"\n"]
         indent+=2
