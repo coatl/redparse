@@ -1938,7 +1938,8 @@ end
       param_names :body 
       alias val body
       alias val= body=
-      def initialize(lparen,body,rparen)
+      def initialize(lparen=nil,body=nil,rparen=nil)
+        return unless body
         @offset=lparen.offset
         self[0]=body
       end
