@@ -1961,11 +1961,11 @@ end
       def op?; false end
  
       def parsetree(o)
-          body.parsetree(o)
+        body ? body.parsetree(o) : [:nil]
       end
 
       def rescue_parsetree o
-        body.rescue_parsetree o
+        body ? body.rescue_parsetree(o) : [:nil]
 #        result.first==:begin and result=result.last unless o[:ruby187]
 #        result
       end
