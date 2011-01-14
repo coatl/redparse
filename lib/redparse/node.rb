@@ -598,6 +598,7 @@ class RedParse
         #@namelist
         result=superclass.namelist||[] rescue []
         result.concat @namelist if defined? @namelist
+        result.uniq!
         return result
       end
 
