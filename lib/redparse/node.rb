@@ -3504,6 +3504,7 @@ end
         o[:linenum]+=@open.count("\n")
         result=[@open,unparse_interior(o),@close,@modifiers].join
         o[:linenum]+=@close.count("\n")
+        result<<" " if /\r\z/===result
         return result
       end
 
