@@ -4082,7 +4082,7 @@ EOS
         assert_equal nodes,nodes2
 
         begin
-          unparsed=nodes.unparse
+          unparsed=nodes.unparse :exact=>true, :linenum=>1
           if unparsed==xmpl
             assert true
             done_already=true
