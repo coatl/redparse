@@ -4063,8 +4063,8 @@ end
     class VarLikeNode<ValueNode #nil,false,true,__FILE__,__LINE__,self
       param_names :name
       def self.new(name,*more)
-        if name.ident=='('
-          SequenceNode.new
+        if name.ident=='(' #shouldn't happen now, AFAICT
+          ParenedNode.new
         else
           super
         end
