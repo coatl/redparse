@@ -323,19 +323,21 @@ class RedParse
           return Ron.load( cache_f.read )
         rescue Exception=>e
           warn "#{e.class}: #{e}"
-          warn "cache ron read failed for:\n#{input}"
+          warn "cache ron read failed for:#{cache_fn}"
           return nil
         end
       when 'Marshal'
         cache_f.pos=pos
         begin
           return Marshal.load( cache_f )
-        rescue Exception=>e              
+        rescue Exception=>e
           warn "#{e.class}: #{e}"
-          warn "cache read failed for:\n#{input}"
+          warn "cache read failed for:#{cache_fn}"
           return nil
         end
-      else huh
+      else 
+        warn "unrecognized RedParse::Cache encoder type: #{encoder}"
+        return nil
       end
   end
 
