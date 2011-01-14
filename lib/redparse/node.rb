@@ -1744,7 +1744,7 @@ end
         op=op()
         op=op.chomp "@"
         result=op
-        result+=" " if /#{LETTER}$/o===op or /^[+-]/===op && LiteralNode===val
+        result+=" " if /(?:#{LETTER}|[?!])$/o===op or /^[+-]/===op && LiteralNode===val
         result+=val.unparse(o)
       end
     end
