@@ -4479,7 +4479,7 @@ end
       def image; "(for)" end
 
       def unparse o=default_unparse_options
-        result=unparse_nl(self,o)+"         for #{iterator.lhs_unparse(o)[1...-1]} in #{enumerable.unparse o}"
+        result=unparse_nl(self,o,"")+"         for #{iterator.lhs_unparse(o)[1...-1]} in #{enumerable.unparse o}"
         result+=unparse_nl(body,o)+"           #{body.unparse(o)}" if body
         result+=";end"
       end
