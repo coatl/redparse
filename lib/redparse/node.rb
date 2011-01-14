@@ -4196,7 +4196,7 @@ end
         result+=unparse_nl(consequent,o)+"#{consequent.unparse(o)}" if consequent
         result+=unparse_nl(elsifs.first,o)+elsifs.map{|n| n.unparse(o)}.join if elsifs
         result+=unparse_nl(else_,o)+"else "+else_.unparse(o) if else_
-        result+=";else " if defined? @empty_else
+        result+=";else " if defined? @empty_else and @empty_else
         result+=";end"
         return result
       end
