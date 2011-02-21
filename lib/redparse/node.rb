@@ -165,6 +165,8 @@ class RedParse
       extend Stackable::Meta
 
       def image; "#{inspect}" end
+
+      def short_inspect; inspect+"\n" end
  
       def to_parsetree(*options) #this shouldn't be needed anymore
         o={}
@@ -413,6 +415,10 @@ class RedParse
       end
 
       def image; "(#{inspect})" end
+
+      def short_inspect(cutoff=2)
+        inspect.gsub(/\n {#{cutoff*2},}.*$/,'')
+      end
 
       def error? x; false end
 
