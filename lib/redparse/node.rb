@@ -3058,11 +3058,17 @@ end
 
       def unparse o=default_unparse_options
         fail if block==false
+        parensadded=[false]
+        params=params()
+        params&&=params.map{|param|  
+          unparse_nl(param,o,'',"\\\n")+param.unparse_maybe_parens(o,parensadded)  
+        }.join(', ')
+        real_parens=real_parens() || parensadded[0]
         result=[
          receiver&&receiver.unparse(o)+'.',
          name=='()' ? '' : name,
          real_parens ? '(' : (' ' if params),
-         params&&params.map{|param|  unparse_nl(param,o,'',"\\\n")+param.unparse(o)  }.join(', '),
+         params,
          real_parens ? ')' : nil,
         
          block&&[
@@ -4148,7 +4154,7 @@ end
       def image; "([])" end
 
       def unparse o=default_unparse_options
-        "["+map{|item| unparse_nl(item,o,'')+item.unparse(o)}.join(', ')+"]"
+        "["+map{|item| unparse_nl(item,o,'')+item.unparse_maybe_parens(o)}.join(', ')+"]"
       end
 
       def parsetree(o)
@@ -4582,8 +4588,8 @@ end
         arrow= defined?(@no_arrows) ? " , " : " => "
         (0...size).step(2){|i| 
           result<< unparse_nl(self[i],o,'')+
-            self[i].unparse(o)+arrow+
-            self[i+1].unparse(o)+', '
+            self[i].unparse_maybe_parens(o)+arrow+
+            self[i+1].unparse_maybe_parens(o)+', '
         }
         result.chomp! ', '
         result << "}" unless defined? @no_braces and @no_braces
