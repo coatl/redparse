@@ -367,7 +367,7 @@ class RedParseTest<Test::Unit::TestCase
     'module self::A include B; c end'...'',
     'class a.b.c.d.e.f::Quux; YYY=534 end'...'',
     'class[Array][0]::Foo; Bazz=556 end'...'',
-    '=begin\r\nfoo\r\n=end\r\n'...'',
+    "=begin\r\nfoo\r\n=end\r\n"...'',
     'a!`b'...'',
     'fetch_named { {} }'...'',
     'def subject::Builder.foo; bar end'...'',
@@ -1621,7 +1621,8 @@ class RedParseTest<Test::Unit::TestCase
     '%W[a #{b} c]'...'',
 
     '"a b c #{d}"'...'',
-    '"a b c #{d}\n"'...'',
+    '"a b c #{d}\\n"'...'',
+    %*"a b c \#{d}\n"*...'',
     '"a b c #{d} "'...'',
     '"#{a} b c"'...'',
 
