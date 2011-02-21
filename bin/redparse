@@ -105,7 +105,15 @@ while /^-/===ARGV.first
       when "--rawtokens"; ENV['RAW_PRINT_TOKENS']='1'
       when "--stack"; ENV['PRINT_STACK']='1'
       when "--unparse"; unparse=true
-      when "--compile", "-c"; require 'redparse/compile'; compile=true
+      when /^(?:--output|-o)=?(.*)$/
+        outputf=($1.size>0 ? $1 : (/^[^-]/===ARGV.first && ARGV.shift ))
+      when /^(?:--require|-r)=?(.*)$/
+        reqs||=[]
+        reqs<<($1.size>0 ? $1 : (/^[^-]/===ARGV.first && ARGV.shift ))
+      when /^(?:--coalesce|-c)=?(.*)$/; 
+        coalesce=true
+        variant=($1.size>0 ? $1 : (/^[^-]/===ARGV.first && ARGV.shift or ''))
+      when "--compile"; require 'redparse/compile'; compile=true
       when "--macros", "--macro", "-m"
         require 'rubygems'
         require 'macro'
