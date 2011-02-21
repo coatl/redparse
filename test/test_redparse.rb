@@ -42,10 +42,13 @@ class Test::Unit::TestCase
   rescue Test::Unit::AssertionFailedError=>e
     warn "an expected error occurred in #{from}: #{e.message}"
     if defined? @@known_errors
-      @@known_errors+=1
+      @@known_errors<<x
     else
-      @@known_errors=1
-      at_exit {warn "!!!UNFIXED KNOWN ERRORS!!!: #@@known_errors"}
+      @@known_errors=[x]
+      at_exit {
+        warn "!!!UNFIXED KNOWN ERRORS!!!: #{@@known_errors.size}"
+        @@known_errors.each{|err| warn "  "+err unless err["\n"] }
+      }
     end
   rescue Exception=>e
     raise
@@ -4045,10 +4048,14 @@ EOW
   rescue Test::Unit::AssertionFailedError=>e
     warn "a known bug in ParseTree/MRI reared its head in #{from}: '#{x unless /\n./===x or x.size>65}'"
     if defined? @@known_ruby_bugs
-      @@known_ruby_bugs+=1
+      @@known_ruby_bugs<<x
     else
-      @@known_ruby_bugs=1
-      at_exit {warn "unfixed bugs in ParseTree/MRI: #@@known_ruby_bugs"}
+      warn e.message
+      @@known_ruby_bugs=[x]
+      at_exit {
+        warn "unfixed bugs in ParseTree/MRI: #{@@known_ruby_bugs.size}"
+        @@known_ruby_bugs.each{|bug| warn "  "+bug unless bug["\n"] }
+      }
     end
   rescue Exception=>e
     raise
