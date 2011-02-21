@@ -204,11 +204,11 @@ class TestsFor1_9 < Test::Unit::TestCase
     puts 'unparsed:'
     puts code2
     answer=nil
-    until answer==true or answer==false
+    while true
       puts 'is this difference an error? (y/n)'
       answer=gets
-      answer=true if /\Ay/i===answer
-      answer=false if /\An/i===answer
+      return true if /\Ay/i===answer
+      return false if /\An/i===answer
     end
     return answer
   end
