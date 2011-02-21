@@ -3902,6 +3902,8 @@ EOW
     'a rescue (...)',
     "((...))",
     'def ((...)).foo; end',
+    'def a0.(...); end',
+    'def a0.a1(a2=(...)); end',
     'a0 = (...) rescue b0',
     'a0 = ((...)) rescue b0',    
     '(...)  #with a comment',
@@ -3913,12 +3915,35 @@ EOW
     "b=1;b (...)",
     "return (...)",
     '"#{(...)}"',
+    '"#{*(...)}"',
+    '*(...)',
+    '*(...)=y',
+    'a,*((...)).w=d,e,f',
+    'a,((...)).w,c=d,e,f',
   ]
   INJECTABLES=[  #take it easy with these too
     'p (1..10).method(:each)',
     'a0 rescue b0',
     'begin; r; t end',
     'a=b,c=d',
+    "\n__END__\n",
+    '* =f,g',
+    '
+     <<-foo
+       xxx
+     foo
+     <<-bar
+       yyy
+     bar
+    ',
+    '
+     <<-foo
+       xxx
+     foo
+    ',
+   'm;n',
+   'undef rth, hty',
+   'alias rth hty',
   ]
   if ENV['MANGLE']
   else
