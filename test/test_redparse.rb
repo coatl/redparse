@@ -35,10 +35,10 @@ require "rubylexer/test/testcases"
 $VERBOSE=1
 
 class Test::Unit::TestCase
-  def known_error
+  def known_error x
     from=caller.first
     from=from[/ in `.*'\Z/] || from[/\A[^:]*:[^:]*/]
-    yield
+    yield x
   rescue Test::Unit::AssertionFailedError=>e
     warn "an expected error occurred in #{from}: #{e.message}"
     if defined? @@known_errors
@@ -59,10 +59,10 @@ class Test::Unit::TestCase
     end
   end
 
-  def known_failure
+  def known_failure x
     from=caller.first
     from=from[/ in `.*'\Z/] || from[/\A[^:]*:[^:]*/]
-    yield
+    yield x
   rescue Exception=>e
     warn "an expected failure occurred in #{from}: #{e}"
     if defined? @@known_failures
@@ -81,9 +81,9 @@ class Test::Unit::TestCase
     end
   end
 
-  def slow
+  def slow x
     if ENV['SLOW']
-      yield
+      yield x
     else
       if defined? @@slow_spots
         @@slow_spots+=1
@@ -3966,7 +3966,7 @@ EOW
     safe.gsub! /\\\\/,"__"
     safe[/[^ -~]|\\\\/] and fail
     cp="check_parsing '#{escaped}'"
-    cp="#{wrap}{#{cp}}" if wrap
+    cp="#{wrap}('#{escaped}'){|x| check_parsing x}" if wrap
     "
       define_method 'test_parsing_of_#{safe}' do
         #puts 'test_parsing_of_#{safe}'
@@ -4038,10 +4038,10 @@ EOW
 
   Test::Unit::AssertionFailedError=MiniTest::Assertion unless defined? Test::Unit::AssertionFailedError
 
-  def known_ruby_bug
+  def known_ruby_bug x
     from=caller.first
     from=from[/ in `.*'\Z/] || from[/\A[^:]*:[^:]*/]
-    yield
+    yield x
   rescue Test::Unit::AssertionFailedError=>e
     warn "a known bug in ParseTree/MRI reared its head in #{from}: #{e.message}"
     if defined? @@known_ruby_bugs
