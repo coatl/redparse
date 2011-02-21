@@ -335,9 +335,15 @@ class RedParseTest<Test::Unit::TestCase
     'c while d and /8/../2.a?(b)/',
     'a if 1..2',
     'status, err_args = Documeh_status{fcgi_state = 3; docespond do doc_response =fcgi_state =  1; end }',
+    "case;when I; JIS;else case; when sjis__length; EJP ;else 55; end;end",
+    "case;when 0;ng = 'JIS';else case; when sjis__length; ding = 'EUC-JP' ;end;end",
+    "doc_status, err_args = Documeh_status{fcgi_state = 3; docespond do doc_response =fcgi_state =  1; end }",
 
     #not sure which, doesn't really matter anyway
     "$11111111111111111111111111111111111111111111111111111111111111111111",
+    "module Array ([Array]).first::E include M end",
+    "module Array ([Array]).first::E include M; end",
+    "module Array ([Array]).first::E; end",
   ]
 
   ONELINERS=[
