@@ -3520,8 +3520,10 @@ end
         unless escapable=ESCAPABLES[open]
           maybe_crunch='\\#' if %r{\A["`/\{]\Z} === @char and open[1] != ?q and open != "'" #"
           #crunch (#) might need to be escaped too, depending on what @char is
+          quotes=open[-1,1]
+          quotes+=close unless quotes==close
           escapable=ESCAPABLES[open]=
-            /[#{Regexp.quote open[-1,1]+close}#{maybe_crunch}]/
+            /[#{Regexp.quote(quotes)}#{maybe_crunch}]/
         end
         escapable             
       end
