@@ -4043,7 +4043,7 @@ EOW
     from=from[/ in `.*'\Z/] || from[/\A[^:]*:[^:]*/]
     yield x
   rescue Test::Unit::AssertionFailedError=>e
-    warn "a known bug in ParseTree/MRI reared its head in #{from}: #{e.message}"
+    warn "a known bug in ParseTree/MRI reared its head in #{from}: '#{x unless /\n./===x or x.size>65}'"
     if defined? @@known_ruby_bugs
       @@known_ruby_bugs+=1
     else
