@@ -1131,7 +1131,9 @@ end
   end
 
   attr_accessor :lexer, :print_filter
-  attr :rubyversion
+  attr_reader :rubyversion, :stack
+
+  alias rules expanded_RULES
 
   def get_token(recursing=false)
     unless @moretokens.empty? 
