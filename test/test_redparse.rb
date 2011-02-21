@@ -4193,6 +4193,7 @@ EOW
     return @server_running_187= version=="1.8.7"
   end
 
+  @@differed_by_begin=0
   def check_parsing xmpl
     ParseTree.fork_server?
     xmpl=xmpl.dup.freeze
@@ -4245,8 +4246,14 @@ EOW
             assert true
           else
             assert_equal tree, RedParse.remove_silly_begins(tree2)
-            warn "parse_trees differed by a :begin in #{xmpl}"
             differed_by_begin=true
+            if @@differed_by_begin==0 or ENV['DIFFER_BY_BEGIN']
+              warn "parse_trees differed by a :begin in #{xmpl}"
+              at_exit{warn "differed by begin: #@@differed_by_begin"} unless ENV['DIFFER_BY_BEGIN']
+            elsif @@differed_by_begin==1
+              warn "more parse_trees differ by a :begin (set DIFFER_BY_BEGIN for details)"
+            end
+            @@differed_by_begin+=1
           end
           assert_equal warnings, warnings2 if ENV['WARN_PICKINESS']
           if warnings != warnings2
