@@ -135,6 +135,25 @@ while /^-/===ARGV.first
       else fail "unknown option: #{opt}"
     end
 end
+
+if coalesce
+  variant=variant.split(' ')
+
+  reqs.each{|req| require req } if reqs
+  versions,modules=variant.partition{|v| /^\d/===v }
+  modules.map!{|m| RedParse.const_get m }
+  fail if versions.size>1
+  version=versions.first||(ruby19 ? 1.9 : 1.8)
+  version=version.to_f
+  classes=modules.grep Class
+  modules-=classes
+  assert classes.size<=1
+  k=classes.first||RedParse
+  rp=k.new("",:rubyversion=>version,:cache_mode=>:none)
+  modules.each{|m| rp.extend m }
+  rp.write_reduce_withs outputf
+  exit
+end
   
 unless inputs
     if ARGV.empty?
