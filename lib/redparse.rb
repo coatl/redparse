@@ -55,6 +55,17 @@ class RedParse
   
   alias :inspect :to_s
   
+  def pretty_stack max=nil
+    target=@stack
+    target=target[-max..-1] if max and max<target.size
+
+    target.map{|n| 
+      res=n.inspect
+      res<<"\n" unless res[-1]=="\n"
+      res
+    }
+  end
+
 ####### generic stuff for parsing any(?) language
 #  include Nodes
   class StackMonkey
