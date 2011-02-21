@@ -2868,7 +2868,78 @@ class RedParseTest<Test::Unit::TestCase
       "$-\v"...'',
       '$-[]'...'',
       'a,b=(*c=b,a)'...'',
-      
+      '"__A#{a=b,c=d}"'...'',
+      '"#{ * =f,g}"'...'',
+      '"#{*a0 = (*a= c)}"'...'',
+      '"#{*a0= begin a end rescue b0}"'...'',
+      '"#{*a=b rescue c}"'...'',
+      '"#{*a=b}"'...'',
+      '"#{*a[*b]=c}"'...'',
+      '"#{BEGIN{a}}"'...'',
+      '"#{END{a}}"'...'',
+      '"#{a=b,d rescue c}"'...'',
+      '"#{begin begin; ync; p1; end;rr end}"'...'',
+      '"1#{begin; r; t end;p (1).m}2"'...'',
+      'a=a i? -R'...'',
+      'begin; r; t end;q p'...'',
+      'begin; p (1..10).method(:each); rescue b; end.m'...'',
+      'begin; p (1..10).method(:each); rescue B=>c; end'...'',
+      'begin begin; ync; p1; end;rr end'...'',
+      '"#{"#{*a0 = (*a= c)}"}"'...'',
+      '"#{ * =f,g}"'...'',
+      'b=1;b p %s[jim];'...'',
+      '"#{*a=b}"'...'',
+      'a0 rescue b0=b,d rescue c'...'',
+      'a0 = ~begin; a; rescue b; end rescue b0'...'',
+      'def a c=d=1; end'...'',
+      '"#{a=1,2}"'...'',
+      '"#{a,=1}"'...'',
+      'a0 = ("#{a=b,d rescue c}") rescue b0'...'',
+      'a.b[]=a=b,c=d'...'',
+      'a rescue begin; p (1..10).method(:each); rescue b; end.m'...'',
+      'a rescue a=1,2 rescue 4'...'',
+      'a rescue a=*b rescue c rescue d'...'',
+      'a rescue BEGIN {a}'...'',
+      'a rescue "#{a=b,d rescue c}"'...'',
+      '__END__  #with a comment'...'',
+      '"sdfgfg#{"dfgdh"}";g'...'',
+      '+ ?c;p'...'',
+      '+?c;p'...'',
+      '+:s;p'...'',
+      "+:'s';p"...'',
+      '+/r/;p'...'',
+      '+"r";p'...'',
+      '+++++++++++1;p'...'',
+      '+++++++++++-1;p'...'',
+      '+%s{s};p'...'',
+      '* =f,g rescue b and c'...'',
+      '(begin; r; t end;b;c);d;e;f;(g;h;i)'...'',
+      '(BEGIN {})'...'',
+      '(;1;2;);p'...'',
+      '(/ 1/);p'...'',
+      '(mkk,(a=b,c).kk)=3'...'',
+      '"#{a=b,d rescue c}"'...'', 
+      "\r\n\n__END__\n\r\n\r\n\r\n\r\n\r\n"...'',
+      "%\n__END__\n[a]"...'',
+      "?\\\n__END__\n-?"...'',
+      "a0 = def a.\n__END__\n; end rescue b0"...'',
+      "def a.b(c=\n__END__\n); end"...'',
+      "<<x.\n 1111\nx\na0 rescue b0()\n"...'',
+      'a rescue BEGIN{b}'...'',
+      'a rescue a=*b rescue c'...'',
+      'a rescue a rescue a=1,2 rescue 4'...'',
+      'a rescue a0 = b 1 do end rescue c'...'',
+      'a0 = ~bend'...'',
+      'a,((BEGIN {})).w,c=d,e,f'...'',
+      'a,(* =f,g rescue b and c).w,c=d,e,f'...'',
+      'a,(a0 rescue b0=b,d rescue c).w=d'...'',
+      'a[*b]=a=b,c=d'...'',
+      'class<<a; begin; r; t end;c end'...'',
+      'def a0unde;  undef new, ne; end'...'',
+      'def a0.a & b; end'...'',
+      'def a0.a  b=c do end; hhh end'...'',
+      'def a0.a b=c,d=e do f end; end'...'',
+      'def a0.a* b; end'...'',
     ]
 
 
@@ -2941,9 +3012,17 @@ class RedParseTest<Test::Unit::TestCase
        \\"
      foo
 
+def a1(a2=  %s[\
+]);end
 END
 
   STANZAS=PASSTHRU_BSLASHES_ENTIRE+%q[
+  "#{p "#{<<-kekerz}#{"foob"
+     zimpler
+     kekerz
+     }"
+  }"
+
   @@anon = Module.new
   class @@anon::I
     bindtextd 
@@ -3671,6 +3750,92 @@ end
 
 <<-EOS<<__LINE__
 EOS
+
+def (
+__END__
+).foo; end
+
+def (a=
+__END__
+).foo; end
+
+-0.0
+__END__
+**31
+
+p (M.
+__END__
+)
+
+module
+__END__
+::Foo; end
+
+a,(%
+__END__
+[a]).w,c=d,e,f
+
+alias :"
+__END__
+#{bar}" :"baz#{quux}"
+
+undef :"
+__END__
+#{bar}"
+
+p Module.
+__END__
+
+p (
+__END__
+)
+
+def (  def test_endblockwarn
+    ruby = EnvUtil.rubybin
+    # Use Tempfile to create temporary file path.
+    launcher = Tempfile.new(self.class.name)
+    errout = Tempfile.new(self.class.name)
+    launcher << <<EOF
+errout = ARGV.shift
+STDERR.reopen(File.open(errout, "w"))
+STDERR.sync = true
+Dir.chdir(#{q(DIR)})
+cmd = "\\"#{ruby}\\" \\"endblockwarn.rb\\""
+system(cmd)
+EOF
+    launcher.close
+    launcherpath = launcher.path
+    errout.close
+    erroutpath = errout.path
+    system("#{q(ruby)} #{q(launcherpath)} #{q(erroutpath)}")
+    expected = <<EOW
+endblockwarn.rb:2: warning: END in method; use at_exit
+(eval):2: warning: END in method; use at_exit
+EOW
+    assert_equal(expected, File.read(erroutpath))
+    # expecting Tempfile to unlink launcher and errout file.
+  end).foo; end
+
+def (  def test_endblockwarn
+<<EOF
+irqDIR
+cmd
+EOF
+<<EOW
+endblat_exit
+EOW
+  end).foo; end
+
+def (
+<<EOF
+irqDIR
+cmd
+EOF
+<<EOW
+endblat_exit
+EOW
+).foo; end
+
 
   ] ##############################END OF STANZAS#################################################
   ###############################################################################################
