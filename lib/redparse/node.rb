@@ -1141,6 +1141,22 @@ end
         return nl*shy
       end
 
+      def unparse_maybe_parens(o,changed=[])
+        result=unparse(o)
+        if !o[:exact] and 
+          case self
+          when CallNode; params and params.size>0 and !real_parens
+          when KWCallNode,AliasNode,UndefNode,SequenceNode; true
+          when AssignNode; MultiAssign===left
+          end
+        then
+          result="(#{result})"
+          changed[0]=true
+        end
+        return result
+      end
+      protected :unparse_maybe_parens
+
       def default_unparse_options
         {:linenum=>1}
       end
