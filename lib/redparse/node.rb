@@ -464,6 +464,7 @@ class RedParse
 
       def inspect label=nil,indent=0,verbose=false
         ivarnames=instance_variables-FlattenedIvars::EXCLUDED_IVARS
+        ivarnames-=noinspect_instance_variables if defined? noinspect_instance_variables
         ivarnodes=[]
         ivars=ivarnames.map{|ivarname|
           ivar=instance_variable_get(ivarname)
