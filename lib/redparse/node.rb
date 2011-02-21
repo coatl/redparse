@@ -2040,9 +2040,9 @@ end
           result+=unparse_nl(rescues.first,o) if rescues
           rescues.each{|resc| result+=resc.unparse(o) } if rescues
           result+=unparse_nl(else_,o)+"else "+else_.unparse(o) if else_
-          result+=";else" if @empty_else
+          result+=";else" if defined? @empty_else and @empty_else
           result+=unparse_nl(ensure_,o)+"ensure "+ensure_.unparse(o) if ensure_
-          result+=";ensure" if @empty_ensure 
+          result+=";ensure" if defined? @empty_ensure and @empty_ensure
           return result
       end
 
@@ -3458,6 +3458,7 @@ end
         @open||='"' 
         @close||='"' 
         @bs_handler||=:dquote_esc_seq
+        @modifiers=nil
         if /[\[{]/===@char
           @parses_like||=split_into_words(str)
         end
@@ -4177,9 +4178,7 @@ end
       param_names :condition,:consequent,:elsifs,:otherwise
       def initialize(iftok,condition,thentok,consequent,elsifs,else_,endtok)
         @offset=iftok.offset
-        if else_ 
-          else_=else_.val or @empty_else=true
-        end
+        @empty_else= else_ && !(else_=else_.val)
         condition.special_conditions! if condition.respond_to? :special_conditions!
         elsifs.extend ListInNode if elsifs
         super(condition,consequent,elsifs,else_)
