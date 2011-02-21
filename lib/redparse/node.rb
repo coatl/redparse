@@ -4028,13 +4028,12 @@ end
             val.unparse(o)
         when Float
           s= val.accurate_to_s
-          #why must it be *2? I wouldn't think any fudge factor would be necessary
           case s
           when /-inf/i; s="-"+Inf
           when /inf/i;  s=    Inf
           when /nan/i;  s=    Nan
           else
-            fail unless [s.to_f].pack("d")==[val].pack("d")
+            fail "float coercion not stable" unless [s.to_f].pack("d")==[val].pack("d")
           end
           s
         else val.inspect
