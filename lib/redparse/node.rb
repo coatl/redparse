@@ -5274,7 +5274,7 @@ end
       def error? x=nil
         @endline||=nil
         inner=middle.grep(MisparsedNode).first and return inner.error?( x )
-        "#@endline: misparsed #{what}: #{middle.map{|node| node&&node.image}.join(' ')}" 
+        "#@endline: misparsed #{what}: #{middle.map{|node| node&&(node.short_inspect rescue node.inspect)}.join}" 
       end
       alias msg error?
     end
