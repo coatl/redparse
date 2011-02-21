@@ -273,7 +273,7 @@ class TestsFor1_9 < Test::Unit::TestCase
   end
  
   RUBY_1_9_VALID.each{|xmpl|
-    define_method("test_valid_#{xmpl}") do
+    define_method("test_1_9_valid_#{xmpl}") do
       pt19=parser(xmpl,'(eval)').parse
       assert_nil pt19.errors
       assert_unparses_to pt19,xmpl
