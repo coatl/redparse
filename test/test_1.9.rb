@@ -215,7 +215,7 @@ class TestsFor1_9 < Test::Unit::TestCase
 
   def assert_unparses_to pt,code
     code2=pt.unparse
-    if code==code2 or EXCEPTIONS[code].include? code2
+    if code==code2 or (EXCEPTIONS[code] and EXCEPTIONS[code].include? code2)
       assert true
     elsif confirm_error?(code,code2)
       assert_equal code,code2 
