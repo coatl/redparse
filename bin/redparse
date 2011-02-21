@@ -96,6 +96,7 @@ while /^-/===ARGV.first
       when "--pp"; output=:pp
       when "--lisp"; output=:lisp
       when "--parsetree"; output=:parsetree
+      when "--no-parsetree"; output=:no_parsetree
       when "--vsparsetree"; output=:vsparsetree
       when "--vsparsetree2"; output=:vsparsetree2
       when "--update-problemfiles"; problemfiles=ProblemFiles.new
