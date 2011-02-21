@@ -3923,6 +3923,11 @@ EOW
     '*(...)=y',
     'a,*((...)).w=d,e,f',
     'a,((...)).w,c=d,e,f',
+    '[(...),1,2,3]',
+    '{(...)=>x}',
+    '{x=>(...)}',
+    'm((...))',
+    'm (...)',
   ]
   INJECTABLES=[  #take it easy with these too
     'p (1..10).method(:each)',
