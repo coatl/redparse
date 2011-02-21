@@ -3952,7 +3952,7 @@ EOW
     puts "warning: most data fuzzing is disabled; set MANGLE to enable"
   end
 
-  RUBYIDENT=/((?:$|@@?)?#{RubyLexer::LETTER}#{RubyLexer::LETTER_DIGIT}*[?!]?)/o
+  RUBYIDENT=/((?:\$|@@?)?#{RubyLexer::LETTER}#{RubyLexer::LETTER_DIGIT}*[?!]?)/o
 
   def self.snippet2testmethod(snippet,wrap=nil)
     escaped=snippet.gsub(/[\\']/){"\\"+$&}
