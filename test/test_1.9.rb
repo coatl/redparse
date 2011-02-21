@@ -162,10 +162,10 @@ class TestsFor1_9 < Test::Unit::TestCase
     '->(a=1,*b,(c1,*c2,c3),d=2,&e;f,g,h) do [ b,c3,d,e,f,g,h ] end',
     '->a=1,*b,(c1,*c2,c3),d=2,&e;f,g,h{ [ b,c3,d,e,f,g,h ]}',
   ]
-  EXPECT_2_METHODS=EXPECT_1_METHOD.grep /foo=1/
+  EXPECT_2_METHODS=EXPECT_1_METHOD.grep( /foo=1/ )
   EXPECT_1_METHOD.replace(EXPECT_1_METHOD-EXPECT_2_METHODS)
 
-  EXPECT_1_METHOD.concat EXPECT_NO_METHODS.grep /->/
+  EXPECT_1_METHOD.concat( EXPECT_NO_METHODS.grep( /->/ ) )
 #  EXPECT_NO_METHODS.concat [
 #  ]
   EXPECT_NO_METHODS.replace(EXPECT_NO_METHODS-EXPECT_1_METHOD)
