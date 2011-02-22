@@ -1065,10 +1065,9 @@ end
     RedParse.signature(class<<self; ancestors end)
   end
   def RedParse.signature(ancs=ancestors)
-    [ancs.map{|m| m.name},
-     Digest::SHA256.file(__FILE__),
-     Digest::SHA256.file(__FILE__.sub(/\.rb\z/,"/node.rb")),
-    ]
+    @@my_sha||=Digest::SHA256.file(__FILE__)
+    @@node_sha||=Digest::SHA256.file(__FILE__.sub(/\.rb\z/,"/node.rb"))
+    [ancs.map{|m| m.name}, @@my_sha, @@node_sha,]
   end
 
   def initialize(input,name=nil,line=nil,lvars=nil,options=nil)
