@@ -833,8 +833,10 @@ end
       },
     #hmmm.... | in char classes above looks useless (predates GoalPostToken)
 
-    -[Expr, Op|KW_Op, Expr, lower_op]>>RawOpNode,  #most operators
-    
+#    -[Expr, Op|KW_Op, Expr, lower_op]>>RawOpNode,  #most operators
+    -[Expr, Op, Expr, lower_op]>>RawOpNode,  #most operators
+    -[Expr, "=>", Expr, lower_op]>>ArrowOpNode,
+
     #assignment
     -[Lvalue, MODIFYASSIGNOP, Expr, lower_op]>>AssignNode,
     -[Lvalue, Op('=',true), AssignmentRhsNode, lower_op]>>AssignNode,
