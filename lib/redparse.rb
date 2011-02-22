@@ -779,6 +779,8 @@ end
 
   #for use in lookahead patterns
   def VALUELIKE_LA
+    @valuelike_la ||=
+
     KW(@varlikes)|NumberToken|SymbolToken|StringToken|UNOP|DEFOP|
     KW(/^[({]$/x)|VarNameToken|MethNameToken|HerePlaceholderToken|
     KW(BEGINWORDS)|FUNCLIKE_KEYWORD()|AssignmentRhsListStartToken
