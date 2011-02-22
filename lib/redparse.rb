@@ -772,7 +772,7 @@ end
 
   #for use in lookback patterns
   OPERATORLIKE_LB=OperatorToken|
-                 KW(/^(not | defined\? | rescue3 | .*[@,] | [ ~ ! ; \( \[ \{ ? : ] | \.{1,3} | :: | => | ![=~])$/x)|
+                 KW(/^(not | defined\? | rescue3 | .*[@,] | [~!;\(\[\{?:] | \.{1,3} | :: | => | ![=~])$/x)|
                  KW(%r{^( \*\*? | << | >> | &&? | \|\|? | \^ | % | / | - | \+ )?=$}x)|
                  KW(BEGINWORDS)|KW(/^#{INNERBOUNDINGWORDS}$/)|RescueHeaderNode|StartToken|
                  GoalPostToken|BlockFormalsNode|AssignmentRhsListStartToken
