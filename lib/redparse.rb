@@ -1261,17 +1261,6 @@ end
     @moretokens.unshift token
   end
 
-=begin
-  self.LOOKAHEAD_CLASSES.each_with_index{|classes,i|
-    case classes
-    when Class: huh
-    when Array: classes.flatten.each{huh}
-    else 
-    end
-  }
-=end
-
-#  def fixup_multiple_assignments!; end
 end
 
 
