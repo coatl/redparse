@@ -306,7 +306,7 @@ end
     #with the last an Eoi, and first a StartToken
     #there was a parse error
     unless @stack.size==3
-      pp @stack[-[15,@stack.size].min..-1] if ENV['PRINT_STACK']
+      puts( pretty_stack( 15 ))if ENV['PRINT_STACK']
       top=MisparsedNode.new("(toplevel)", @stack[1...-1],'')
       raise ParseError.new(top.msg,@stack)
     end
