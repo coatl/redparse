@@ -343,6 +343,7 @@ end
 #    puts msgs.join("\n")
 
   rescue Exception=>e
+    if ENV['PRINT_PARSE_ERRORS']
       input=@lexer
       if Array===input
         STDERR.puts "error while parsing:"
@@ -351,8 +352,10 @@ end
       else
         input=input.original_file
         inputname=@lexer.filename
-        STDERR.puts "error while parsing #@filename:#@endline: <<<  #{input if input.to_s.size<=1000}  >>>"
+        STDERR.puts "error while parsing #@filename:#@endline: <<<  #{input.inspect if input.inspect.size<=1000}  >>>"
       end
+      e.backtrace.each{|l| p l }
+    end
     raise
   else
     unless msgs.empty?
