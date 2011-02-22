@@ -688,11 +688,18 @@ end
   end
 
   def lower_op
+    @lower_op||=proc{|parser,op| 
+      LOWEST_OP===op or (!(parser.VALUELIKE_LA() === op) and 
+        parser.left_op_higher(parser.stack[-3],op)
+      ) 
+    }.extend LowerOp_inspect
+=begin was
     return @lower_op if defined? @lower_op
     lower_op=item_that{|op| left_op_higher(@stack[-3],op) }
     lower_op=(LOWEST_OP|(~VALUELIKE_LA() & lower_op)).la
     lower_op.extend LowerOp_inspect
     @lower_op=lower_op
+=end
   end
 
   #this is a hack, should use graphcopy to search for Deferreds and replace with double-Deferred as below
