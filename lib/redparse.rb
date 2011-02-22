@@ -145,12 +145,16 @@ end
     #index of data at which to start matching
     i=@stack.size-1   #-1 because last element of @stack is always lookahead
 
+=begin was, but now done by expanded_RULES
     #I could call this a JIT compiler, but that's a bit grandiose....
     #more of a JIT pre-processor
     compiled_rule=@compiled_rules[rule]||=
       rule.map{|pattern| 
         String|Regexp===pattern ? KW(pattern) : pattern 
       }
+=end
+    assert(rule.grep(String|Regexp|Reg::Subseq|Reg::LookAhead|Reg::Lookback|Proc).empty?)
+    compiled_rule=rule
 
     #what's the minimum @stack size this rule could match?
     rule_min_size=@min_sizes[compiled_rule]||=
@@ -377,18 +381,23 @@ end
 
   #inline any subsequences in RULES right into the patterns
   #reg should do this already, but current release does not
+  #also expand regexp/string to keyword matcher
   def expanded_RULES
+    return @rules if defined? @rules
     result=RULES()
-    return result if (-[:foo, -[:bar]]).subregs.grep(Reg::Subseq).empty?
-    result.map!{|rule|
-      unless rule.left.subregs.grep(Reg::Subseq)
+    #return result if (-[:foo, -[:bar]]).subregs.grep(Reg::Subseq).empty?
+    @rules=result.map!{|rule|
+      if rule.left.subregs.grep(Reg::Subseq|String|Regexp).empty?
       then rule
       else
         right=rule.right
         rule=rule.left.subregs.dup
         (rule.size-1).downto(0){|i|
-          if Reg::Subseq===rule[i]
-            rule[i,1]=rule[i].subregs
+          case mtr=rule[i]
+          when Reg::Subseq
+            rule[i,1]=mtr.subregs
+          when String,Regexp
+            rule[i]=RedParse::KW(mtr)
           end
         }
         -rule>>right
