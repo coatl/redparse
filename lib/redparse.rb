@@ -1071,7 +1071,14 @@ end
     ]
   end
 
-  def initialize(input,name="(eval)",line=1,lvars=[],options={})
+  def initialize(input,name=nil,line=nil,lvars=nil,options=nil)
+    line,name=name,nil if Hash===name or Array===name or Integer===name
+    lvars,line=line,nil if Hash===line or Array===line
+    options,lvars=lvars,nil if Hash===lvars
+    options||={}
+    name||=options[:name]||"(eval)"
+    line||=options[:line]||1
+    lvars||=options[:lvars]||[]
     @rubyversion=options[:rubyversion]||1.8
 
     encoding=options[:encoding]||:ascii
