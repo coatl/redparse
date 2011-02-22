@@ -698,7 +698,7 @@ end
   #this is a hack, should use graphcopy to search for Deferreds and replace with double-Deferred as below
   def item_that(*a,&b)
     if defined? @generating_parse_tables
-      huh unless b
+      fail unless b
       #double supers, one of them in a block executed after this method returns....
       #man that's weird
       super(*a){|ob| @saw_item_that[[super(*a,&b),ob]]=true}
