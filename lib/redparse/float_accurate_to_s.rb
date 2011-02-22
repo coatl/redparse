@@ -3,18 +3,18 @@ class Float
   BITSIZE=SIZE*8
   BASE10_DIGITS=(2**BITSIZE-1).to_s.size
   def accurate_to_s
+  #this shouldn't be needed anymore after 1.9.2
     return "#{'-' if self<0}Infinity" if infinite?
     return "NaN" if nan?
-    return "0.0e0" if zero?
+    return to_s if zero? #-0.0 and +0.0
 
     as_str=sprintf("%.#{BASE10_DIGITS+2}e",self)
 
     #decompose self into sign, mantissa, and exponent (in string form)
-    all,sign,first,digits,exp=*as_str.match(/^([+-]?)(\d)\.(\d+)e(.*)$/)
-    digits=first<<digits
-    exp=exp.to_i+1
+    all,sign,first,digits,exp=*as_str.match(/^([+-]?)(\d+)(?:\.(\d+))?(?:[eE](.*))?$/)
+    digits=first<<(digits||'0')
+    exp=(exp||'0').to_i+1
     lead=sign<<"0."
-    return digits=digits if as_str.to_f.zero? #hopeless
 
     #recompose back to a float
     result=[lead,digits,"e",exp].join
