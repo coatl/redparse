@@ -19,7 +19,79 @@
 
 $VERBOSE=1
 $Debug=1
+
 require 'test/unit'
+
+if ENV['MULTIPROCESS'] #or ENV['MANGLE']
+def (Test::Unit).run?; true end #the sense of this flag is inverted
+  filters=(0..0xFF).map{|h|
+    #exit Test::Unit::AutoRunner.run{|r| r.filters<<
+     proc{|tc| tc.method_name.+(tc.class.name).hash&0xFF==h} #}
+  }
+p 1
+Test::Unit::AutoRunner.run{|r| r.filters<<filters.pop }
+p 2
+at_exit do
+
+  workers=[]
+
+  sock2idx={}
+  results=[]
+  10.times{
+    si,co=IO.pipe
+    so,ci=IO.pipe
+    sock2idx[ci]=workers.size
+    workers<<co
+    results<<ci
+    fork{
+      #co.close
+      #ci.close
+      r=si
+      while l=r.gets
+        i=l.to_i
+        begin
+          p :autorunner
+          Test::Unit::AutoRunner.run{|r| r.filters<<filters[i] }
+        rescue Exception=>e
+          puts "ar error!"
+          so.puts "error: #{e.message}\t#{e.backtrace.join(%<\t>)}".gsub("\n","\t")
+        else
+          puts "ar done"
+          so.puts 'done'
+        end
+      end
+      exit!
+    }
+    #si.close
+    #so.close
+    filters.pop
+    co.puts filters.size.to_s
+  }
+  until filters.empty?
+    readable,=IO.select(results)
+    p readable
+    readable.each{|rd|
+      l=rd.gets
+      if /\Aerror: /===l
+        l[0,7]=''
+        l.gsub!("\t","\n")
+        warn "exception in autorunner instance:"
+        warn l
+      elsif /\Adone\Z/===l
+        sockidx=sock2idx[rd]
+        filter=filters.pop
+        i=filters.size
+        workers[sockidx].puts i.to_s
+      else fail "expected done or error in: '#{l.chomp}'"
+      end
+    }
+  end
+  readable.each{|rd| rd.close}
+
+  exit
+end
+end
+
 #require 'parse_tree'
 require 'tempfile'
 begin
