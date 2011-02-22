@@ -1209,7 +1209,7 @@ end
       when EoiToken; break
       when HereBodyToken;
         @endline=result.endline
-        break
+        redo
       when AssignmentRhsListStartToken; break
       when AssignmentRhsListEndToken; break
       when IgnoreToken; redo
