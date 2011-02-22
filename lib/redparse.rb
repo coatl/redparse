@@ -1038,7 +1038,7 @@ end
 
    #here docs
    -[HerePlaceholderToken]>>HereDocNode,
-   -[HereBodyToken.la]>>delete_monkey(1,"delete_here_body"),   ##this is rediculous. this should be a lexer hack?
+   #-[HereBodyToken.la]>>delete_monkey(1,"delete_here_body"),   ##this is rediculous. this should be a lexer hack?
 
    -[VarNameToken]>>VarNode,
 
