@@ -153,7 +153,7 @@ end
         String|Regexp===pattern ? KW(pattern) : pattern 
       }
 =end
-    assert(rule.grep(String|Regexp|Reg::Subseq|Reg::LookAhead|Reg::Lookback|Proc).empty?)
+    assert(rule.grep(String|Regexp|Reg::Subseq|Reg::LookAhead|Reg::LookBack|Proc).empty?)
     compiled_rule=rule
 
     #what's the minimum @stack size this rule could match?
@@ -234,6 +234,411 @@ end
     raise
   end
 
+
+  def coalesce_loop(klass=nil,ident=nil,klass2=nil,ident2=nil)
+    eligible=rules.reverse.map!{|rule| can_coalesce?(rule,klass,ident,klass2,ident2)&&rule }
+    i=rules.size
+    eligible.map!{|rule| 
+      i-=1
+      next unless rule
+      if @size_cache
+        @size_cache[[i,rule.right]]||=1
+        @size_cache[[i,rule.right]]+=1
+      end
+      coalesce rule, i, klass,ident,klass2,ident2
+    }
+    eligible.compact!
+    @size_cache[klass2 ? [klass,ident,klass2,ident2] : ident ? ident : klass]= eligible.size if @size_cache
+
+    @empty_reduce_withs+=1 if defined? @empty_reduce_withs and eligible.size.zero?
+
+    return eligible
+  end
+
+  def can_coalesce? rule,klass=nil,ident=nil,klass2=nil,ident2=nil
+    Reg::Transform===rule or fail
+    node_type= rule.right
+    rule=rule.left.subregs.dup
+    rule.pop if Proc|::Reg::LookAhead===rule.last
+    rule[0]=rule[0].subregs[0] if ::Reg::LookBack===rule[0]
+
+=begin was, but now done by expanded_RULES
+    #I could call this a JIT compiler, but that's a bit grandiose....
+    #more of a JIT pre-processor
+    compiled_rule=@compiled_rules[rule]||=
+      rule.map{|pattern| 
+        String|Regexp===pattern ? KW(pattern) : pattern 
+      }
+=end
+    assert(rule.grep(String|Regexp|Reg::Subseq|Reg::LookAhead|Reg::LookBack|Proc).empty?)
+
+
+    return false if klass && !can_combine?(rule,klass,ident)
+    return false if klass2 && !can_combine2?(rule,klass2,ident2,-2)
+    warn "plain lit matches #{node_type}" if klass==LiteralNode and klass2.nil?
+    return true
+  end
+
+  def coalesce rule,rulenum,klass=nil,ident=nil,klass2=nil,ident2=nil
+    #last 4 params aren't actually neeeded anymore
+
+    @coalesce_result||=[]
+    result=@coalesce_result[rulenum]
+    return result if result
+
+    #dissect the rule
+    Reg::Transform===rule or fail
+    node_type= rule.right
+    rule=rule.left.subregs.dup
+    lookahead_processor=(rule.pop if Proc|::Reg::LookAhead===rule.last)
+    lookback=rule[0]=rule[0].subregs[0] if ::Reg::LookBack===rule[0]
+
+    assert @rules[rulenum].right==node_type
+
+    if klass==VarNode and klass2==KeywordToken
+      #warn "can_combine2? about to fail"
+    end
+
+    needends=0
+    result=["\n##{mui node_type}\n"]
+    
+    #index of data at which to start matching
+    result<<"i=@stack.size-1   ##{mui node_type}\n#-1 because last element of @stack is always lookahead\n"
+
+=begin was, but now done by expanded_RULES
+    #I could call this a JIT compiler, but that's a bit grandiose....
+    #more of a JIT pre-processor
+    compiled_rule=@compiled_rules[rule]||=
+      rule.map{|pattern| 
+        String|Regexp===pattern ? KW(pattern) : pattern 
+      }
+=end
+    assert(rule.grep(String|Regexp|Reg::Subseq|Reg::LookAhead|Reg::LookBack|Proc).empty?)
+    compiled_rule=rule
+
+    return if klass && !can_combine?(compiled_rule,klass,ident) #should never happen
+    return if klass2 && !can_combine2?(compiled_rule,klass2,ident2,-2) #should never happen
+
+    #what's the minimum @stack size this rule could match?
+    rule_min_size=@min_sizes[compiled_rule]||=
+      compiled_rule.inject(0){|sum,pattern| 
+        sum + pattern.itemrange.begin 
+      }
+    if rule_min_size > 1
+      needends+=1
+      result<<"if i>=#{rule_min_size}\n"
+      min_i=rule_min_size
+    end
+    #@@has_loop||=[]
+    #@@has_optional||=[]
+    has_loop=#@@has_loop[rulenum]||=
+      compiled_rule.find{|x| x.itemrange.last.to_f.infinite? }
+    has_optional=#@@has_optional[rulenum]||=
+      compiled_rule.find{|x| x.itemrange.first.zero? }
+
+    if Class===node_type and has_loop||has_optional
+      result<<"matching=[]\n"
+      need_matching=true
+    end
+
+    j=compiled_rule.size
+    #actually try to match rule elements against each @stack element in turn
+    first1=true
+    compiled_rule.reverse_each{|matcher|
+      j-=1
+      result<<"i.zero? and fail\n" unless min_i && min_i>0 or first1
+      first1=false
+      #is this matcher optional? looping?
+      maximum= matcher.itemrange.last
+      minimum= matcher.itemrange.first
+      loop= maximum.to_f.infinite?
+      optional=minimum.zero?
+      fail "looping matcher with finite maximum not supported" if maximum>1 and !loop
+      if need_matching
+        success="matching.unshift item"
+        loopsuccess="target.unshift item"
+        optfail="matching.unshift nil"
+
+        result<<"matching.unshift target=[]\n" if loop
+      end
+      is_lookback=matcher .equal? lookback
+      if loop or optional
+        matcher=matcher.subregs[0]
+        fail "lookback is not a scalar" if is_lookback
+      end
+
+      itemget="@stack[i-=1]"
+      itemget="(item=#{itemget})" if success
+      test="#{ref_to matcher,rulenum,j}===#{itemget}  #try match of #{mui matcher}"
+      p [:misparse_start, matcher] if node_type===MisparsedNode and j.zero?
+      matcher= ~ (matcher.subregs[0]|NilClass) if Reg::Not===matcher
+      if matcher===nil and j.zero?
+        warn "rule ##{rulenum}(>>#{node_type}) can match nil at start; might match emptiness before start of stack"
+      end
+      if !loop
+        fail unless maximum==1
+        min_i-=1 if min_i
+        result<<<<-END
+            if #{test}
+              #{success if !is_lookback}
+                   END
+        optional ? result<<<<-END : needends+=1
+            else
+              #ignore optional match fail
+              #but bump the data position back up, since the latest datum
+              #didn't actually match anything.
+              i+=1
+              #{optfail}
+            end
+                   END
+      else
+        min_i=nil
+        if minimum<10
+          needends+=minimum
+          result<<<<-END*minimum
+          if #{test}
+            #{loopsuccess}
+          END
+          result<<<<-END
+            while #{test}
+              #{loopsuccess}
+            end
+              #but bump the data position back up, since the latest datum
+              #didn't actually match anything.
+              i+=1
+          END
+        else
+          needends+=1
+          result<<<<-END
+            #{"n=#{minimum}" unless need_matching}
+            while #{test}
+              #{loopsuccess || "n-=1"}
+            end
+            if #{need_matching ? "target.size>=minimum" : "n<=0"} then
+              #but bump the data position back up, since the latest datum
+              #didn't actually match anything.
+              i+=1
+          END
+        end
+
+      end
+    } 
+
+    #give lookahead matcher (if any) a chance to fail the match
+    result<<case lookahead_processor
+    when ::Reg::LookAhead
+      action_idx=compiled_rule.size+1
+      needends+=1
+      "if #{ref_to lookahead_processor.subregs[0],rulenum,compiled_rule.size}===@stack.last ##{mui lookahead_processor.subregs[0] }\n"
+    when Proc
+      action_idx=compiled_rule.size+1
+      needends+=1
+      "if #{ref_to lookahead_processor,rulenum,compiled_rule.size}[self,@stack.last] ##{mui lookahead_processor}\n"
+    else ''
+    end
+
+    #if there was a lookback item, don't include it in the matched set
+    #result<<"matching.shift\n"    if lookback and need_matching
+
+    need_return=true
+
+    #replace matching elements in @stack with node type found
+    result<<
+    case node_type
+    when Class
+      #if there was a lookback item, don't include it in the new node
+      <<-END
+        #{"i+=1" if lookback}
+        matchrange= i...-1  #what elems in @stack were matched?
+        #{"matching=@stack.slice! matchrange" unless need_matching}
+        node=#{ref_to node_type,rulenum,action_idx||rule.size}.create(*matching) ##{mui node_type}
+        node.startline||=#{need_matching ? "@stack[i]" : "matching.first"}.startline
+        node.endline=@endline
+        #{need_matching ? "@stack[matchrange]=[node]" : "@stack.insert i,node" }
+      END
+    when Proc,StackMonkey;   ref_to(node_type,rulenum,action_idx||rule.size)+"[@stack] ##{mui node_type}\n"
+    when :shift; need_return=false; "return 0\n"
+    when :accept,:error; need_return=false; "throw :ParserDone\n"
+    else fail
+    end
+    
+    result<<"return true #let caller know we found a match\n" if need_return
+    result<<"end;"*needends
+    result<<"\n"
+
+    return @coalesce_result[rulenum]=result
+  rescue Exception=>e
+    #puts "error (#{e}) while executing rule: #{rule.inspect}"
+    #puts e.backtrace.join("\n")
+    raise
+  end
+
+  @@ref_to_cache={}
+  @@ref_to_cache_by_id={}
+  @@ref_to_idx=-1
+  def ref_to obj,i,j
+    assert j<=0x3FF
+    if Module===obj and obj.name
+      return obj.name
+    elsif ref=@@ref_to_cache_by_id[obj.__id__] || @@ref_to_cache[(i<<10)+j] 
+      return ref
+    else
+      @@ref_to_rules||=
+          rules.map{|rule|
+            rule.left.subregs.map{|pat|
+              case pat
+              when String,Regexp #not needed anymore...?
+                RedParse::KW(pat)
+              when Reg::LookBack,Reg::LookAhead,Reg::Repeat #Reg::Repeat should be handled already by now
+                pat.subregs[0]
+              #subseqs handled already
+              else pat
+              end
+            }<<rule.right
+          }
+
+      @ref_to_code||=[]
+      name="@@ref_#{@@ref_to_idx+=1}"
+      #eval "#{name}=obj"
+      unless @@ref_to_rules[i][j]==obj
+        warn "ref_to mismatch"
+      end
+      @ref_to_code<<"#{name}=rules[#{i}][#{j}]"
+      @ref_to_code<<"warn_unless_equal #@@ref_to_idx,mui(#{name}),#{squote mui( obj )}"
+      @@ref_to_cache[(i<<10)+j]=name
+      @@ref_to_cache_by_id[obj.__id__]=name
+    end
+  end
+
+  module ReduceWithUtils
+    #a version of inspect that is especially likely to be stable;
+    #no embedded addresses and ivar order is always the same
+    def matcher_unique_inspect(m)
+      result=m.inspect
+      return result unless /\A#<[A-Z]/===result
+      "#<#{m.class}: "+
+         m.instance_variables.sort.map{|iv| 
+           val=m.instance_variable_get(iv).inspect
+           val.gsub!(/#<(Proc|(?:Stack|Delete)Monkey):(?:0[xX])?[0-9a-fA-F]+/){ "#<#$1:" }
+           iv.to_s+"="+val
+         }.join(" ")+">"
+    end
+    alias mui matcher_unique_inspect
+
+    def squote(str)
+      "'#{str.gsub(/['\\]/){|ch| %[\\]+ch }}'"
+    end
+
+    @@unequal_parser_ref_vars=0
+    @@line_mismatch_parser_ref_vars=0
+    def warn_unless_equal i,ref,orig
+      return if ref==orig
+      msg="expected @ref_#{i} to == #{squote orig}, saw #{squote ref}"
+      ref=ref.gsub(/\.rb:\d+>/,".rb:X>")
+      orig=orig.gsub(/\.rb:\d+>/,".rb:X>")
+      count=
+        if ref==orig
+          msg="@ref_#{i} differed in line nums"
+          warn "more @ref_ vars differed in line nums..." if @@line_mismatch_parser_ref_vars==1
+          @@line_mismatch_parser_ref_vars+=1
+        else
+          @@unequal_parser_ref_vars+=1
+        end
+      warn msg if 1==count
+    end
+  end
+  include ReduceWithUtils
+
+  def classes_matched_by(matcher)
+    result=[]
+    worklist=[matcher]
+    begin
+      case x=worklist.shift
+      when Reg::And,Reg::Or; worklist.concat x.subregs
+      when Class; result<<x
+      end
+    end until worklist.empty?
+    return [Object] if result.empty?
+    return result
+  end
+ 
+
+
+  def can_combine? rule,klass,ident
+    rule.reverse_each{|matcher|
+      if Reg::Repeat===matcher
+        optional= matcher.times.first==0
+        matcher=matcher.subregs[0]
+      end
+      if ident
+        return true if matcher===klass.new(ident)
+        optional ? next : break
+      end
+
+=begin was
+      orlist= Reg::Or===matcher ? matcher.subregs : [matcher]
+      orlist.map!{|m| 
+        classes=(Reg::And===m ? m.subregs : [m]).grep(Class)
+        case classes.size
+        when 0; return true
+        when 1
+        else warn "multiple classes in matcher #{matcher}"
+        end
+        classes if classes.all?{|k| klass<=k }
+      }
+      return true if orlist.compact.flatten[0]
+=end
+      return true if classes_matched_by(matcher).any?{|k| klass<=k }
+
+      break unless optional
+    }
+    return false
+  end
+
+  def can_combine2? rule,klass,ident,index=-1
+  #very similar to can_combine?, just above
+  #i think can_combine2? with 3 params is equiv to can_combine?
+  #so, the two should be merged
+    index=-index
+    rule_max_size=rule.inject(0){|sum,pattern|
+        sum + pattern.itemrange.end
+    }
+    return true if rule_max_size<index
+    min=max=0
+    rule.reverse_each{|matcher|
+      break if index<min
+      if Reg::Repeat===matcher
+        #optional= matcher.times.first==0
+        min+=matcher.times.first
+        max+=matcher.times.last
+        matcher=matcher.subregs[0]
+      else
+        min+=1
+        max+=1
+      end
+      next if index>max
+      if ident
+        return true if matcher===klass.new(ident)
+        next #was: optional ? next : break
+      end
+=begin was
+      orlist= Reg::Or===matcher ? matcher.subregs : [matcher]
+      orlist.map!{|m| 
+        classes=(Reg::And===m ? m.subregs : [m]).grep(Class)
+        case classes.size
+        when 0; return true
+        when 1
+        else warn "multiple classes in matcher #{matcher}: #{classes.inspect}"
+        end
+        classes if classes.all?{|k| klass<=k }
+      }
+      return true if orlist.compact.flatten[0]
+=end
+      return true if classes_matched_by(matcher).any?{|k| klass<=k }
+    }
+    return false
+  end
+
   class ParseError<RuntimeError
     def initialize(msg,stack)
       super(msg)
@@ -264,7 +669,7 @@ end
   end
 
   #try all possible reductions
-  def reduce
+  def old_slow_reduce
       shift=nil
       @rules.reverse_each{|rule|
         shift=evaluate(rule) and break
@@ -272,20 +677,278 @@ end
       return shift
   end
 
-  def parse
+  HASHED_REDUCER=!ENV['REDUCE_INTERPRETER']
 
-    #hack, so StringToken can know what parser its called from
-    #so it can use it to parse inclusions
-    oldparser=Thread.current[:$RedParse_parser]
-    Thread.current[:$RedParse_parser]||=self
+  @@rules_compile_cache={}
 
-    return @cached_result if defined? @cached_result
+  #try all possible reductions
+  def reduce
+    i=@rules.size
+    code=@@rules_compile_cache[class<<self; ancestors end<<@rubyversion]||=coalesce_loop().join
+    code= <<-END
+      class RedParse
+      def (Thread.current['$RedParse_instance']).reduce
+      #{code}
+      return nil
+      end
+      end
+    END
 
-    @rules||=expanded_RULES()
-#    @inputs||=enumerate_exemplars
+    f=Tempfile.new("reduce")
+    Thread.current['$RedParse_instance']=self
+    p [:code_hash, code.hash]
+    f.write code
+    f.flush
+    load f.path
 
-    @stack=[StartToken.new, get_token] 
-           #last token on @stack is always implicitly the lookahead
+    reduce
+  ensure f.close if f
+  end if !HASHED_REDUCER
+
+
+#  include StackableClasses
+
+  Punc2name={
+    "("=>"lparen",    ")"=>"rparen",
+    "["=>"lbracket",    "]"=>"rbracket",
+    "{"=>"lbrace",    "}"=>"rbrace",
+    ","=>"comma",
+    ";"=>"semicolon",
+    "::"=>"double_colon",
+    "."=>"dot",
+    "?"=>"question_mark", ":"=>"colon",
+    "="=>"equals",
+    "|"=>"pipe",
+    "<<"=>"leftleft", ">>"=>"rightright",
+    "=>"=>"arrow",
+    "->"=>"stabby",
+    "rhs,"=>"rhs_comma",
+    "lhs,"=>"lhs_comma",
+    "||="=>"or_equals",
+    "&&="=>"and_equals",
+  }
+
+
+  RUBYUNOPERATORS=::RubyLexer::RUBYUNOPERATORS
+  RUBYBINOPERATORS=::RubyLexer::RUBYBINOPERATORS
+  RUBYSYMOPERATORS=::RubyLexer::RUBYSYMOPERATORS
+  RUBYNONSYMOPERATORS=::RubyLexer::RUBYNONSYMOPERATORS
+  OPERATORS=RUBYUNOPERATORS-%w[~@ !@]+RUBYBINOPERATORS+RUBYNONSYMOPERATORS+
+              %w[while until if unless rescue and or not unary* unary& rescue3 lhs* rhs*]
+  OPERATORS.uniq!
+  RUBYKEYWORDLIST=( 
+   RubyLexer::RUBYKEYWORDLIST+Punc2name.keys+
+   RUBYSYMOPERATORS+RUBYNONSYMOPERATORS
+  ).uniq
+
+  def rubyoperatorlist; OPERATORS end
+  def rubykeywordlist; RUBYKEYWORDLIST end
+
+  class KeywordToken
+    def reducer_method(stack)
+      :"reduce_with_tos_KeywordToken_#@ident"
+    end
+    def reducer_ident
+      :"KeywordToken_#@ident"
+    end
+  end
+
+  class OperatorToken
+    def reducer_ident
+      :"OperatorToken_#@ident"
+    end
+  end
+
+  class ValueNode
+    def reducer_method(stack)
+      :"reduce_with_tos_#{stack[-3].reducer_ident}_then_#{reducer_ident}"
+    end
+  end
+
+  def parser_identity
+  #what is the relationship between this method and #signature?
+  #can the two be combined?
+    result=class<<self; ancestors end
+    result.reject!{|k| !!((::RedParse<k)..false) }
+    result.reject!{|k| k.name[/^(?:RedParse::)?ReduceWiths/] }
+    result.reverse!
+    result.push @rubyversion
+    #@rubyversion in identity is a hack; should have RedParse1_9 module instead
+  end
+
+  def code_for_reduce_with ident, code
+     code=coalesce_loop(*code) if Array===code
+     ident.gsub!(/[\\']/){|x| "\\"+x}
+     code=code.join
+     @reduce_with_defns+=1
+     if name=@reduce_with_cache[code]
+       @reduce_with_aliases+=1
+       "alias :'reduce_with_tos_#{ident}' :'#{name}'\n"
+     else
+       @reduce_with_cache[code]=name="reduce_with_tos_#{ident}"
+       ["define_method('", name ,"') do\n", code ,"\nnil\nend\n"]
+     end
+  end
+
+  def addl_node_containers; [] end
+
+  def write_reduce_withs path=nil
+    return unless HASHED_REDUCER
+    start=Time.now
+    @size_cache={}
+    identity=parser_identity
+    @reduce_with_cache={}
+    @reduce_with_aliases=0
+    @empty_reduce_withs=@reduce_with_defns=0
+
+      expanded_RULES()
+      shortnames=[]   #[[],[]]
+      list=[self.class,*addl_node_containers].map{|mod| 
+        mod.constants.select{|k| 
+          /(?:Node|Token)$/===k.to_s 
+        }.map{|k| 
+          mod.const_get k
+        }
+      }.flatten.grep(Class).uniq
+      #list=STACKABLE_CLASSES()
+      list -= [KeywordToken,ImplicitParamListStartToken,ImplicitParamListEndToken,
+               Token,WToken,NewlineToken,DecoratorToken,Node,ValueNode]
+      list.reject!{|x| IgnoreToken>=x and not /(^|:)AssignmentRhs/===x.name}
+      exprclasses,list=list.partition{|k| k<=ValueNode }
+      fail unless list.include? StartToken
+      indexcode=list.map{|klass|
+        shortname=klass.to_s[/[^:]+$/]
+        warn "empty reducer_ident for ::#{klass}" if shortname.empty?
+        <<-END
+          class ::#{klass}
+            def reducer_method(stack)
+              :reduce_with_tos_#{shortname}
+            end if instance_methods(false).&(["reducer_method",:reducer_method]).empty?
+            def reducer_ident
+              :#{shortname}
+            end if instance_methods(false).&(["reducer_ident",:reducer_ident]).empty?
+          end
+        END
+      }.concat(exprclasses.map{|exprclass|
+        shec=exprclass.name[/[^:]+$/]
+        warn "empty reducer_ident for ::#{exprclass}" if shec.empty?
+        <<-END
+            class ::#{exprclass}
+              def reducer_ident
+                :#{shec}
+              end if instance_methods(false).&(["reducer_ident",:reducer_ident]).empty?
+            end
+        END
+      })
+      ruby= list.map{|klass|
+        shortname=klass.to_s[/[^:]+$/]
+        shortnames<<[shortname,klass,nil]
+        code_for_reduce_with( shortname, [klass] )
+      }.concat(rubykeywordlist.map{|kw|
+        shortname="KeywordToken_#{kw}"
+        shortnames<<[shortname,KeywordToken,kw]
+        code_for_reduce_with( shortname, [KeywordToken, kw] )
+      }).concat({ImplicitParamListStartToken=>'(',ImplicitParamListEndToken=>')'}.map{|(k,v)|
+        shortnames<<[k.name,k,v]
+        code_for_reduce_with k.name, [k,v]
+      })
+      shortnames.delete ["OperatorToken",OperatorToken,nil]
+      record=shortnames.dup
+      ruby.concat(exprclasses.map{|exprclass|
+        shec=exprclass.name[/[^:]+$/]
+        shortnames.map{|(sn,snclass,snparam)|
+          warn "empty shortname for #{snclass}" if sn.empty?
+          record<<["#{sn}_then_#{shec}", exprclass, nil, snclass, snparam]
+          code_for_reduce_with "#{sn}_then_#{shec}", [exprclass, nil, snclass, snparam]
+        } 
+      })
+      ruby.concat(exprclasses.map{|exprclass|
+        shec=exprclass.name[/[^:]+$/]
+        rubyoperatorlist.map{|op|
+          record<<["OperatorToken_#{op}_then_#{shec}", exprclass, nil, OperatorToken, op]
+          code_for_reduce_with "OperatorToken_#{op}_then_#{shec}", [exprclass, nil, OperatorToken, op]
+        } 
+      }).concat([LiteralNode,VarNode].map{|k|
+          shec=k.name[/[^:]+$/]
+          record<<["#{shec}_then_#{shec}", k, nil, k, nil]
+          code_for_reduce_with "#{shec}_then_#{shec}", [k, nil, k, nil]
+      })
+
+      modname="ReduceWithsFor_#{parser_identity.join('_').tr(':.','_')}"
+
+      size_cache,rule_popularity=@size_cache.partition{|((i,action),size)| Integer===i }
+
+      ruby.unshift [<<-END,@ref_to_code.join("\n"),<<-END2]
+        #number of coalescences: #{size_cache.size}
+        #empty coalescences: #@empty_reduce_withs
+        #duplicate coalescences: #@reduce_with_aliases
+        #nonduplicate coalescences: #{@reduce_with_cache.size}
+        #reduce_with_defns: #@reduce_with_defns
+        extend RedParse::ReduceWithUtils
+        def self.redparse_modules_init(parser)
+          return if defined? @@ref_0
+          rules=parser.rules.map{|rule|
+            rule.left.subregs.map{|pat|
+              case pat
+              when String,Regexp #not needed anymore...?
+                RedParse::KW(pat)
+              when Reg::LookBack,Reg::LookAhead,Reg::Repeat #Reg::Repeat should be handled already by now
+                pat.subregs[0]
+              #subseqs handled already
+              else pat
+              end
+            }<<rule.right
+          }
+                                          END
+
+        end
+        def redparse_modules_init
+          ::RedParse::#{modname}.redparse_modules_init(self) 
+          super
+        end
+                                          END2
+
+      ruby.unshift( "#15 largest coalescences:\n", 
+        *size_cache.sort_by{|(k,size)| size}[-15..-1].map{ \
+          |(k,size)| "##{k.inspect}=#{size}\n" 
+      })
+ 
+      ruby.unshift("#10 most popular rules:\n",
+        *rule_popularity.sort_by{|(rule,pop)| pop}[-10..-1].map{ \
+          |((i,action),pop)| "##{i} #{action.inspect}=#{pop}\n" 
+      })
+
+      warn "15 largest coalescences:"
+      size_cache.sort_by{|(klass,size)| size}[-15..-1].each{ \
+        |(klass,size)| warn "#{klass.inspect}=#{size}" 
+      }
+
+      warn "10 most popular rules:"
+      rule_popularity.sort_by{|(rule,pop)| pop}[-10..-1].each{ \
+        |((i,action),pop)| warn "#{i} #{action.inspect}=#{pop}" 
+      }
+
+
+      @ref_to_code=nil
+      ruby=["module RedParse::#{modname}\n",ruby,"\nend\n",indexcode]
+      @@rules_compile_cache[identity]=ruby
+
+    path ||= $LOAD_PATH.find{|d| File.exist? File.join(d,"redparse.rb") }+"/redparse/"
+    #should use reduce_withs_directory here somehow instead...
+
+    path += modname+".rb" if path[-1]==?/
+    File.open(path,"wb") {|f| ruby.flatten.each{|frag| f.write frag } }
+
+    #warn "actual write_reduce_withs writing took #{Time.now-start}s"
+    warn "size of #{path}: #{File.size path}"
+
+  ensure 
+    warn "write_reduce_withs took #{Time.now-start}s" if start
+    @reduce_with_cache=nil if @reduce_with_cache
+    @size_cache=nil if @size_cache
+  end
+
+  def old_reduce_loop
     catch(:ParserDone){ loop {
       #try all possible reductions
       next if reduce==true 
@@ -299,6 +962,55 @@ end
       #shift our token onto the @stack
       @stack.push tok
     }}
+  end
+
+=begin should be
+  reduce_call= HASHED_REDUCER ? 
+      'send(@stack[-2].reducer_method(@stack))' : 
+      'reduce'
+  eval <<-END,__FILE__,__LINE__
+    def reduce_loop
+      catch(:ParserDone){ ( @stack.push(get_token||break) unless(#{reduce_call}==true) ) while true }
+    end
+  END
+=end
+  def reduce_loop
+    catch(:ParserDone){ while true
+      #try all possible reductions
+      #was: next if reduce==true
+      next if send(@stack[-2].reducer_method(@stack))==true
+
+      #no rule can match current @stack, get another token
+      tok=get_token  or break
+
+      #are we done yet?
+      #tok.nil? or EoiToken===tok && EoiToken===@stack.last and break
+
+      #shift our token onto the @stack
+      @stack.push tok
+    end }
+  end
+
+  if ENV['REDUCE_INTERPRETER']
+    alias reduce old_slow_reduce
+    alias reduce_loop old_reduce_loop
+  end
+
+  def parse
+
+    #hack, so StringToken can know what parser its called from
+    #so it can use it to parse inclusions
+    oldparser=Thread.current[:$RedParse_parser]
+    Thread.current[:$RedParse_parser]||=self
+
+    return @cached_result if defined? @cached_result
+
+    expanded_RULES()
+#    @inputs||=enumerate_exemplars
+
+    @stack=[StartToken.new, get_token] 
+           #last token on @stack is always implicitly the lookahead
+    reduce_loop
 
     @stack.size==2 and return result=NopNode.new #handle empty parse string
 
@@ -549,21 +1261,6 @@ if defined? SPECIALIZED_KEYWORDS
   end
 
   KW2class={}
-
-  Punc2name={
-    "("=>"lparen",    ")"=>"rparen",
-    "["=>"lbracket",    "]"=>"rbracket",
-    "{"=>"lbrace",    "}"=>"rbrace",
-    ","=>"comma",
-    ";"=>"semicolon",
-    "::"=>"double_colon",
-    "."=>"dot",
-    "?"=>"question_mark", ":"=>"colon",
-    "="=>"equals",
-    "|"=>"pipe",
-    "<<"=>"leftleft", ">>"=>"rightright",
-    "=>"=>"arrow",
-  }
 end
 
   def self.KW(ident)
@@ -1157,6 +1854,28 @@ if defined? END_ATTACK
 end
     @saw_item_that=nil
     @print_filter=proc{true}
+ 
+    #write_reduce_withs
+    modules=options[:modules]||[]
+ 
+    dir=reduce_withs_directory
+    modname="ReduceWithsFor_#{parser_identity.join('_').tr(':.','_')}"
+    begin
+    require File.join(dir,modname)
+    rescue LoadError
+    else
+    modules+=[self.class.const_get( modname )]
+    end
+    modules.each{|m| extend m }
+    redparse_modules_init
+  end
+
+  def redparse_modules_init
+
+  end
+
+  def reduce_withs_directory
+    "redparse"
   end
 
   attr_accessor :lexer, :print_filter
