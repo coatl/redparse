@@ -5171,6 +5171,7 @@ end
         exlist.extend ListInNode
         super(exlist,rescuehdr.varname,action)
       end
+      alias name varname
 
       def unparse o=default_unparse_options
         xx=exceptions.map{|exc| exc.unparse o}.join(',')
