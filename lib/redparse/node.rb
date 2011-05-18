@@ -2062,6 +2062,7 @@ end
     module HasRescue
       def parsetree_and_rescues(o)
           body=body()
+          body=body.clone if body
           target=result=[]   #was: [:begin, ]
 
           #body,rescues,else_,ensure_=*self
