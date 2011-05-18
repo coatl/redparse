@@ -2211,6 +2211,9 @@ end
 
       def left; body end
       def right; rescues[0].action end
+      def op; "rescue" end
+
+      alias rescue_with right
 
       alias ensure_ ensure
       alias else_ else
