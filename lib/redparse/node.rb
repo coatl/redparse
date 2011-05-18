@@ -1812,6 +1812,7 @@ end
         result+=val.unparse(o)
       end
     end
+    UnaryOpNode=UnOpNode
 
     class UnaryAmpNode<UnOpNode
 
