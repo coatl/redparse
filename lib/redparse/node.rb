@@ -4873,6 +4873,11 @@ end
             body.rescues.empty? and !body.ensure and !body.empty_ensure and body.body and body.body.size>1
               wantblock=true
           end
+          if o[:quirks]
+            first=body
+            first=first.first if SequenceNode===first
+            wantblock=true if UndefNode===first and first.size>1
+          end
           body=body.parsetree(o)
           if body.first==:block and rescues.empty? and not ensures||@empty_ensure
             if wantblock
