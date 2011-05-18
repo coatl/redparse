@@ -1517,6 +1517,7 @@ end
     class VarLikeNode<ValueNode; end  #nil,false,true,__FILE__,__LINE__,self
     class SequenceNode<ListOpNode; end
     class NopNode<SequenceNode; end
+    class UnOpNode<ValueNode; end
 
     class SequenceNode<ListOpNode
       def initialize(*args)
@@ -1555,11 +1556,18 @@ end
 
       LITFIX=LiteralNode&-{:val=>Fixnum}
       LITRANGE=RangeNode&-{:left=>LITFIX,:right=>LITFIX}
-      LITSTR=StringNode&-{:size=>1,:char=>/^[^`\[{]$/}
+      LITSTR=Recursive(ls={},StringNode&-{:char=>/^[^`\[{]$/}&+[(String|ls).+])
       #LITCAT=proc{|item| item.grep(~LITSTR).empty?}
       #class<<LITCAT; alias === call; end
       LITCAT=StringCatNode& item_that.grep(~LITSTR).empty? #+[LITSTR.+]
-      LITNODE=LiteralNode|NopNode|LITSTR|LITCAT|LITRANGE|(VarLikeNode&-{:name=>/^__/})
+      LITUPLUS=Recursive(lup={},
+                 UnOpNode&-{:op=>"+@", :val=>
+                   (LiteralNode&-{:val=>Symbol|Numeric})|
+                   (StringNode&-{:size=>1,:char=>"/"})|
+                   lup
+                 }
+               )
+      LITNODE=LiteralNode|NopNode|LITSTR|LITCAT|(VarLikeNode&-{:name=>/^__/})|LITUPLUS
             #VarNode|  #why not this too?
       def parsetree(o)
         data=compact
