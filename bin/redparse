@@ -96,9 +96,12 @@ while /^-/===ARGV.first
       when "--pp"; output=:pp
       when "--lisp"; output=:lisp
       when "--parsetree"; output=:parsetree
+      when "--ripper"; output=:ripper; ruby19=true
       when "--no-parsetree"; output=:no_parsetree
       when "--vsparsetree"; output=:vsparsetree
       when "--vsparsetree2"; output=:vsparsetree2
+      when "--vsripper"; output=:vsripper; ruby19=true
+      when "--vsripper2"; output=:vsripper2; ruby19=true
       when "--update-problemfiles"; problemfiles=ProblemFiles.new
       when "--ignore-silly-begins"; ignorebegins=true
       when "--tokens"; ENV['PRINT_TOKENS']='1'
@@ -259,6 +262,40 @@ inputs.each_index{|i|
       rescue Exception
 =end
       pp(hack||[])
+    when :vsripper,:vsripper2,:ripper
+      warn "disabling positioning info in ripper emulation output for now"
+      begin
+        require 'ripper'
+        require 'ripper/sexp'
+        class ::Ripper::SexpBuilder
+          def column; 0; end
+          def lineno; 0; end
+        end
+      rescue LoadError
+      end
+      require 'redparse/ripper'
+      require 'redparse/ripper_sexp'
+      RedParse::Ripper.instrumentSexpBuilder(::Ripper::SexpBuilder)if verbose and defined? ::Ripper
+      RedParse::Ripper.instrumentSexpBuilder(::Ripper::SexpBuilderPP)if verbose and defined? ::Ripper
+      RedParse::Ripper.instrumentSexpBuilder(::RedParse::Ripper::SexpBuilder)if verbose
+      RedParse::Ripper.instrumentSexpBuilder(::RedParse::Ripper::SexpBuilderPP)if verbose
+      rip=Ripper.sexp_raw(orig_input,name) if output!=:ripper and defined? ::Ripper
+      rp=RedParse::Ripper::SexpBuilder.new(input,name)
+      rp.parser=tree
+      begin
+        rp= rp.parse :quirks=>true
+      rescue Exception=>e
+        warn e.backtrace.unshift(e.inspect).join("\n  ")
+        rp=[:failed]
+      end
+      if rip and rip==rp
+        puts "no differences"
+      else
+        puts "mine:"
+        pp rp
+        puts "minero's:"
+        pp rip
+      end
     when :vsparsetree,:vsparsetree2
       begin
       require 'rubygems'
