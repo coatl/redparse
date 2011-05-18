@@ -379,6 +379,12 @@ class RedParse
       include FlattenedIvars
 
       def initialize(*data)
+        if Hash===data.last
+          options=data.pop
+          options.each_pair{|name,val|
+            instance_variable_set name,val
+          }
+        end
         replace data
       end
 
