@@ -3532,7 +3532,7 @@ end
         @open||='"' 
         @close||='"' 
         @bs_handler||=:dquote_esc_seq
-        @modifiers=nil
+        @modifiers||=nil
         if /[\[{]/===@char
           @parses_like||=split_into_words(str)
         end
