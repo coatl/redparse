@@ -368,6 +368,9 @@ class RedParse
         end
         super( *args<<val )
       end
+      def ==(other)
+        ListInNode===other and super
+      end
     end
 
     class Node<Array
