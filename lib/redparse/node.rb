@@ -4063,12 +4063,13 @@ end
           end
         when NumberToken 
           case val
-          when /[.e]/i; val=val.to_f
           when /\A[+-]?0([^.]|\Z)/; val=val.oct
+          when /[.e]/i; orig=val; val=val.to_f
           else val=val.to_i
           end
         end
         result=LiteralNode.new(val)
+        result.string=orig if orig
         result.offset=offset
         result
       end
