@@ -41,9 +41,9 @@ class RedParse
 
     module FlattenedIvars
       EXCLUDED_IVARS=%w[@data @offset @startline @endline]
-      EXCLUDED_IVARS.push(*EXCLUDED_IVARS.map{|iv| iv.to_sym })
+      #EXCLUDED_IVARS.push(*EXCLUDED_IVARS.map{|iv| iv.to_sym })
       def flattened_ivars
-        ivars=instance_variables
+        ivars=instance_variables.map{|v| v.to_s }
         ivars-=EXCLUDED_IVARS
         ivars.sort!
         result=ivars+ivars.map{|iv| 
@@ -472,7 +472,8 @@ class RedParse
       end
 
       def inspect label=nil,indent=0,verbose=false
-        ivarnames=instance_variables-FlattenedIvars::EXCLUDED_IVARS
+        ivarnames=instance_variables.map{|v| v.to_s }
+        ivarnames-=FlattenedIvars::EXCLUDED_IVARS
         ivarnames-=noinspect_instance_variables if defined? noinspect_instance_variables
         ivarnodes=[]
         ivars=ivarnames.map{|ivarname|
