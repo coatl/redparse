@@ -3602,7 +3602,8 @@ end
       def unparse_interior o,open=@open,close=@close,escape=nil
         escapable=escapable(open,close)
         result=map{|substr|
-          if String===substr
+          case substr
+          when String
 
             #hack: this is needed for here documents only, because their
             #delimiter is changing.
@@ -3611,6 +3612,8 @@ end
             o[:linenum]+=substr.count("\n") if o[:linenum]
 
             substr
+          when NopNode
+            '#{}'
           else
             ['#{',substr.unparse(o),'}']
           end
