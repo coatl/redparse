@@ -4867,6 +4867,7 @@ end
 
         target.push ensuretarget=target=[:ensure, ] if ensures or @empty_ensure
         #simple dup won't work... won't copy extend'd modules
+        #should use clone here
         body=Marshal.load(Marshal.dump(body())) if body()
         elses=elses()
         if rescues.empty?
