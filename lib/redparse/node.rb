@@ -2206,6 +2206,10 @@ end
             replace [expr,[RescueNode[[],nil,backup]].extend(ListInNode)]
       end
 
+      def self.namelist
+        %w[left right]
+      end
+
       def else; nil end
       def ensure; nil end
 
