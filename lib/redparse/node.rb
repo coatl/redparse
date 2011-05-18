@@ -4105,15 +4105,19 @@ end
           ":"+
             val.unparse(o)
         when Float
-          s= val.accurate_to_s
-          case s
-          when /-inf/i; s="-"+Inf
-          when /inf/i;  s=    Inf
-          when /nan/i;  s=    Nan
+          if defined? @string; 
+            @string
           else
-            fail "float coercion not stable" unless [s.to_f].pack("d")==[val].pack("d")
+            s= val.accurate_to_s
+            case s
+            when /-inf/i; s="-"+Inf
+            when /inf/i;  s=    Inf
+            when /nan/i;  s=    Nan
+            else
+              fail "float coercion not stable" unless [s.to_f].pack("d")==[val].pack("d")
+            end
+            s
           end
-          s
         else val.inspect
         end
       end
