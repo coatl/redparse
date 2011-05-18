@@ -2557,7 +2557,7 @@ end
       def unparse(o=default_unparse_options)
         result=lhs.lhs_unparse(o)
         result="(#{result})" if defined? @lhs_parens
-        result+op+
+        result+' '+op+' '+
           (rhs.class==Array ? 
             rhs.map{|rv| rv.unparse o}.join(',') :
             rhs.unparse(o) 
