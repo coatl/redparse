@@ -4063,8 +4063,8 @@ end
           end
         when NumberToken 
           case val
-          when /\A-?0([^.]|\Z)/; val=val.oct
           when /[.e]/i; val=val.to_f
+          when /\A[+-]?0([^.]|\Z)/; val=val.oct
           else val=val.to_i
           end
         end
