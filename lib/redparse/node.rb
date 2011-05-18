@@ -1592,6 +1592,7 @@ end
             (items[i,1] = *header[1..-1]) if header and header.first==:block
           }     
         end
+        result=
         if items.size>1
           items.unshift :block
         elsif items.size==1
@@ -1599,6 +1600,13 @@ end
         else
           items
         end
+
+        limit=o[:quirks] ? 1 : result.size-1
+        (0..limit).each{|i| 
+          result[i,1]=result[i][1..-1] if Array===result[i] and result[i][0]==:block
+        }
+
+        return result
       end
 
       def unparse o=default_unparse_options
