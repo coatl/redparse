@@ -1673,12 +1673,18 @@ end
 
     class RangeNode
       param_names(:first,:op,:last)
-      def initialize(left,op,right=nil)
-        op,right="..",op unless right
-        op=op.ident if op.respond_to? :ident
+      def initialize(*args)
+        options=Hash===args.last ? args.pop : {}
+        if args.size==2
+          left,right=*args
+          op=".."
+        else
+          left,op,right=*args
+          op=op.ident if op.respond_to? :ident
+        end
         @exclude_end=!!op[2]
         @as_flow_control=false
-        super(left,op,right)
+        super(left,op,right,options)
       end
       def begin; first end
       def end; last end
@@ -1748,14 +1754,16 @@ end
         return new(op,val)
       end
 
-      def initialize(op,val)
+      def initialize(op,val,options=nil)
         @offset||=op.offset rescue val.offset
         op=op.ident if op.respond_to? :ident
         /([&*])$/===op and op=$1+"@"
         /^(?:!|not)$/===op and 
           val.respond_to? :special_conditions! and 
             val.special_conditions!
-        super(op,val)
+        args=[op,val]
+        args<<options if options
+        super(*args)
       end
 
       def arg; val end
@@ -1810,10 +1818,18 @@ end
     end
 
     class UnaryStarNode<UnOpNode
-      def initialize(op,val=nil)
-        op,val="*@",op unless val
+      def initialize(*args)
+        options=args.pop if Hash===args.last
+        if args.size==1
+          op="*@"
+          val=args.first
+        else
+          op,val=*args
+        end
         op.ident="*@" if op.respond_to? :ident
-        super(op,val)
+        args=[op,val]
+        args.push options if options
+        super(*args)
       end
 
       class<<self
