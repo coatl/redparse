@@ -3449,6 +3449,9 @@ end
         @startline=@endline=1
         super()
       end
+      def unparse(o=default_unparse_options)
+        "()"
+      end
 
 =begin
       def unparse o=default_unparse_options
