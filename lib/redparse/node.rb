@@ -4725,6 +4725,7 @@ end
 #          header=header.data[1]
 #        end
         if CallSiteNode===header
+          @parens=header.has_parens?
           receiver=header.receiver
           args=header.args
           header=header.name
@@ -4750,6 +4751,10 @@ end
 
       def self.namelist
         %w[receiver name args body rescues elses ensures]
+      end
+
+      def has_parens?; 
+        @parens if defined? @parens
       end
 
 #      def receiver= x
