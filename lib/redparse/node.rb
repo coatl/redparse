@@ -4043,7 +4043,7 @@ end
 
     class LiteralNode<ValueNode
       param_names :val
-      attr_accessor :offset
+      attr_accessor :offset, :string
       def self.create(old_val)
         offset=old_val.offset
         val=old_val.ident
