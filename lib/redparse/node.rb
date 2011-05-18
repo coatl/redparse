@@ -3106,6 +3106,7 @@ end
 
       def real_parens; @not_real_parens||=nil; !@not_real_parens end
       def real_parens= x; @not_real_parens=!x end
+      alias has_parens? real_parens
 
       def unparse o=default_unparse_options
         fail if block==false
