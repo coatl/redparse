@@ -1336,13 +1336,21 @@ end
 
     class RawOpNode<ValueNode
       param_names(:left,:op,:right)
-      def initialize(left,op,right=nil)
-        op,right=nil,op if right.nil?
+      def initialize(*args)
+        options=args.pop if Hash===args.last
+        if args.size==2
+          left,right=*args
+          op=nil
+        else
+          left,op,right=*args
+        end
         if op.respond_to? :ident
           @offset=op.offset
           op=op.ident
         end
-        super(left,op,right)
+        args=left,op,right
+        args.push options if options
+        super( *args )
       end
 
 #      def initialize_copy other
