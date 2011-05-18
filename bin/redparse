@@ -182,6 +182,8 @@ inputs.each_index{|i|
     input=inputs[i] or next
     name=names[i]
 
+    orig_input=input
+
     if /\A=begin\s/===input
       #combine 1st 2 lines of input
       if /\A(=begin(.*)\n=end\s(.*))\n/===input
