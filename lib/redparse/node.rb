@@ -4774,8 +4774,9 @@ end
 
       def unparse o=default_unparse_options
         result=[
-         "def ",receiver&&receiver.unparse(o)+'.',name,
-           args && '('+args.map{|arg| arg.unparse o}.join(',')+')', unparse_nl(body||self,o)
+         "def ",receiver&&receiver.unparse(o)+'.',name, has_parens? ? '(' : ' ', 
+           args&&args.map{|arg| arg.unparse o}.join(','), 
+         (')' if has_parens?), unparse_nl(body||self,o)
         ]
         result<<unparse_and_rescues(o)
 =begin
