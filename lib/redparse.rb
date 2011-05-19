@@ -1862,6 +1862,10 @@ end
  
     dir=reduce_withs_directory
     modname="ReduceWithsFor_#{parser_identity.join('_').tr(':.','_')}"
+
+    #but, need to skip warning lines matching this regexp:
+    #  /(^|[/\\])#{modname}\.rb:\d+: warning: mismatched indentations at 'end' with 'if' at \d+$/
+
     begin
     require File.join(dir,modname)
     rescue LoadError
