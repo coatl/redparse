@@ -1876,6 +1876,10 @@ end
     redparse_modules_init
   end
 
+  def self.parse(*args)
+    new(*args).parse
+  end
+
   def redparse_modules_init
 
   end
