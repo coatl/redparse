@@ -28,9 +28,7 @@ def (Test::Unit).run?; true end #the sense of this flag is inverted
     #exit Test::Unit::AutoRunner.run{|r| r.filters<<
      proc{|tc| tc.method_name.+(tc.class.name).hash&0xFF==h} #}
   }
-p 1
 Test::Unit::AutoRunner.run{|r| r.filters<<filters.pop }
-p 2
 at_exit do
 
   workers=[]
