@@ -1134,7 +1134,7 @@ end
       end
 
       def unparse_nl(token,o,alt=';',nl="\n")
-
+        fail unless alt
         #should really only emit newlines 
         #to bring line count up to startline, not endline.
 
