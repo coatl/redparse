@@ -104,9 +104,9 @@ while /^-/===ARGV.first
       when "--vsripper2"; output=:vsripper2; ruby19=true
       when "--update-problemfiles"; problemfiles=ProblemFiles.new
       when "--ignore-silly-begins"; ignorebegins=true
-      when "--tokens"; ENV['PRINT_TOKENS']='1'
-      when "--rawtokens"; ENV['RAW_PRINT_TOKENS']='1'
-      when "--stack"; ENV['PRINT_STACK']='1'
+      when "--tokens"; tokens=ENV['PRINT_TOKENS']='1'
+      when "--rawtokens"; rawtokens=ENV['RAW_PRINT_TOKENS']='1'
+      when "--stack"; stack=ENV['PRINT_STACK']='1'
       when "--unparse"; unparse=true
       when /^(?:--output|-o)=?(.*)$/
         outputf=($1.size>0 ? $1 : (/^[^-]/===ARGV.first && ARGV.shift ))
