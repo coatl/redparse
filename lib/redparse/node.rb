@@ -2160,6 +2160,14 @@ end
  
       def parsetree(o)
         result=parsetree_and_rescues(o)
+
+=begin should be something like this:
+        limit=o[:quirks] ? 1 : result.size
+        (0...limit).each{|i| 
+          result[i,1]=result[i][1..-1] if Array===result[i] and result[i][0]==:block
+        }
+=end
+
         if o[:ruby187] and result.first==:begin
           result=result[1]
         else
