@@ -5284,7 +5284,7 @@ end
       def image; "(#{receiver.image}.[])" end
 
       def unparse o=default_unparse_options
-        [ receiver.unparse(o).sub(/\s+\Z/,''),
+        [ receiver.unparse(o).sub(/ \z/,''),
           '[',
           params&&params.map{|param| param.unparse o}.join(','),
           ']'
