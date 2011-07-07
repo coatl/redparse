@@ -142,7 +142,7 @@ class Test::Unit::TestCase
       @@known_errors<<x
     else
       @@known_errors=[x]
-      at_exit {
+      extra_summary {
         warn "!!!UNFIXED KNOWN ERRORS!!!: #{@@known_errors.size}"
         @@known_errors.each{|err| warn "  "+err unless err["\n"] }
       }
@@ -155,7 +155,7 @@ class Test::Unit::TestCase
       @@known_errors_fixed+=1
     else
       @@known_errors_fixed=1
-      at_exit {warn "unexpectedly fixed known errors: #@@known_errors_fixed"}
+      extra_summary {warn "unexpectedly fixed known errors: #@@known_errors_fixed"}
     end
   end
 
@@ -169,7 +169,7 @@ class Test::Unit::TestCase
       @@known_failures+=1
     else
       @@known_failures=1
-      at_exit {warn "!!!UNFIXED KNOWN FAILURES!!!: #@@known_failures"}
+      extra_summary {warn "!!!UNFIXED KNOWN FAILURES!!!: #@@known_failures"}
     end
   else
     warn "expected failure in #{from}, but was fixed(?!)"
@@ -177,7 +177,7 @@ class Test::Unit::TestCase
       @@known_failures_fixed+=1
     else
       @@known_failures_fixed=1
-      at_exit {warn "unexpectedly fixed known failures: #@@known_failures_fixed"}
+      extra_summary {warn "unexpectedly fixed known failures: #@@known_failures_fixed"}
     end
   end
 
@@ -189,7 +189,7 @@ class Test::Unit::TestCase
         @@slow_spots+=1
       else
         @@slow_spots=1
-        at_exit {warn "slow test code skipped in #@@slow_spots places. (set SLOW to enable)"}
+        extra_summary {warn "slow test code skipped in #@@slow_spots places. (set SLOW to enable)"}
       end
     end
   end
@@ -4156,7 +4156,7 @@ EOW
     else
       warn e.message
       @@known_ruby_bugs=[x]
-      at_exit {
+      extra_summary {
         warn "unfixed bugs in ParseTree/MRI: #{@@known_ruby_bugs.size}"
         @@known_ruby_bugs.each{|bug| warn "  "+bug unless bug["\n"] }
       }
@@ -4169,7 +4169,7 @@ EOW
       @@known_ruby_bugs_fixed+=1
     else
       @@known_ruby_bugs_fixed=1
-      at_exit {warn "unexpectedly fixed known ParseTree/MRI bugs: #@@known_ruby_bugs_fixed"}
+      extra_summary {warn "unexpectedly fixed known ParseTree/MRI bugs: #@@known_ruby_bugs_fixed"}
     end
   end
 
@@ -4271,7 +4271,7 @@ EOW
         @@missed_syntax_errors+=1
       else
         @@missed_syntax_errors=1
-        at_exit{warn "missed syntax errors: #@@missed_syntax_errors"}
+        extra_summary{warn "missed syntax errors: #@@missed_syntax_errors"}
       end
       #puts "warning: syntax error expected, but none was seen, expression: <<< #{xmpl} >>>" if 
       #  POWERS_OF_2[@@missed_syntax_errors]
@@ -4360,7 +4360,7 @@ EOW
             differed_by_begin=true
             if @@differed_by_begin==0 or ENV['DIFFER_BY_BEGIN']
               warn "parse_trees differed by a :begin in #{xmpl}"
-              at_exit{warn "differed by begin: #@@differed_by_begin"} unless ENV['DIFFER_BY_BEGIN']
+              extra_summary{warn "differed by begin: #@@differed_by_begin"} unless ENV['DIFFER_BY_BEGIN']
             elsif @@differed_by_begin==1
               warn "more parse_trees differ by a :begin (set DIFFER_BY_BEGIN for details)"
             end
@@ -4372,7 +4372,7 @@ EOW
               @@mismatched_warnings+=1
             else
               @@mismatched_warnings=1
-              at_exit{warn "mismatched warnings: #@@mismatched_warnings (set WARN_PICKINESS for details)"}
+              extra_summary{warn "mismatched warnings: #@@mismatched_warnings (set WARN_PICKINESS for details)"}
             end
           end
         rescue Interrupt; raise
@@ -4414,7 +4414,7 @@ EOW
                 @@unparse_mismatched_linenums+=1
             else
                 @@unparse_mismatched_linenums=1
-                at_exit{warn "unparse mismatched linenums: #@@unparse_mismatched_linenums"}
+                extra_summary{warn "unparse mismatched linenums: #@@unparse_mismatched_linenums"}
             end
           else
             assert true 
