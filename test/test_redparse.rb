@@ -396,8 +396,9 @@ class RedParseTest<Test::Unit::TestCase
   FAILURE_EXAMPLES=[
   ]
   RUBYBUG_EXAMPLES=[
-
     #bugs in ruby itself
+    "a=a i? -R",
+    "b=1;b p %s[jim];",
     "c do p (110).m end",
     "p = p m %(1)",
     "p = p m %(1) ,&t",
@@ -408,6 +409,7 @@ class RedParseTest<Test::Unit::TestCase
     "z{|| p (1).m}",
 
     #bugs in ParseTree
+    'def a c=d=1; end',
 '    case
     when 0
       guecoding
