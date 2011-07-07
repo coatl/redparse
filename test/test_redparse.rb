@@ -3041,7 +3041,20 @@ class RedParseTest<Test::Unit::TestCase
       'def a0.a & b; end'...'',
       'def a0.a  b=c do end; hhh end'...'',
       'def a0.a b=c,d=e do f end; end'...'',
+      'def a0.a b=c,d=e e2 do f end; end'...'',
+      'def a0.a b=c,d=e e2 e3 do f end; end'...'',
+      'def a0.a b=c,d=e e2 e3 e4 do f end; end'...'',
+      'def a0.a b=c,d=e() do f end; end'...'',
+      'def a0.a( b=c,d=e do f end ); end'...'',
+      'def a0.a( b=c,d=e() do f end ); end'...'',
+      'def a0.a*b; end'...'',
       'def a0.a* b; end'...'',
+      'def a0.a * b; end'...'',
+      'def a0.a&b; end'...'',
+      'def a0.a& b; end'...'',
+      'def a0.a & b; end'...'',
+      'begin undef a,b;rr end'...'',
+      '"foo#{"dfg#{"sdfsd"}" }"; sdfasd'...'',
     ]
 
 
