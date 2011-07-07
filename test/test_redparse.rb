@@ -104,6 +104,33 @@ require "rubylexer/test/testcases"
 
 $VERBOSE=1
 
+begin
+require 'test/unit/ui/console/testrunner'
+class Test::Unit::UI::Console::TestRunner
+  @@Extra_Summarizers=[]
+  alias finished__without_extra_summaries finished
+  def finished x
+    print "\nTests complete\n"
+    @@Extra_Summarizers.each{|sz| sz[x] }
+    finished__without_extra_summaries x
+  end
+  def self.extra_summary &code
+    @@Extra_Summarizers<<code
+  end
+end
+class Test::Unit::TestCase
+  def extra_summary &code
+    Test::Unit::UI::Console::TestRunner.extra_summary &code
+  end
+end
+rescue LoadError
+class Test::Unit::TestCase
+  def extra_summary &code
+    at_exit &code
+  end
+end
+end
+
 class Test::Unit::TestCase
   def known_error x
     from=caller.first
