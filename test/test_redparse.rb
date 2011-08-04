@@ -3621,8 +3621,7 @@ end
     assert(!$bad)
     s = "a string"
     s[0..s.size]="another string"
-    assert_equal("another string", s)
-    s = <<EOS
+    assert_equal("another string",    s = <<EOS
 #{
 [1,2,3].join(",")
 }
