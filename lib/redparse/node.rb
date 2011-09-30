@@ -357,6 +357,7 @@ class RedParse
     end
 
     module ListInNode
+      def self.[](*args) args.extend ListInNode end
       def []=(*args)
         val=args.pop
         #inline symbols as callnodes
