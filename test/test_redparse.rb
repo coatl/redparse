@@ -4073,7 +4073,14 @@ EOW
 
   RUBYIDENT=/((?:\$|@@?)?#{RubyLexer::LETTER}#{RubyLexer::LETTER_DIGIT}*[?!]?)/o
 
+  SEEN_SNIPPETS={}
+
   def self.snippet2testmethod(snippet,wrap=nil)
+    if SEEN_SNIPPETS[snippet]
+      return
+    else
+      SEEN_SNIPPETS[snippet]=1
+    end
     escaped=snippet.gsub(/[\\']/){"\\"+$&}
     safe=escaped.gsub(/([^ -~])/){
       x=$1[0]
