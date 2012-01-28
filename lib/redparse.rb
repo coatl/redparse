@@ -1802,10 +1802,10 @@ end
     line||=options[:line]||1
     lvars||=options[:lvars]||[]
     @rubyversion=options[:rubyversion]||1.8
-
-    encoding=options[:encoding]||:ascii
-    encoding=:binary if @rubyversion<=1.8
     input.binmode if input.respond_to? :binmode
+
+    @encoding=options[:encoding]||:ascii
+    @encoding=:binary if @rubyversion<=1.8
 
     if Array===input
       def input.get1token; shift end
@@ -1822,8 +1822,8 @@ end
       @funclikes=@lexer::FUNCLIKE_KEYWORDS()
       @varlikes=@lexer::VARLIKE_KEYWORDS()
       lvars.each{|lvar| @lexer.localvars[lvar]=true }
-      encoding=@lexer.encoding_name_normalize(encoding.to_s).to_sym
-      warn "#{encoding} encoding won't really work right now" if RubyLexer::NONWORKING_ENCODINGS.include? encoding
+      @encoding=@lexer.encoding_name_normalize(@encoding.to_s).to_sym
+      warn "#{@encoding} encoding won't really work right now" if RubyLexer::NONWORKING_ENCODINGS.include? @encoding
     end
     @funclikes=/#@funclikes|^->$/ if @rubyversion>=1.9
     @filename=name
