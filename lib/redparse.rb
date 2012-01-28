@@ -1785,12 +1785,22 @@ if defined? END_ATTACK
 end
 
   def signature
-    RedParse.signature(class<<self; ancestors end)
+    ancs=class<<self; ancestors end
+    ancs.slice!(ancs.index(RedParse)..-1)
+
+    lancs=class<<@lexer; ancestors end
+    [RubyLexer,Array].each{|k|
+      if i=lancs.index(k)
+        lancs.slice!(i..-1)
+      end
+    }
+
+    RedParse.signature(ancs+lancs)
   end
   def RedParse.signature(ancs=ancestors)
     @@my_sha||=Digest::SHA256.file(__FILE__)
     @@node_sha||=Digest::SHA256.file(__FILE__.sub(/\.rb\z/,"/node.rb"))
-    [ancs.map{|m| m.name}, @@my_sha, @@node_sha,]
+    [ancs.map{|m| m.name}, @encoding, @@my_sha, @@node_sha,]
   end
 
   def initialize(input,name=nil,line=nil,lvars=nil,options=nil)
