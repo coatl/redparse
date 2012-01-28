@@ -1805,26 +1805,7 @@ end
 
     encoding=options[:encoding]||:ascii
     encoding=:binary if @rubyversion<=1.8
-    cache=Cache.new(
-      File===input,name, 
-        :line,line,:encoding,encoding,:locals,lvars.sort.join(","), 
-      @rubyversion, :/, *signature
-    )
-    cache_mode=options[:cache_mode]||ENV['REDPARSE_CACHE']||:read_write
-    cache_mode=cache_mode.to_sym
-    raise ArgumentError,"bad cache mode #{cache_mode}" unless /^(?:read_(?:write|only)|write_only|none)$/===cache_mode.to_s    
-    read_cache= /read/===cache_mode.to_s
     input.binmode if input.respond_to? :binmode
-    if read_cache and cache and result=cache.get(input)
-      @cached_result=result
-      @write_cache=nil
-      return
-    end
-    if /write/===cache_mode.to_s
-      @write_cache,@input= cache,input 
-    else
-      @write_cache=nil
-    end
 
     if Array===input
       def input.get1token; shift end
@@ -1868,6 +1849,26 @@ end
 
     dir=reduce_withs_directory
     modname="ReduceWithsFor_#{parser_identity.join('_').tr(':.','_')}"
+
+    cache=Cache.new(
+      File===input,name, 
+        :line,line,:encoding,@encoding,:locals,lvars.sort.join(","), 
+      @rubyversion, :/, *signature
+    )
+    cache_mode=options[:cache_mode]||ENV['REDPARSE_CACHE']||:read_write
+    cache_mode=cache_mode.to_sym
+    raise ArgumentError,"bad cache mode #{cache_mode}" unless /^(?:read_(?:write|only)|write_only|none)$/===cache_mode.to_s    
+    read_cache= /read/===cache_mode.to_s
+    if read_cache and cache and result=cache.get(input)
+      @cached_result=result
+      @write_cache=nil
+      return
+    end
+    if /write/===cache_mode.to_s
+      @write_cache,@input= cache,input 
+    else
+      @write_cache=nil
+    end
 
     #but, need to skip warning lines matching this regexp:
     #  /(^|[/\\])#{modname}\.rb:\d+: warning: mismatched indentations at 'end' with 'if' at \d+$/
