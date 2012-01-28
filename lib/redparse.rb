@@ -1859,9 +1859,13 @@ end
     @saw_item_that=nil
     @print_filter=proc{true}
  
-    #write_reduce_withs
-    modules=options[:modules]||[]
- 
+    if modules=options[:modules]
+      modules.each{|m| extend m}
+    end
+    if modules=options[:lexer_modules]
+      modules.each{|m| @lexer.extend m}
+    end
+
     dir=reduce_withs_directory
     modname="ReduceWithsFor_#{parser_identity.join('_').tr(':.','_')}"
 
@@ -1872,9 +1876,8 @@ end
     require File.join(dir,modname)
     rescue LoadError
     else
-    modules+=[self.class.const_get( modname )]
+     extend self.class.const_get( modname )
     end
-    modules.each{|m| extend m }
     redparse_modules_init
   end
 
