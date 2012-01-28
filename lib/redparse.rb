@@ -1828,7 +1828,11 @@ end
         @varlikes=RubyLexer::VARLIKE_KEYWORDS
       end
     else
-      @lexer=RubyLexer.new(name,input,line,0,:rubyversion=>@rubyversion,:encoding=>encoding)
+      if RubyLexer===input
+        @lexer=input
+      else
+        @lexer=RubyLexer.new(name,input,line,0,:rubyversion=>@rubyversion,:encoding=>@encoding)
+      end
       @funclikes=@lexer::FUNCLIKE_KEYWORDS()
       @varlikes=@lexer::VARLIKE_KEYWORDS()
       lvars.each{|lvar| @lexer.localvars[lvar]=true }
