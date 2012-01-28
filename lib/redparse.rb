@@ -841,7 +841,9 @@ end
             end
         END
       })
-      ruby= list.map{|klass|
+      ruby=["#Copyright (C) #{Time.now.year} #{ENV['COPYRIGHT_OWNER']||'Caleb Clausen'}\n"+
+            "#Generated with ruby v#{RUBY_VERSION}\n"
+      ].concat list.map{|klass|
         shortname=klass.to_s[/[^:]+$/]
         shortnames<<[shortname,klass,nil]
         code_for_reduce_with( shortname, [klass] )
