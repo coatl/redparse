@@ -10,8 +10,8 @@ class TestsFor1_9 < Test::Unit::TestCase
     '{a:  b}'...'{:a=>b}',
     '{a:  b, c:  d}'...'{:a=>b, :c=>d}',
     "a ? b\n :  c"..."a ? b : \n c",
-    '{a:  1,b:  2,c=>3}'...'{:a=>1,:b=>2,c=>3}'
-
+    '{a:  1,b:  2,c=>3}'...'{:a=>1,:b=>2,c=>3}',
+    'a b {p 1} do p 2 end'...'a(b {p 1}) do p 2 end',
   ]
 
   RUBY_1_9_TO_1_8_EQUIVALENCES_BUT_FOR_STRESC=[
