@@ -1,3 +1,195 @@
+=== v1.0.0 26oct2011
+* performance improvements:
+  * coalescer:
+    * a new backend, the 'coalescer' is 10x faster and actually works!
+    * canned coalesce output (which takes forever to generate otherwise)
+  * cache:
+    * cached outputs are stored near to the inputs if that's writeable
+    * otherwise, they're in the first writeable directory of:
+      * Etc.getpwuid if any, $HOME if any, root dir
+    * if none are writeable, nothing is cached
+    * defined a parser signature that will change when:
+      * parser source code changes, or
+      * parser type (including modules parser is extended by) changes, or
+      * lexer type changes
+* many improvements to #unparse (which turns Node trees back into ruby code):
+  * slightly tweaked the unparsing of defined? so it'll reparse correctly
+  * in AssignNode#unparse, always put spaces around assign op
+  * only elide spaces right before [ on unparse of BracketsGetNode
+  * unparse of for node should not start with newlines...
+  * speed up unparse_nl when no token provided
+  * 3rd param to unparse_nl (alt) should never be nil
+  * parens and the like and when to omit them from unparse output:
+    * need to call to_s on body of ParenedNode#unparse
+    * emit extra () on unparse in hash and array lits and method call params.
+    * better detection of when to leave out curly braces in hash literal
+    * unparse of MethodNode and CallSiteNode now omits parens if original did
+    * hardcode unparse of NopNode to "()" (was empty string)
+    * NopNode in str inclusion unparses to #{} (was: #{()})
+  * string literal unparsing:
+    * fix unparse of string when delimiter is \r
+    * better detection of backslash (and friends) in strings
+    * for splitting word array or requoting here docs
+  * exception machinery and unparsing:
+    * tolerate missing #rescues in nodes which allow rescue
+    * oops, #unparse was inserting extraneous empty elses
+  * unparsing float literals:
+    * unparse to original string rep of a float literal if available
+      * (to reduce rounding errors)
+    * unparse of -0.0 preserves its sign
+    * more forgiving about parsing floats
+    * better error message on float coercion problem
+* ruby 1.9:
+  * generally improving ability to run under mri 1.9 (fixing warnings, mostly)
+    all the new 1.9 syntax should now work 
+      * notably improvements to -> and .()
+    avoiding warnings about undef'd ivars
+    avoiding duplication in char classes
+  * encoding:
+    * pass encoding on to the lexer
+    * encoding names should always be represented as symbols
+  * 1.9+extensibility:
+    * made @funclikes and @varlikes: ivars instead of constants
+    * @funclikes and @varlikes vary depending on whether in 1.9 mode
+    * -> is now considered a funclike keyword
+    * VALUELIKE_LA converted from a constant to a method
+    * FUNCLIKE_KEYWORD is now a method rather than a constant
+  * 1.9 syntax:
+    * look for block locals in method params only in -> args
+    * -> now has no method params but does have block params (and block locals)
+    * add locals slot for BlockNode
+      * and fill from vars after ; in block params
+    * special rule for -> in 1.9 not needed now (treated like KWCallNode)
+    * new exception in 1.9 for !@ method
+    * improved support for .() type calls in 1.9 mode
+* programmer's interface:
+  * ast creation:
+    * Node.new should optionally allow ivars to be set using named params
+    * on StringNode.[], don't overwrite @modifiers if one is provided
+    * now parser uses LiteralNode.create to create literals
+      * (so client code can use LiteralNode.new)
+    * sugary constructor for ListInNode
+    * make RawOpNode#new arg parsing more robust
+  * ast reading/searching/reflecting:
+    * some utilities for finding nodes in node trees
+    * to_ruby is an alias for unparse in RedParse::Node and descendants
+    * ListInNode should compare == only if both sides are ListInNode
+    * explicit, public accessors for things that were private:
+      * added #body #reversed and #test_first to while and until nodes
+      * make the #string representation of literal nodes publicly accessible
+      * MethodNode#has_parens? now returns whether formal args had parens
+    * new names for things that were already available:
+      * give RescueOpNode an #op method (always returns "rescue")
+      * alias RescueOpNode#right to #rescue_with (for the fallback expression)
+      * alias CallSiteNode#has_parens? to #real_parens
+      * alias RescueNode#name to its varname
+      * alias UnOpNode#arg to #val
+      * alias UnaryOpNode to UnOpNode
+    * changes in structure, shouldn't impact users:
+      * empty parens should make a ParenedNode, not a SequenceNode
+      * NopNode is now a descendant of SequenceNode
+      * created UnAmpNode for unary ampersand
+  * location:
+    * print error location when parse or lex error occurs
+    * line numbers in Node trees are present/correct in more cases
+  * inspect:
+    * Node#inspect now omits some unimportant or duplicate subfields
+    * remove some duplication in pp output
+    * put + in front of ListInNode on inspect... so it looks like other nodes
+    * head of a constant is now inspected correctly if it happened to be a node
+    * make #inspect more robust in the presence of weird labels
+    * use shorter inspect in error string for misparsed nodes
+    * allow Node subclasses to exclude certain ivars from #inspect
+    * leave HashNode's @no_braces undef'd if not set... makes inspect view prettier
+  * misc api:
+    * added RedParse.parse, for parsing without a RedParse object
+    * all RedParse.new options after the 1st can now be omitted
+    * allow cache mode to be given in a env var, if not otherwise specified
+    * always put error messages on stderr!
+    * added stack attr to RedParse to allow access to the stack from outside
+    * created a #pretty_stack method for printing the stack out
+    * use pretty_stack to print stack
+    * display more fields of @input on inspect
+    * RedParse#inspect cleaner, while preserving old functionality via #dump
+    * have RedParse#to_s emit a more accurate image of the actual type
+    * improve RedParse#to_s slightly for faux @lexers
+    * made #rules an alias for #expanded_RULES
+    * rubyversion attr is no longer writable
+* misc
+  * ripper emulation, still pretty raw/incomplete
+  * beginnings of drop-in replacements for 3 other parsers
+  * find stuff in gemspec relative to __FILE__ instead of .
+  * don't need this trashy rakefile anymore
+  * re-enabled the compiler
+  * support octal literals starting with +
+  * make sure there's a #blame in nodes that have #error?   [api,AST]
+  * EXCLUDED_IVARS no longer needs to keep symbol and string forms of each elem
+* command line:
+  * added --coalesce cmdline option to use new 'coalescer' parser compiler
+  * made an option for omitting the output of the parse tree
+  * added --cache cmdline option to control caching
+  * avoid printing initial garbage tokens when --print-tokens enabled
+  * added long names for -7 and -9 flags (version selection)
+  * don't require the compiler unless --compile given on cmdline 
+  * don't print ugly minor node details unless -v set
+* parsetree:
+  * improved compatibility w/ parsetree generally
+  * in HasRescue#parsetree should not modify reciever now
+  * in quirks mode:
+    * always force a :block to wrap #parsetree of begin..end nodes
+      * if the sole expression in the body is an undef
+      * (sigh...improves compatibility with cranky ref impl)
+    * only search for literals to nopify at the start
+      * of a sequence, instead of all but the last element
+  * paren node with no body looks like nil to #parsetree
+  * added several to known parsetree/mri boo-boos
+* tests for ruby 1.9 variant:
+  * disable caching in 1.9 tests
+  * put each 1.9 test case in its own test method
+  * let's do all 1.9 testing in utf-8
+  * expect no sequences except in block bodies
+  * expect no multiassigns except if top-level is an assignment
+  * print code that failed if exception in 1.9 tests
+  * made test for invalid 1.9 expressions
+  * adding test for 1.9 constructs equivalent to other 1.9 constructs
+  * add test case for block locals in .() call
+  * tried to improve parse tree 'blurring' code
+    * (which ignores bs_handler in strings)
+  * include 1_9 in names of 1.9 tests
+* tests:
+  * added extra_summary utility method to Test::Unit,
+    * which can print additional messages when the test is over
+    * used with known ruby bugs, keep a them separate
+    * since those aren't bugs in redparse
+  * cut down on the rate of the differed-by-begin warning
+  * a system of 'interactive' testing
+    * to allow user to confirm whether unparse is valid
+    * when not exactly equal to original
+  * only wank about parse errors if an env var is set
+  * an option to divide tests into multiple processes
+  * oops, error in mangle mode's detection of globals
+  * fixed a couple test cases that needed to have newlines
+  * a buncha new good (=exhibits errors) test data
+  * new wrappers and injectables expand the reach of mangle mode tests
+  * correcting or moving bad test cases
+  * eliminate duplicate tests
+* rules:
+  * simplify operator rule by removing KeywordToken match
+    * but now => has to be parsed separately
+  * herebodytoken delete rule eliminated... now a lexer hack
+  * moved rules for parsing parenthesized expressions down to be lower prec than KWCallNode   [rules]
+  * expand duties of expanded_RULES to wrapping string/regexp matchers in KW()   [rules]
+  * rewrote #lower_op to return a proc   [rules]
+  * cacheing of parse table intermediate structures
+  * @compiled_rules cache not needed anymore
+  * (slightly) improve error handling when no block to item_that
+  * initial stab at DanglingStarNode.create   [rules]
+  * mini version of ruleset, just a few rules, for debugging [rules]
+  * improving readability in a char class
+* moved lexer-specific code into the lexer
+  * __FILE__/__LINE__ value setting 
+  * token linenums determination
+
 === 0.8.4 / 21dec2009
 * 5 Major Enhancements:
   * OpNode and related modules are now classes
