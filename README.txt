@@ -4,29 +4,20 @@
 
 == DESCRIPTION:
 
-RedParse is a ruby parser written in pure ruby. Instead of YACC or 
-ANTLR, it's parse tool is a home-brewed "compiler-interpreter". (The
-tool is LALR(1)-equivalent and the 'parse language' is pretty nice, 
-even in it's current crude form.)
+RedParse is a ruby parser (and parser-compiler) written in pure ruby. 
+Instead of YACC or ANTLR, it's parse tool is a home-brewed language. (The
+tool is (at least) LALR(1)-equivalent and the 'parse language' is 
+pretty nice, even in it's current form.)
 
 My intent is to have a completely correct parser for ruby, in 100% 
-ruby. Currently, RedParse can parse all known ruby 1.8 constructions
-correctly. There might be some problems with unparsing or otherwise 
-working with texts in a character set other than ascii. Some of the
-new ruby 1.9 constructions are supported in 1.9 mode. For more
-details on known problems, see below. 
-
-== REQUIREMENTS:
-* RedParse requires RubyLexer, my hand-coded lexer for ruby. It also 
-  uses Reg, (a pattern-matcher). RubyLexer depends on Sequence, 
-  (external iterators). Reg depends on Sequence as well. To summarize:
-  *  RedParse 0.8.4 requires RubyLexer 0.7.7 and Reg>=0.4.8
-  *  RubyLexer 0.7.7 requires Sequence>=0.2.3
-  *  Reg 0.4.8 requires Sequence>=0.2.3
-* All are available as gems. (Or tarballs on rubyforge, if you must.)
+ruby. And I think I've more or less succeeded. Aside from some fairly
+minor quibbles (see below), RedParse can parse all known ruby 1.8 and 1.9 
+constructions correctly. Input text may be encoded in ascii, binary, 
+utf-8, iso-8859-1, and the euc-* family of encodings. Sjis is not yet 
+supported.
 
 == INSTALL:
-* gem install redparse #(if root as necssary)
+* gem install redparse #(as root if necessary)
 
 == LICENSE:
 
@@ -61,13 +52,12 @@ Please see COPYING.LGPL for details.
 
 == Drawbacks:
 
-* Pathetically, ridiculously slow (ok, compiler-compilers are hard...)
-* Error handling is very minimal right now.
+* Slow. Not as bad as it used to be, tho.
+* Error coverage is sketchy at best
 * No warnings at all.
-* Unit test takes a fairly long time.
+* Unit test takes a fairly long time (much better now, tho! down to 15min).
 * Lots of warnings printed during unit test.
 * Debugging parse rules is not straightforward.
-* Incomplete support for ruby 1.9.
 * "loosey-goosey" parser happily parses many expressions which normal 
   ruby considers errors.
 
@@ -246,20 +236,45 @@ existing format in the future, but no incompatibility-creating changes.
  ErrorNode         #mixed in to nodes with a syntax error
  +-MisparsedNode   #mismatched braces or begin..end or the like
 
+== REQUIREMENTS:
+* RedParse requires RubyLexer, my hand-coded lexer for ruby. It also 
+  uses Reg, (a pattern-matcher). RubyLexer depends on Sequence, 
+  (external iterators). Reg depends on Sequence as well. To summarize:
+  *  RedParse 1.0.0 requires RubyLexer 0.8.0 and Reg>=0.4.8
+  *  RubyLexer 0.8.0 requires Sequence>=0.2.4
+  *  Reg 0.4.8 requires Sequence>=0.2.3
+* All are available as gems. (Or tarballs on rubyforge, if you must.)
+
 == Known problems with the parser:
 * Encoding of the input is not stored anywhere in resulting parse tree.
 * Ascii, binary, utf-8, and euc encodings are supported, but sjis is not.
+* offsets of some nodes are incorrect
+* multi-assign nested in multi-assign as receiver of an attribute lhs won't parse right
+* these expressions won't parse:
+  <<x.
+   1111
+  x
+  a0 rescue b0()
+
+  ?\
+  __END__
+  -?
+
+  __END__  #with a comment
+
+  * =f,g rescue b and c
 
 == Known problems with the unparser:
-* On unparse, here documents are converted into regular strings. For the most 
-  part, these are exactly equivalent to the original. However, whatever tokens
-  appeared between the here document header and body will now show up on a 
-  different line. If one of those tokens was __LINE__, it will have a 
-  different value in the unparsed code than it had originally.
-* some floating-point literals don't survive parse/unparse roundtrip intact, 
-  due to bugs in MRI 1.8's Float#to_s/String#to_f.
-* unparsing of trees whose input was in a character set other than ascii may
-  not work.
+* Major:
+  * unparsing of trees whose input was in a character set other than ascii may
+    not work.
+* Minor:
+  * On unparse, here documents are converted into regular strings. For the 
+    most part, these are exactly equivalent to the original. However, 
+    whatever tokens appeared between the here document header and body will 
+    now show up on a different line. If one of those tokens was __LINE__, 
+    it will have a different value in the unparsed code than it had 
+    originally.
 
 == Known problems with ParseTree creator
 * Major:
@@ -271,6 +286,9 @@ existing format in the future, but no incompatibility-creating changes.
     but what I emit is equivalent.
     * %W"is #{"Slim #{2?"W":"S"}"}#{xx}."
   * silly empty case nodes aren't always optimized to nop like in ParseTree.
+  * begin..end blocks nested in other begin..end blocks aren't combined
+  * literal strings,numbers,symbols,etc as their own stmts should be optimized away
+  * BEGIN expressions not in their own statement may not be treated right
 
 == Bugs in ruby
 * These expressions don't parse the same as in MRI because of bug(s) in MRI:
