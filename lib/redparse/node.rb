@@ -1,6 +1,6 @@
 =begin           
     redparse - a ruby parser written in ruby
-    Copyright (C) 2008  Caleb Clausen
+    Copyright (C) 2008, 2012  Caleb Clausen
 
 
     This program is free software: you can redistribute it and/or modify
