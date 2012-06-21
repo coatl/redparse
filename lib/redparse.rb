@@ -1795,12 +1795,12 @@ end
       end
     }
 
-    RedParse.signature(ancs+lancs)
+    RedParse.signature(@encoding,ancs+lancs)
   end
-  def RedParse.signature(ancs=ancestors)
+  def RedParse.signature(encoding,ancs=ancestors)
     @@my_sha||=Digest::SHA256.file(__FILE__)
     @@node_sha||=Digest::SHA256.file(__FILE__.sub(/\.rb\z/,"/node.rb"))
-    [ancs.map{|m| m.name}, @encoding, @@my_sha, @@node_sha,]
+    [ancs.map{|m| m.name}, encoding, @@my_sha, @@node_sha,]
   end
 
   def initialize(input,name=nil,line=nil,lvars=nil,options=nil)
