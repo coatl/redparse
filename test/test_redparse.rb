@@ -1,6 +1,6 @@
-=begin           
+=begin copyright
     redparse - a ruby parser written in ruby
-    Copyright (C) 2008, 2012  Caleb Clausen
+    Copyright (C) 2008, 2012, 2016  Caleb Clausen
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public

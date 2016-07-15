@@ -389,7 +389,7 @@ warn_unless_equal 168,mui(@@ref_168),'RubyLexer::OperatorToken & -{, :ident=>/^(
           ::RedParse::ReduceWithsFor_RedParse_1_8.redparse_modules_init(self) 
           super
         end
-#Copyright (C) 2012 Caleb Clausen
+#Copyright (C) 2012, 2016 Caleb Clausen
 #Generated with ruby v1.8.6
 define_method('reduce_with_tos_NumberToken') do
 
