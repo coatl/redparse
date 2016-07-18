@@ -96,14 +96,14 @@ class ParseTreeServer
         tree=
         begin
           instance.parse_tree_for_string(str) #tree
-        rescue Exception=>e; 
+        rescue Exception=>e
           tree=e
         end
         put tree
 
         open(STDERR.path){|f| 
           f.pos=pos
-          put warnings=f.read.split #warnings
+          put warnings=f.read.split("\n") #warnings
         }
       end
       rescue Exception=>e; put e; raise
