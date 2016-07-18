@@ -4427,7 +4427,7 @@ EOW
         end unless done_already
 
         assert_equal nodes, Marshal.load(Marshal.dump(nodes))
-        assert_equal nodes, Ron.load(Ron.dump(nodes)) if defined? Ron
+        #assert_equal nodes, Ron.load(Ron.dump(nodes)) if defined? Ron
         assert_equal nodes, nodes.deep_copy
 
         unless done_already or Exception===tree or differed_by_begin
