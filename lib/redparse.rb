@@ -1056,6 +1056,7 @@ end
     #should be handled in the same way, but currently are not
 #    puts msgs.join("\n")
 
+=begin
   rescue Exception=>e
     if ENV['PRINT_PARSE_ERRORS']
       input=@lexer
@@ -1072,6 +1073,7 @@ end
     end
     raise
   else
+=end
     unless msgs.empty?
       pp @stack[-[15,@stack.size].min..-1] if ENV['PRINT_STACK']
       raise RedParse::ParseError.new(msgs.join("\n"),@stack)
