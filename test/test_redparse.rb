@@ -4390,11 +4390,6 @@ EOW
             problem_exprs.flush
           end
           raise e
-        else
-          if false and problem_exprs and tree!=tree2
-            problem_exprs.write xmpl+"\n"
-            problem_exprs.flush
-          end
         end #rescue false
         
       end #until output.equal? tree 
