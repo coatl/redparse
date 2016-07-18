@@ -472,6 +472,19 @@ class RedParse
         return result
       end
 
+      def classic_inspect
+        self.class.name.dup+'['+
+          map{|elem| 
+            if elem.respond_to? :classic_inspect
+              elem.classic_inspect
+            else
+              elem.inspect
+            end
+          }.join(', ')+
+        ']'
+        #this skips ivars, tho...
+      end
+
       def inspect label=nil,indent=0,verbose=false
         ivarnames=instance_variables.map{|v| v.to_s }
         ivarnames-=FlattenedIvars::EXCLUDED_IVARS
