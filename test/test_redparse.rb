@@ -101,6 +101,8 @@ end
 require "redparse"
 require "redparse/pthelper"
 require "rubylexer/test/testcases"
+require File.expand_path(__FILE__+"/../data/pt_known_output")
+require_relative 'ptlog' if ENV['PTLOG']
 
 $VERBOSE=1
 
@@ -270,7 +272,9 @@ end
 =end
 
 require 'redparse/parse_tree_server'
-class ParseTree
+class ParseTree #todo: move this to parse_tree_server.rb. 
+                #also, slight fork of 
+                #parse_tree_and_warnings_leaks_stderr in bin/parsetree
   class<<self
   include ParseTreeComm
   def old_fork_server?
@@ -351,7 +355,7 @@ class ParseTree
     rescue Exception
       return nil,nil
     end
-    raise tree if Exception===tree
+    #raise tree if Exception===tree
     return tree,warnings
   end
   end
@@ -4311,6 +4315,7 @@ EOW
 
   def ParseTree.server_running_187?
     #@server_running_187||=nil
+    return nil if !defined? @out
     return @server_running_187 unless @server_running_187.nil?
     put :version
     version=get
@@ -4324,42 +4329,25 @@ EOW
     return @server_running_187= version=="1.8.7"
   end
 
+
+
   @@differed_by_begin=0
   def check_parsing xmpl
-    ParseTree.fork_server?
+    xmpl.force_encoding "binary"
     xmpl=xmpl.dup.freeze
     pt_opts=[:quirks]
     pt_opts<<:ruby187 if ParseTree.server_running_187?
     /unparse/===xmpl and warn 'unparse in parser test data!'
     problem_exprs=problem_exprs()
     nodes=warnings=warnings2=nil
-=begin
-      xmpl=<<-prefix+xmpl+<<-suffix
-        BEGIN{throw :never_exec_parse_data_try1,1}
-        BEGIN{throw :never_exec_parse_data_try2,2}
-        BEGIN{throw :never_exec_parse_data_try3,3}
-        BEGIN{raise "never_exec_parse_data_try4"}
-        BEGIN{raise "never_exec_parse_data_try5"}
-      prefix
-        ;0
-      suffix
-=end
-#        tree=nil
-#        output=false
-#        loops=0
-      begin
-#        output=
-#        catch(:never_exec_parse_data_try1){
-#          catch(:never_exec_parse_data_try2){
-#            catch(:never_exec_parse_data_try3){
-              tree,warnings=ParseTree.parse_tree_and_warnings(xmpl)
-#            }
-#          }
-#        }
-#        break if loops+=1 > 3
-      rescue Interrupt; raise
-      rescue Exception=>e
-        tree=e
+    if tree=$pt_known_output[xmpl]
+      tree=tree.dup
+      warnings=tree.pop[:warnings] if Array===tree and Hash===tree.last        #+[__,+{warnings:String}]
+    else
+      tree,warnings=ParseTree.parse_tree_and_warnings(xmpl)
+      hacky_record_pt_output(xmpl,tree,warnings) if ENV['PTLOG']
+    end
+      if Exception===tree
         tree2=nodes=h=nil
         assert_hopefully_raises_Exception(xmpl){
           nodes=RedParse.new(xmpl,"-",1,[],:cache_mode=>:write_only).parse
