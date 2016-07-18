@@ -4345,7 +4345,7 @@ EOW
       warnings=tree.pop[:warnings] if Array===tree and Hash===tree.last        #+[__,+{warnings:String}]
     else
       tree,warnings=ParseTree.parse_tree_and_warnings(xmpl)
-      hacky_record_pt_output(xmpl,tree,warnings) if ENV['PTLOG']
+      PTLOG.record_pt_output(xmpl,tree,warnings) if ENV['PTLOG']
     end
       if Exception===tree
         tree2=nodes=h=nil
