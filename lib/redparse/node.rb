@@ -2793,7 +2793,7 @@ end
           [:op_asgn2, rcvr,prop,  op.to_sym, args]
         end
       end
-    end
+    end if false
  
     class LogicalNode
       include KeywordOpNode

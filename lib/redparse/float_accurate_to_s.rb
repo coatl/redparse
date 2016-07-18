@@ -15,6 +15,13 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 =end
+needed=  !defined?(RUBY_ENGINE) ||
+         (RUBY_ENGINE=='ruby' && (
+            RUBY_VERSION[/^\d+\.\d+/].to_f<=1.8 || #1.8 or below or
+            RUBY_VERSION[/^1\.9\.(\d+)/,1].to_i<2  #1.9 if < 1.9.2
+         ))
+
+
 class Float
   SIZE=[1.1].pack("d").size
   BITSIZE=SIZE*8
@@ -109,7 +116,7 @@ class Float
       return [lead,digits<<last,"e",exp].join
     end
   end
-end
+end if needed
 
 =begin not quite accurate, tho
 class String

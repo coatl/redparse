@@ -195,6 +195,7 @@ class Test::Unit::TestCase
   end
 end
 
+if ENV['IMMED']
 #print output immediately on failing test (at end too....)
 begin
   require 'test/unit/ui/console/testrunner'
@@ -217,7 +218,7 @@ class MiniTest::Unit
     return result
   end
 end if defined? MiniTest::Unit
-
+end
 
 =begin nice idea, don't work yet
 class Test::Unit::TestResult
