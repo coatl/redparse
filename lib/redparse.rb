@@ -47,7 +47,7 @@ class RedParse
   
   # irb friendly #inspect/#to_s
   def to_s
-    mods=class<<self;self end.ancestors-self.class.ancestors
+    mods=class<<self; ancestors; end.reject{|k| !k.name }-self.class.ancestors
     mods=mods.map{|mod| mod.name }.join('+')
     mods="+"<<mods unless mods.empty?
     input=@input||@lexer.input
@@ -684,8 +684,7 @@ end
 
   #try all possible reductions
   def reduce
-    i=@rules.size
-    code=@@rules_compile_cache[class<<self; ancestors end<<@rubyversion]||=coalesce_loop().join
+    code=@@rules_compile_cache[class<<self; ancestors end.reject{|k| !k.name}<<@rubyversion]||=coalesce_loop().join
     code= <<-END
       class RedParse
       def (Thread.current['$RedParse_instance']).reduce
@@ -769,7 +768,7 @@ end
   def parser_identity
   #what is the relationship between this method and #signature?
   #can the two be combined?
-    result=class<<self; ancestors end
+    result=class<<self; ancestors end.reject!{|k| !k.name}
     result.reject!{|k| !!((::RedParse<k)..false) }
     result.reject!{|k| k.name[/^(?:RedParse::)?ReduceWiths/] }
     result.reverse!
@@ -1785,10 +1784,10 @@ if defined? END_ATTACK
 end
 
   def signature
-    ancs=class<<self; ancestors end
+    ancs=class<<self; ancestors end.reject{|k| !k.name}
     ancs.slice!(ancs.index(RedParse)..-1)
 
-    lancs=class<<@lexer; ancestors end
+    lancs=class<<@lexer; ancestors end.reject{|k| !k.name}
     [RubyLexer,Array].each{|k|
       if i=lancs.index(k)
         lancs.slice!(i..-1)
