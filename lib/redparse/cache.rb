@@ -191,7 +191,7 @@ class RedParse
         begin
           Thread.current["Marshal.ignore_sclass"]=true
           Marshal.dump(result,fd)
-        rescue TypeError=>e #dump failed
+        rescue TypeError #dump failed
           File.unlink cachedir+hash
           begin
             require 'ron'
@@ -383,7 +383,7 @@ class RedParse
         Marshal.dump(result,cache_f)
         encoder= "Marshal"
         #STDERR.puts 'Marshal'
-      rescue TypeError=>e #dump failed
+      rescue TypeError #dump failed
         #STDERR.write "Marshal failed => "
         cache_f.close
         cache_f=File.open(cache_fn,"wb")

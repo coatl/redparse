@@ -1131,7 +1131,7 @@ end
           when '&'; amp=val.parsetree(o)
           end
         }
-        return output,star,amp
+        return output,star
       end
 
       def unparse_nl(token,o,alt=';',nl="\n")
@@ -2184,7 +2184,7 @@ end
       end
 
       def begin_parsetree(o)
-        body,rescues,else_,ensure_=*self
+        #body,rescues,else_,ensure_=*self
         needbegin=(rescues&&!rescues.empty?) || ensure_ || @empty_ensure
         result=parsetree(o)
         needbegin and result=[:begin, result] unless result.first==:begin
@@ -2254,7 +2254,7 @@ end
 
           rescues=rescues().map{|resc| resc.parsetree(o)}
           target.push newtarget=[:rescue, ]
-          else_=nil
+          #else_=nil
           needbegin=  (BeginNode===body and body.after_equals)
           huh if needbegin and RescueOpNode===body #need test case for this
           huh if needbegin and ParenedNode===body #need test case for this
@@ -2323,10 +2323,10 @@ end
             else
               rhs=RescueOpNode.new(rescuee.val,op2,rescuer)
             end
+            super(lhs,op,rhs)
           else
-            lhs,op,bogus1,rhs,bogus2=*args
+            super(args[0],args[1],args[3])
           end
-          super(lhs,op,rhs)
         else super
         end
       end
@@ -2343,7 +2343,10 @@ end
               rhs=RescueOpNode.new(rescuee.val,op2,rescuer)
             end
           else
-            lhs,op,bogus1,rhs,bogus2=*args
+            lhs=args.shift
+            op=args.shift
+            args.shift #bogus1
+            rhs=args.shift
           end
         else
           lhs,op,rhs=*args
@@ -3153,7 +3156,7 @@ end
       end
 
       def image
-        result="(#{receiver.image if receiver}.#{name})"
+        "(#{receiver.image if receiver}.#{name})"
       end
      
       def with_commas
@@ -3563,7 +3566,6 @@ end
         result=str.dup
         seq=result.to_sequence
         rl.instance_eval{@file=seq}
-        repls=[]
         i=0
         #ugly ugly ugly... all so I can call @bs_handler
         while i<result.size and bs_at=result.index(/\\./m,i)
@@ -3668,7 +3670,7 @@ end
 
 #        data=tokens.inject([]){|sum,token|
 #          data=elems=token.string.elems
-          data=elems=
+          data= #elems=
             case token
             when StringToken; token.elems
             when HerePlaceholderToken; token.string.elems
@@ -3680,7 +3682,6 @@ end
 #        endline=@endline
         1.step(data.length-1,2){|i|
           tokens=data[i].ident.dup
-          line=data[i].linenum
 
           #replace trailing } with EoiToken
           (tokens.size-1).downto(0){|j| 
@@ -4239,7 +4240,7 @@ end
 
       def parsetree(o)
         size.zero? and return [:zarray]
-        normals,star,amp=param_list_parse(self,o)
+        normals,star=param_list_parse(self,o)
         result=normals.unshift :array
         if star
           if size==1
@@ -5301,7 +5302,7 @@ end
 
       def parsetree_no_fcall o
         params=params()
-        output,star,amp=param_list_parse(params,o)
+        output,star=param_list_parse(params,o)
 #        receiver=receiver.parsetree(o)
         result=[:call, receiver.rescue_parsetree(o), :[], output]
         if params

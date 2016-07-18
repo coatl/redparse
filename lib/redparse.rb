@@ -229,7 +229,7 @@ end
     return true #let caller know we found a match
 
     
-  rescue Exception=>e
+  rescue Exception #=>e
     #puts "error (#{e}) while executing rule: #{rule.inspect}"
     #puts e.backtrace.join("\n")
     raise
@@ -468,7 +468,7 @@ end
     result<<"\n"
 
     return @coalesce_result[rulenum]=result
-  rescue Exception=>e
+  rescue Exception  #=>e
     #puts "error (#{e}) while executing rule: #{rule.inspect}"
     #puts e.backtrace.join("\n")
     raise
@@ -1066,7 +1066,7 @@ end
         input=nil
       else
         input=input.original_file
-        inputname=@lexer.filename
+#        inputname=@lexer.filename
         STDERR.puts "error while parsing #@filename:#@endline: <<<  #{input.inspect if input.inspect.size<=1000}  >>>"
       end
       e.backtrace.each{|l| p l }
