@@ -74,6 +74,7 @@ class ParseTreeServer
   end
 
   def main
+    Process.setsid
     si=STDIN
     so=STDOUT
     @out=so; @in=si
