@@ -51,13 +51,13 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency("rubylexer", '0.8.0')
-      s.add_runtime_dependency("reg", ['>= 0.4.8'])
+      s.add_runtime_dependency("reg", ['>= 0.5.0a0'])
     else
       s.add_dependency("rubylexer", '0.8.0')
-      s.add_dependency("reg", ['>= 0.4.8'])
+      s.add_dependency("reg", ['>= 0.5.0a0'])
     end
   else
     s.add_dependency("rubylexer", '0.8.0')
-    s.add_dependency("reg", ['>= 0.4.8'])
+    s.add_dependency("reg", ['>= 0.5.0a0'])
   end
 end
