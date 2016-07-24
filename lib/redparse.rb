@@ -768,7 +768,7 @@ end
   def parser_identity
   #what is the relationship between this method and #signature?
   #can the two be combined?
-    result=class<<self; ancestors end.reject!{|k| !k.name}
+    result=class<<self; ancestors end.reject{|k| !k.name}
     result.reject!{|k| !!((::RedParse<k)..false) }
     result.reject!{|k| k.name[/^(?:RedParse::)?ReduceWiths/] }
     result.reverse!
