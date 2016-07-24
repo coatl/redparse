@@ -472,6 +472,10 @@ class RedParse
         return result
       end
 
+      def to_s #mostly for form inside #{ }
+        unparse
+      end
+
       def classic_inspect
         self.class.name.dup+'['+
           map{|elem| 
