@@ -142,7 +142,11 @@ end
 if coalesce
   variant=variant.split(' ')
 
-  reqs.each{|req| require req } if reqs
+  if reqs
+    $:.push '.'
+      reqs.each{|req| require req }
+    $:.delete '.'
+  end
   versions,modules=variant.partition{|v| /^\d/===v }
   modules.map!{|m| RedParse.const_get m }
   fail if versions.size>1
